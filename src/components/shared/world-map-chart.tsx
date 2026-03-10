@@ -7,11 +7,11 @@ import {
   Geography,
 } from "react-simple-maps";
 import { cn } from "@/lib/utils";
-import { STATE_NAMES, regionFillColor } from "@/lib/geo";
+import { STATE_NAMES, PROVINCE_NAME_TO_CODE, regionFillColor } from "@/lib/geo";
 import { formatCurrency } from "@/lib/format";
 import type { StateDatum } from "@/hooks/use-dashboard-data";
 
-const GEO_URL = "/geo/states-10m.json";
+const GEO_URL = "/geo/canada.geojson";
 
 interface WorldMapChartProps {
   stateData: StateDatum[];
@@ -29,7 +29,7 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  // Build intensity map: stateCode → 0..1
+  // Build intensity map: provinceCode → 0..1
   const intensityMap = useMemo(() => {
     const map: Record<string, number> = {};
     const maxSpend = Math.max(...stateData.map((s) => s.spend), 1);
@@ -47,10 +47,10 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
   }, [stateData]);
 
   const handleMouseEnter = useCallback(
-    (stateId: string, event: React.MouseEvent) => {
-      setHoveredId(stateId);
-      const name = STATE_NAMES[stateId] || stateId;
-      const sd = stateDataMap[stateId];
+    (provinceCode: string, event: React.MouseEvent) => {
+      setHoveredId(provinceCode);
+      const name = STATE_NAMES[provinceCode] || provinceCode;
+      const sd = stateDataMap[provinceCode];
       setTooltip({
         x: event.clientX,
         y: event.clientY,
@@ -74,11 +74,11 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
   }, []);
 
   const getFill = useCallback(
-    (stateId: string) => {
-      const intensity = intensityMap[stateId];
+    (provinceCode: string) => {
+      const intensity = intensityMap[provinceCode];
       if (intensity === undefined) return "rgba(255,255,255,0.04)";
       const base = 0.15 + intensity * 0.85;
-      const isHovered = stateId === hoveredId;
+      const isHovered = provinceCode === hoveredId;
       return regionFillColor(isHovered ? Math.min(base + 0.2, 1) : base);
     },
     [intensityMap, hoveredId]
@@ -88,13 +88,13 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
     <div className="rounded-xl border border-border/40 bg-card p-6 relative">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold tracking-wide">
-          US Market — Spend Heat Map
+          Canada — Spend Heat Map
         </h3>
       </div>
 
       <ComposableMap
-        projection="geoAlbersUsa"
-        projectionConfig={{ scale: 1000 }}
+        projection="geoMercator"
+        projectionConfig={{ center: [-96, 60], scale: 500 }}
         width={800}
         height={500}
         style={{ width: "100%", height: "auto" }}
@@ -102,9 +102,10 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
         <Geographies geography={GEO_URL}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const stateId: string = geo.id;
-              const fill = getFill(stateId);
-              const hasData = intensityMap[stateId] !== undefined;
+              const provinceName: string = geo.properties?.name || "";
+              const provinceCode = PROVINCE_NAME_TO_CODE[provinceName] || provinceName;
+              const fill = getFill(provinceCode);
+              const hasData = intensityMap[provinceCode] !== undefined;
 
               return (
                 <Geography
@@ -118,7 +119,7 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
                     hover: { outline: "none", cursor: hasData ? "pointer" : "default" },
                     pressed: { outline: "none" },
                   }}
-                  onMouseEnter={(e) => handleMouseEnter(stateId, e)}
+                  onMouseEnter={(e) => handleMouseEnter(provinceCode, e)}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
                 />

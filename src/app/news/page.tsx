@@ -18,89 +18,161 @@ interface FeedSection {
 const FEED_SECTIONS: FeedSection[] = [
   {
     id: "brand",
-    title: "Emerging Conversation",
-    sources: ["Reddit", "Twitter / X", "TikTok Comments", "Letterboxd"],
+    title: "Brand & Corporate Narrative",
+    sources: ["Retail Insider", "Financial Post", "Strategy Online", "The Globe and Mail"],
     filterFn: (item) => item.tags.includes("brand"),
   },
   {
-    id: "cast",
-    title: "Cast & Talent Signals",
-    sources: ["Variety", "People", "Entertainment Weekly", "Collider"],
-    filterFn: (item) => item.tags.includes("cast"),
-  },
-  {
-    id: "competitor",
-    title: "Competitor Watch — Devil Wears Prada 2",
-    sources: ["Deadline", "Reddit", "Variety", "Box Office Mojo"],
-    filterFn: (item) => item.tags.includes("competitor"),
+    id: "publishing",
+    title: "Book Industry & Publishing Shifts",
+    sources: ["Publishers Weekly", "BookNet Canada", "Canadian Bookseller", "The Globe and Mail"],
+    filterFn: (item) => item.tags.includes("publishing"),
   },
   {
     id: "genre",
-    title: "Genre & Theme Signals",
-    sources: ["Google Trends", "Social Listening", "Reddit", "TikTok Trending"],
+    title: "Genre & Title Momentum",
+    sources: ["BookNet Canada", "Publishers Weekly", "Amazon.ca Bestsellers", "Goodreads"],
     filterFn: (item) => item.tags.includes("genre"),
   },
   {
-    id: "platform",
-    title: "Platform & Ad Tech Updates",
-    sources: ["TechCrunch", "AdExchanger", "Digiday", "Marketing Dive"],
-    filterFn: (item) => item.tags.includes("platform"),
+    id: "amazon",
+    title: "Amazon Bestseller & Assortment Intelligence",
+    sources: ["Amazon.ca Bestsellers", "Amazon.ca Category Data", "Amazon.ca New Releases", "Jungle Scout"],
+    filterFn: (item) => item.tags.includes("amazon"),
+  },
+  {
+    id: "social",
+    title: "Social & Cultural Book Conversation",
+    sources: ["Reddit r/books", "Reddit r/suggestmeabook", "Reddit r/CanLit", "Goodreads"],
+    filterFn: (item) => item.tags.includes("social"),
+  },
+  {
+    id: "gifting",
+    title: "Gifting, Lifestyle & Home Trends",
+    sources: ["Retail Insider", "Trend Hunter", "Pinterest Trends", "Shopify Canada"],
+    filterFn: (item) => item.tags.includes("gifting"),
+  },
+  {
+    id: "macro",
+    title: "Macro Consumer & Retail Environment",
+    sources: ["Statistics Canada", "The Globe and Mail", "Financial Post", "Deloitte Canada"],
+    filterFn: (item) => item.tags.includes("macro"),
   },
 ];
 
 // ─── Contextual image URL from article title ────────────────────────────────
 
 const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
-  // ── Cast & Talent (TMDB actor photos — must be first to match before "Deep Water" catch-all) ──
-  { match: /Aaron Eckhart|Eckhart/i, photos: ["https://image.tmdb.org/t/p/w500/u5JjnRMr9zKEVvOP7k3F6gdcwT6.jpg"] },
-  { match: /Kelly Gale|Gale/i, photos: ["https://image.tmdb.org/t/p/w500/bU9w5FITuN7TUa9VxFH3whhXFkP.jpg"] },
-  { match: /Ben Kingsley|Kingsley/i, photos: ["https://image.tmdb.org/t/p/w500/vQtBqpF2HDdzbfXHDzR4u37i1Ac.jpg"] },
-  // ── Emerging Conversation (each article gets a unique image) ──
-  { match: /r\/movies.*practical|Jaws vibes/i, photos: ["photo-1478720568477-152d9b164e26"] },
-  { match: /Subway Takeover|OOH|station takeover/i, photos: ["photo-1534430480872-3498386e7856"] },
-  { match: /r\/boxoffice.*pre-sale/i, photos: ["photo-1489599849927-2ee91cede3ba"] },
-  // ── Competing Movies (Devil Wears Prada 2 — must be before generic trailer/ticket matchers) ──
-  { match: /Prada 2 Trailer|Meryl Streep Return/i, photos: ["photo-1469334031218-e382a71b716b"] },
-  { match: /r\/movies.*Prada|megathread.*Prada/i, photos: ["photo-1509631179647-0177331693ae"] },
-  { match: /Prada 2 Fandango|Pre-Sales Track/i, photos: ["photo-1445205170230-053b83016050"] },
-  // ── Film & Brand (general Deep Water fallback) ──
-  { match: /trailer|teaser|first look/i, photos: ["photo-1536440136628-849c177e76a1", "photo-1485846234645-a62644f84728"] },
-  { match: /premiere|red carpet|opening night/i, photos: ["photo-1598899134739-24c46f58b8c0", "photo-1594909122845-11baa439b7bf"] },
-  { match: /ticket|pre.?sale|Fandango/i, photos: ["photo-1517604931442-7e0c8ed2963c", "photo-1489599849927-2ee91cede3ba"] },
-  { match: /Deep Water|deep water/i, photos: ["photo-1551244072-5d12893278ab", "photo-1507525428034-b723cf961d3e", "photo-1544551763-46a013bb70d5"] },
-  { match: /Tonight Show|talk show|interview/i, photos: ["photo-1594909122845-11baa439b7bf", "photo-1478720568477-152d9b164e26"] },
-  { match: /press tour|media tour|junket/i, photos: ["photo-1598899134739-24c46f58b8c0", "photo-1524712245354-2c4e5e7121c0"] },
-  // ── Genre & Theme (each article unique — must be before generic ocean/shark matchers) ──
-  { match: /SharkTok|shark.*TikTok|340%/i, photos: ["photo-1560275619-4662e36fa65c"] },
-  { match: /Underwater Thriller Genre.*28%/i, photos: ["photo-1551244072-5d12893278ab"] },
-  { match: /Ocean Survival Podcasts|Maritime Peril Trend/i, photos: ["photo-1478737270239-2f02b77fc618"] },
-  { match: /shark|ocean|underwater|sea/i, photos: ["photo-1544551763-46a013bb70d5", "photo-1507525428034-b723cf961d3e"] },
-  { match: /thriller|suspense|survival/i, photos: ["photo-1536440136628-849c177e76a1", "photo-1478720568477-152d9b164e26"] },
-  // ── Reviews & Sentiment ──
-  { match: /Rotten Tomatoes|critics|review/i, photos: ["photo-1489599849927-2ee91cede3ba", "photo-1517604931442-7e0c8ed2963c"] },
-  { match: /IMDb|rating|score/i, photos: ["photo-1517604931442-7e0c8ed2963c", "photo-1485846234645-a62644f84728"] },
-  { match: /Letterboxd|social sentiment|buzz/i, photos: ["photo-1478720568477-152d9b164e26", "photo-1594909122845-11baa439b7bf"] },
-  { match: /search volume|Google Trends|trending/i, photos: ["photo-1460925895917-afdab827c52f", "photo-1551288049-bebda4e38f71"] },
-  // ── Platform & Ad Tech ──
-  { match: /TikTok|Reels|short.?form/i, photos: ["photo-1611162616305-c69b3fa7fbe0", "photo-1611162618071-b39a2ec055fb"] },
-  { match: /Meta|Facebook|Instagram/i, photos: ["photo-1611162617474-5b21e879e113", "photo-1432888622747-4eb9a8efeb07"] },
-  { match: /Google|showtime|search ads/i, photos: ["photo-1573804633927-bfcbcd909acd", "photo-1616499370260-485b3e5ed653"] },
-  { match: /Trade Desk|CTV|programmatic/i, photos: ["photo-1593784991095-a205069470b6", "photo-1611532736597-de2d4265fba3"] },
-  // ── Audience Behaviour ──
-  { match: /Gen Z|young audience|18.?24/i, photos: ["photo-1524712245354-2c4e5e7121c0", "photo-1611162616305-c69b3fa7fbe0"] },
-  { match: /group ticket|social movie|friend/i, photos: ["photo-1489599849927-2ee91cede3ba", "photo-1517604931442-7e0c8ed2963c"] },
-  // ── Box Office & Industry ──
-  { match: /box office|domestic gross|weekend/i, photos: ["photo-1517604931442-7e0c8ed2963c", "photo-1489599849927-2ee91cede3ba"] },
-  { match: /IMAX|premium format|Dolby/i, photos: ["photo-1536440136628-849c177e76a1", "photo-1489599849927-2ee91cede3ba"] },
-  { match: /theatrical window|streaming|VOD/i, photos: ["photo-1593784991095-a205069470b6", "photo-1611532736597-de2d4265fba3"] },
-  { match: /summer|blockbuster|ad cost/i, photos: ["photo-1507525428034-b723cf961d3e", "photo-1544551763-46a013bb70d5"] },
-  { match: /campaign|budget|spend/i, photos: ["photo-1460925895917-afdab827c52f", "photo-1551288049-bebda4e38f71"] },
+  // ── Brand & Corporate Narrative (pinned) — bookstore/retail imagery ──
+  // 1. CEO Interview / brand mentions surge
+  { match: /CEO Interview.*Cultural Retail/i, photos: ["photo-1568667256549-094345857637"] },
+  // 2. Plum+ pricing / membership
+  { match: /Plum\+ Pricing Narrative/i, photos: ["photo-1604866830893-c13cafa515d5"] },
+  // 3. ESG Report / Nota sustainable
+  { match: /ESG Report.*Nota/i, photos: ["photo-1559526324-4b87b5e36e44"] },
+  // Brand loop
+  // 22. Heather's Picks viral moment
+  { match: /Heather.*Picks.*Viral/i, photos: ["photo-1507842217343-583bb7270b66"] },
+  // 23. Small-format stores in Ontario
+  { match: /Small-Format Stores/i, photos: ["photo-1580537659466-0a9bfa916a54"] },
+  // 24. Exclusive limited edition sells out
+  { match: /Exclusive Limited Edition/i, photos: ["photo-1476275466078-4007374efbbe"] },
+
+  // ── Book Industry & Publishing Shifts (pinned) ──
+  // 4. Publishing revenue $1.7B
+  { match: /Publishing Revenue.*\$1\.7B/i, photos: ["photo-1524995997946-a1c2e315a42f"] },
+  // 5. Audiobook sales grow 23%
+  { match: /Audiobook Sales.*Grow/i, photos: ["photo-1478737270239-2f02b77fc618"] },
+  // 6. Backlist resurgence
+  { match: /Backlist Resurgence/i, photos: ["photo-1512820790803-83ca734da794"] },
+  // Publishing loop
+  // 25. Independent publishers 22% growth
+  { match: /Independent Publishers.*22%/i, photos: ["photo-1521587760476-6c12a4b040da"] },
+  // 26. eBook sales flatten
+  { match: /eBook Sales Flatten/i, photos: ["photo-1544716278-ca5e3f4abd8c"] },
+  // 27. Children's publishing fastest-growing
+  { match: /Children.*Publishing.*Fastest/i, photos: ["photo-1503454537195-1dcabb73ffb9"] },
+
+  // ── Genre & Title Momentum (pinned) ──
+  // 7. Horror and dark fiction surge
+  { match: /Horror and Dark Fiction/i, photos: ["photo-1519389950473-47ba0277781c"] },
+  // 8. Romantasy continues / Fourth Wing
+  { match: /Romantasy Continues.*Fourth Wing/i, photos: ["photo-1474932430478-367dbb6832c1"] },
+  // 9. r/booktalk "The Returning Tide"
+  { match: /Returning Tide|r\/booktalk/i, photos: ["photo-1495446815901-a7297e633e8d"] },
+  // Genre loop
+  // 28. Cozy mystery subgenre
+  { match: /Cozy Mystery.*Comfort Reading/i, photos: ["photo-1481627834876-b7833e8f5570"] },
+  // 29. Literary fiction resurgence
+  { match: /Literary Fiction.*Resurgence/i, photos: ["photo-1457369804613-52c61a468e7d"] },
+  // 30. Thriller genre fragments
+  { match: /Thriller Genre Fragments/i, photos: ["photo-1587876931567-564ce588bfbd"] },
+
+  // ── Amazon Bestseller & Assortment (pinned) ──
+  // 10. Amazon bestsellers romance/romantasy top 20
+  { match: /Amazon.*Bestsellers.*Romance.*Hold/i, photos: ["photo-1523474253046-8cd2748b5fd2"] },
+  // 11. Amazon new releases climbing / slow living
+  { match: /Amazon.*New Releases Climbing/i, photos: ["photo-1544947950-fa07a98d237f"] },
+  // 12. Amazon BookTok list diverges
+  { match: /Amazon.*BookTok.*Diverges/i, photos: ["photo-1472851294608-062f824d29cc"] },
+  // Amazon loop
+  // 31. Amazon gift bundle sales surge
+  { match: /Amazon.*Gift Bundle.*Surge/i, photos: ["photo-1513885535751-8b9238bd345a"] },
+  // 32. Amazon review velocity spikes / debut authors
+  { match: /Amazon.*Review Velocity/i, photos: ["photo-1516979187457-637abb4f9353"] },
+  // 33. Amazon children's category surge
+  { match: /Amazon.*Children.*Surge/i, photos: ["photo-1471970471555-19d4b113e9ed"] },
+
+  // ── Social & Cultural Book Conversation (pinned) ──
+  // 13. r/books weekly thread breakout titles
+  { match: /r\/books.*What Are You Reading/i, photos: ["photo-1543002588-bfa74002ed7e"] },
+  // 14. r/suggestmeabook dark academia
+  { match: /r\/suggestmeabook.*Dark Academia/i, photos: ["photo-1600880292203-757bb62b4baf"] },
+  // 15. r/CanLit Giller Prize pre-orders
+  { match: /r\/CanLit.*Giller Prize/i, photos: ["photo-1526243741027-444d633d7365"] },
+  // Social loop
+  // 34. r/bookshelf reading nook posts
+  { match: /r\/bookshelf.*Reading Nook/i, photos: ["photo-1535016120720-40c646be5580"] },
+  // 35. r/CanadianBookClub grows to 180K
+  { match: /r\/CanadianBookClub.*180K/i, photos: ["photo-1497633762265-9d179a990aa6"] },
+  // 36. r/RomanceBooks enemies-to-lovers
+  { match: /r\/RomanceBooks.*Enemies/i, photos: ["photo-1529590003495-b2646e2718bf"] },
+
+  // ── Gifting, Lifestyle & Home (pinned) ──
+  // 16. Emotional-value gifting
+  { match: /Emotional-Value Gifting/i, photos: ["photo-1557804506-669a67965ba0"] },
+  // 17. Mother's Day gift search
+  { match: /Mother.*Day Gift Search/i, photos: ["photo-1531983412531-1f49a365ffed"] },
+  // 18. Cozy living / dopamine décor
+  { match: /Cozy Living.*Dopamine/i, photos: ["photo-1513185041617-8ab03f83d6c5"] },
+  // Gifting loop
+  // 37. Teacher appreciation / graduation
+  { match: /Teacher Appreciation.*Graduation/i, photos: ["photo-1513542789411-b6a5d4f31634"] },
+  // 38. Personalization trend / journals
+  { match: /Personalization Trend.*Premium/i, photos: ["photo-1531346878377-a5be20888e57"] },
+  // 39. Baby gifting market
+  { match: /Baby Gifting Market/i, photos: ["photo-1515488042361-ee00e0ddd4e4"] },
+
+  // ── Macro Consumer & Retail (pinned) ──
+  // 19. Consumer confidence dips Q1
+  { match: /Consumer Confidence Dips/i, photos: ["photo-1460925895917-afdab827c52f"] },
+  // 20. E-commerce 14.2% / omnichannel
+  { match: /E-Commerce Share.*14\.2/i, photos: ["photo-1556742393-d75f468bfcb0"] },
+  // 21. Mall foot traffic stabilizes
+  { match: /Mall Foot Traffic Stabilizes/i, photos: ["photo-1441984904996-e0b6ba687e04"] },
+  // Macro loop
+  // 40. Holiday spending forecast cautious
+  { match: /Holiday Spending Forecast/i, photos: ["photo-1607083206968-13611e3d76db"] },
+  // 41. Inflation sensitivity / book spending resilient
+  { match: /Inflation Sensitivity.*Book Spending/i, photos: ["photo-1551288049-bebda4e38f71"] },
+  // 42. Convenience expectations / same-day
+  { match: /Convenience Expectations.*Same-Day/i, photos: ["photo-1586528116311-ad8dd3c8310d"] },
 ];
 
 const FALLBACK_PHOTOS = [
-  "photo-1536440136628-849c177e76a1",
-  "photo-1489599849927-2ee91cede3ba",
-  "photo-1517604931442-7e0c8ed2963c",
+  "photo-1488190211105-8b0e65b80b4e",
+  "photo-1432821596592-e2c18b78144f",
+  "photo-1434030216411-0b793f4b4173",
 ];
 
 function hashId(id: string): number {
@@ -142,14 +214,13 @@ function articleImageUrlLarge(title: string, id: string): string {
 // ─── AI Insight generator (deterministic from article) ──────────────────────
 
 const TAG_LABELS: Record<NewsTag, string> = {
-  brand: "Film & Brand",
-  cast: "Cast & Talent",
-  competitor: "Competing Release",
-  genre: "Genre & Themes",
-  sentiment: "Reviews & Sentiment",
-  platform: "Platform Update",
-  audience: "Audience Behaviour",
-  macro: "Box Office & Industry",
+  brand: "Brand & Corporate Narrative",
+  publishing: "Book Industry & Publishing",
+  genre: "Genre & Title Momentum",
+  amazon: "Amazon Intelligence",
+  social: "Social & Cultural Conversation",
+  gifting: "Gifting, Lifestyle & Home",
+  macro: "Macro Consumer & Retail",
 };
 
 function generateInsight(item: NewsItem): { impact: string; actions: Array<{ icon: React.ElementType; title: string; description: string }> } {
@@ -157,91 +228,81 @@ function generateInsight(item: NewsItem): { impact: string; actions: Array<{ ico
 
   if (tag === "brand") {
     return {
-      impact: "Organic social conversation about Deep Water is building momentum across Reddit and TikTok. Grassroots buzz from real users is the most credible form of social proof and drives outsized word-of-mouth. Amplifying this emerging conversation through paid channels compounds the organic momentum at a fraction of the cost of generating awareness from scratch.",
+      impact: "This signals a shift in how the market perceives Indigo's brand narrative. Whether it's store format changes, executive positioning, loyalty evolution, or sustainability messaging, every public-facing signal shapes market confidence and customer expectation. Indigo's ability to control this narrative directly affects brand equity, investor sentiment, and competitive positioning.",
       actions: [
-        { icon: TrendingUp, title: "Boost UGC-Style Creative", description: "Create paid social ads that mirror the look and tone of organic user posts — reaction-style videos, comment screenshots, and community quotes drive 2-3x higher engagement than polished studio assets." },
-        { icon: Target, title: "Target Community Lookalikes", description: "Build custom audiences from users engaging with Deep Water Reddit threads and TikTok comments. Layer with movie-intent signals for high-conversion prospecting at scale." },
-        { icon: Shield, title: "Monitor Conversation Velocity", description: "Track mention volume and sentiment across Reddit, TikTok, and Twitter/X in real time. If the conversation accelerates, immediately increase spend to ride the organic wave before it peaks." },
+        { icon: TrendingUp, title: "Amplify Positive Brand Signals", description: "If the narrative is favourable, accelerate owned and paid amplification. Feature the story across Indigo's social channels and align PR with the momentum before it fades." },
+        { icon: Target, title: "Track Narrative Trajectory", description: "Monitor whether this story is being picked up by other outlets and how the tone is shifting. Flag any divergence between Indigo's intended positioning and how the market is interpreting it." },
+        { icon: Shield, title: "Prepare Counter-Narrative if Needed", description: "If sentiment is negative or mixed, draft response messaging and identify owned channels to reinforce the brand's intended narrative around curation, Canadian identity, and customer experience." },
       ],
     };
   }
-  if (tag === "cast") {
+  if (tag === "publishing") {
     return {
-      impact: "Cast visibility drives outsized awareness for theatrical releases. Talk show appearances, social media posts, and press tour coverage create high-engagement moments that should be captured and amplified in paid campaigns. Talent-led creative typically outperforms standard studio assets by 30-50% on social platforms.",
+      impact: "Canada's publishing industry revenue rose to $1.7B in 2024, with continued benefit from digital reading formats and social media influence. Shifts in publishing — from genre acceleration to digital format adoption to backlist resurgence — have direct implications for Indigo's assortment strategy, merchandising decisions, and demand forecasting.",
       actions: [
-        { icon: TrendingUp, title: "Create Talent-Led Creative", description: "Cut 15- and 30-second social clips from this appearance for Instagram Reels and TikTok. Talent-driven content drives 2-3x higher engagement than standard trailer cuts." },
-        { icon: Target, title: "Activate Fan Targeting", description: "Build custom audiences around the talent's existing fanbase — followers, lookalikes, and interest segments. Layer with movie-intent signals for high-conversion prospecting." },
-        { icon: Shield, title: "Track Engagement Velocity", description: "Monitor engagement rate and share velocity on talent-related content. If a clip goes viral, immediately increase spend allocation to ride the organic momentum." },
-      ],
-    };
-  }
-  if (tag === "competitor") {
-    return {
-      impact: "Devil Wears Prada 2 is commanding massive attention across social media, Reddit, and ticket pre-sales. The sequel's built-in fanbase and nostalgia factor give it outsized share of voice that could overshadow Deep Water during the critical release window. However, the audience overlap is limited — DWP2 skews female 25-44 comedy while Deep Water targets thriller/action audiences — creating opportunities for strategic counter-programming.",
-      actions: [
-        { icon: Shield, title: "Boost Brand Search Defense", description: "Increase Deep Water branded search bid caps by 25%. Add 'Devil Wears Prada 2' as a negative keyword on broad campaigns to prevent budget leakage to non-target audiences." },
-        { icon: Target, title: "Lean Into Counter-Programming", description: "Position Deep Water as the alternative for audiences not interested in DWP2. Target male 18-34 and thriller enthusiasts with messaging that emphasises adrenaline, practical stunts, and edge-of-your-seat tension." },
-        { icon: TrendingUp, title: "Surge Spend in Overlapping DMAs", description: "Increase budget by 20% in NY, LA, and Chicago where DWP2 pre-sales are strongest. Focus on CTV and YouTube pre-roll to maintain visibility alongside the DWP2 marketing blitz." },
+        { icon: TrendingUp, title: "Align Assortment to Industry Momentum", description: "Cross-reference this publishing shift against Indigo's current category performance. If a format or genre is accelerating industry-wide, ensure Indigo's merchandising and inventory reflect the trend before competitors respond." },
+        { icon: Target, title: "Monitor Digital Format Disruption", description: "Track audiobook and eReading adoption rates relative to physical book sales. Identify where digital is complementing vs. cannibalising physical, and adjust channel strategy accordingly." },
+        { icon: Shield, title: "Watch for Backlist Opportunities", description: "Publishing shifts often create backlist resurgence — older titles that suddenly spike due to adaptations, social buzz, or cultural moments. Flag any backlist acceleration for merchandising consideration." },
       ],
     };
   }
   if (tag === "genre") {
     return {
-      impact: "Rising cultural interest in ocean, shark, and survival content signals a favourable environment for Deep Water's genre positioning. Trending topics create organic search and social demand that paid campaigns can intercept and amplify at lower CPAs.",
+      impact: "Genre and title momentum tracking helps Indigo move from reacting to bestsellers to anticipating demand. Recent market signals show continued genre volatility and culturally driven surges, especially around BookTok-led categories, adaptation-driven spikes, and breakout subgenres. Catching these signals early means better inventory positioning, smarter merchandising, and more relevant marketing.",
       actions: [
-        { icon: TrendingUp, title: "Intercept Trending Interest", description: "Launch Google Search campaigns targeting trending genre keywords — shark movies, ocean thriller, survival films. Capture high-intent searchers while CPCs remain efficient." },
-        { icon: Target, title: "Align Creative With Trends", description: "Produce TikTok and Reels content that ties Deep Water's narrative to trending cultural moments. Use trending audio and hashtags to maximise organic amplification." },
-        { icon: Shield, title: "Monitor Trend Lifecycle", description: "Track Google Trends and TikTok trending data daily. If genre interest peaks, immediately scale spend; if it fades, reallocate to brand and ticket-drive campaigns." },
+        { icon: TrendingUp, title: "Anticipate Demand — Don't Chase It", description: "If a genre or author is showing breakout signals, ensure Indigo's inventory and merchandising are ahead of the curve. Position featured titles prominently before the wave peaks." },
+        { icon: Target, title: "Cross-Reference with Social Signals", description: "Check whether this genre momentum is being amplified on BookTok, Goodreads, or Reddit. Social amplification accelerates demand velocity and shortens the window to capture it." },
+        { icon: Shield, title: "Flag Seasonal and Adaptation Triggers", description: "Track upcoming film/TV adaptations, seasonal reading themes, and award cycles. These are predictable demand drivers that Indigo can merchandise against with lead time." },
       ],
     };
   }
-  if (tag === "sentiment") {
+  if (tag === "amazon") {
     return {
-      impact: "Critic scores and audience sentiment are the strongest predictors of theatrical hold and word-of-mouth multiplier. Positive reviews should be weaponised in paid creative immediately, while any negative signals require rapid messaging adjustments to protect opening weekend projections.",
+      impact: "Amazon often acts as a real-time proxy for consumer demand velocity, even though Indigo curates differently. Bestseller movements, new release surges, review velocity, and category climbing on Amazon.ca reveal what consumers are actively seeking — and where Indigo can compete on curation, experience, and exclusivity rather than price alone.",
       actions: [
-        { icon: TrendingUp, title: "Feature Review Scores in Creative", description: "Update all display, social, and video ads to include the latest Rotten Tomatoes and IMDb scores. Critic-endorsed creative drives 20-35% higher click-through rates." },
-        { icon: Target, title: "Target Review-Reading Audiences", description: "Activate audiences who visit Rotten Tomatoes, IMDb, and Letterboxd. These high-intent moviegoers are closest to ticket purchase and respond to social proof." },
-        { icon: Shield, title: "Set Up Sentiment Alerts", description: "Configure real-time monitoring for sentiment shifts across social platforms and review aggregators. If sentiment drops below 70% positive, trigger messaging pivot to emphasise action and spectacle." },
+        { icon: TrendingUp, title: "Map Amazon Demand to Indigo Opportunity", description: "Cross-reference Amazon's trending titles and categories against Indigo's current assortment and inventory. Identify gaps where demand is proven but Indigo's positioning could capture share." },
+        { icon: Target, title: "Track Review Volume as a Leading Indicator", description: "Rapid review accumulation on Amazon often precedes mainstream breakout. Flag titles with accelerating review velocity for early merchandising consideration and marketing alignment." },
+        { icon: Shield, title: "Differentiate on Curation, Not Price", description: "Amazon competes on convenience and price. Indigo's response should emphasise curated collections, staff picks, exclusive editions, and the in-store discovery experience that Amazon cannot replicate." },
       ],
     };
   }
-  if (tag === "platform") {
+  if (tag === "social") {
     return {
-      impact: "This platform update presents an opportunity for Deep Water's digital campaigns. Early adoption of new ad formats typically yields a 15-25% efficiency advantage before competition saturates. Movie campaigns benefit disproportionately from ticket-integration and shoppable formats.",
+      impact: "Book discovery is increasingly community-driven. Reddit reading communities — r/books, r/suggestmeabook, r/RomanceBooks, r/CanLit — are surfacing high-conviction recommendations that drive real purchasing behaviour. Unlike algorithmic feeds, Reddit threads represent genuine reader enthusiasm with detailed context on why a book resonates. This matters because Indigo's merchandising and marketing can align not just to what is selling, but to why readers are passionate about it.",
       actions: [
-        { icon: Target, title: "Test New Ad Formats", description: "Allocate 10% of platform budget to pilot the new feature with Deep Water trailer and ticket-drive creative. Run A/B tests against current top performers for 7 days." },
-        { icon: TrendingUp, title: "Optimise for Ticket Conversions", description: "If the format supports direct purchase or link-out, connect it to Fandango/AMC ticket pages. Track cost-per-ticket-sale as the primary KPI." },
-        { icon: Shield, title: "Monitor Performance Impact", description: "Set up daily monitoring to track any performance shifts from the platform change. Flag campaigns with >10% CPA increase for immediate creative or targeting adjustments." },
+        { icon: TrendingUp, title: "Align Merchandising to Community Conversation", description: "If a title, trope, or aesthetic is gaining traction on Reddit, ensure Indigo's merchandising and marketing reflect the language and framing the community is using. Reddit-driven demand is high-conviction and specific." },
+        { icon: Target, title: "Monitor Subreddit Recommendation Velocity", description: "Track which titles and genres are gaining momentum across key book subreddits. High upvote counts and comment velocity on recommendation threads are leading indicators of mainstream breakout." },
+        { icon: Shield, title: "Watch for Emerging Aesthetic and Trope Trends", description: "Reddit book conversation often organises around aesthetics (dark academia, cottagecore) and tropes (enemies-to-lovers, found family). These are merchandisable themes Indigo can build collections and campaigns around." },
       ],
     };
   }
-  if (tag === "audience") {
+  if (tag === "gifting") {
     return {
-      impact: "Shifting audience behaviour — from how Gen Z discovers movies to the rise of group ticket purchases — has direct implications for Deep Water's targeting, creative, and channel strategy. Adapting to these signals ensures campaign efficiency and maximises opening weekend attendance.",
+      impact: "Indigo has a meaningful gifts, lifestyle, and home business. Current retail trend coverage points to cautious spending, convenience expectations, and emotional-value gifting. Monitoring gifting intent, seasonal celebration moments, and lifestyle aesthetics helps Indigo position its non-book assortment as intentional, curated, and emotionally resonant — not just transactional.",
       actions: [
-        { icon: Target, title: "Update Audience Segments", description: "Refresh lookalike and interest-based audiences to reflect evolving movie-discovery behaviour. Prioritise social-first, mobile-native audience segments in prospecting campaigns." },
-        { icon: TrendingUp, title: "Test Social-First Creative", description: "Develop vertical video, meme-style, and UGC-inspired creative variants that match how the target audience discovers and shares movie content." },
-        { icon: Shield, title: "Expand Channel Testing", description: "Allocate 10-15% of budget to test emerging channels and formats favoured by the target audience — TikTok Spark Ads, Instagram Broadcast Channels, and Reddit promoted posts." },
+        { icon: TrendingUp, title: "Align to Seasonal Gift Intent", description: "Track upcoming gifting moments — Mother's Day, graduation, teacher gifts, holiday — and ensure merchandising and marketing are positioned with lead time. Gift-intent search spikes are predictable and actionable." },
+        { icon: Target, title: "Monitor Lifestyle Aesthetic Trends", description: "Track trending aesthetics — cozy living, dopamine décor, self-care rituals, personalization — and align Indigo's lifestyle and home merchandising to the cultural conversation driving purchase decisions." },
+        { icon: Shield, title: "Position Indigo as the Curated Gift Destination", description: "In a cautious spending environment, consumers gravitate toward gifts with emotional value. Indigo's curation, private labels (Love & Lore, Nota), and book-lover lifestyle positioning are competitive advantages worth amplifying." },
       ],
     };
   }
   if (tag === "macro") {
     return {
-      impact: "Box office trends and industry dynamics directly impact Deep Water's release strategy. Strong overall theatrical demand creates a rising tide, while compressed windows or premium-format competition require tactical spend adjustments to protect screen share and opening weekend performance.",
+      impact: "Macro consumer and retail conditions directly shape Indigo's performance pressure points: value perception, conversion rates, category mix, and promotional strategy. Canadian retail commentary in early 2026 points to cautious spending, rising convenience expectations, and e-commerce channel shifting. Understanding these forces helps STRATIS connect external conditions to strategic response.",
       actions: [
-        { icon: TrendingUp, title: "Adjust DMA Budget Allocation", description: "Reallocate 10-15% of budget based on market-level box office performance data. Shift investment toward DMAs showing strongest theatrical demand and away from underperforming markets." },
-        { icon: Target, title: "Emphasise Premium Formats", description: "If IMAX/Dolby demand is rising, increase creative featuring premium format messaging. Partner with exhibitors for co-branded campaigns driving premium ticket sales." },
-        { icon: Shield, title: "Scenario Plan for Window Changes", description: "Build 3 spend scenarios based on different theatrical window outcomes. Pre-approve contingency budgets to extend campaigns if the film holds well or pivot to VOD if the window compresses." },
+        { icon: TrendingUp, title: "Adjust Strategy to Spending Climate", description: "If consumer confidence is declining or discretionary spending is under pressure, shift messaging toward value, emotional gifting, and experience — away from volume and impulse." },
+        { icon: Target, title: "Monitor Foot Traffic and Channel Shifts", description: "Track mall retail trends and e-commerce vs. in-store behaviour. Shifts in channel preference have direct implications for Indigo's omnichannel strategy and marketing budget allocation." },
+        { icon: Shield, title: "Flag Holiday and Seasonal Spending Signals Early", description: "Early indicators of holiday spending sentiment — from consumer surveys to credit card data — help Indigo calibrate promotional intensity, inventory depth, and campaign timing." },
       ],
     };
   }
   // default
   return {
-    impact: "This development has implications for Deep Water's marketing strategy. Staying ahead of industry shifts and cultural moments ensures campaign relevance and maximises the efficiency of the $9.3M media investment across the release window.",
+    impact: "This development has strategic implications for Indigo's positioning. Staying ahead of market shifts, consumer behaviour changes, and competitive dynamics ensures Indigo can respond proactively rather than reactively.",
     actions: [
-      { icon: TrendingUp, title: "Scale Top Performers", description: "Increase budget on the top 3 campaigns by 15-20% to capture rising demand. Current best-performing creative has headroom before hitting frequency caps." },
-      { icon: Target, title: "Expand Audience Targeting", description: "Broaden prospecting audiences to capture new moviegoer segments entering the consideration set. Test lookalike audiences based on recent ticket purchasers." },
-      { icon: Shield, title: "Accelerate Creative Production", description: "Fast-track 3-5 new creative variants to maintain freshness across the release window. Focus on behind-the-scenes, cast-led, and review-score creative angles." },
+      { icon: TrendingUp, title: "Assess Strategic Impact", description: "Evaluate how this development affects Indigo's current priorities and whether it warrants a change in approach across merchandising, marketing, or operations." },
+      { icon: Target, title: "Cross-Reference with Other Signals", description: "Check whether this signal is being confirmed by other data sources — social conversation, sales data, competitor behaviour — to determine confidence level before acting." },
+      { icon: Shield, title: "Monitor for Escalation", description: "Track whether this signal is intensifying, stabilising, or fading. Set a review point to reassess impact and determine next steps." },
     ],
   };
 }
@@ -434,7 +495,7 @@ export default function NewsPage() {
                   <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-500/5 border border-red-500/10">
                     <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
                     <p className="text-xs text-red-300/80">
-                      <span className="font-semibold text-red-400">Competitor Alert:</span> This article involves <span className="font-semibold">{selectedArticle.competitor}</span>, a competing theatrical release in Deep Water&apos;s marketing window.
+                      <span className="font-semibold text-red-400">Competitor Alert:</span> This article involves <span className="font-semibold">{selectedArticle.competitor}</span>, a competing retailer in Indigo&apos;s market.
                     </p>
                   </div>
                 )}
@@ -451,7 +512,7 @@ export default function NewsPage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold">STRATIS Insight</h3>
-                    <p className="text-[10px] text-muted-foreground/60">What this means for Deep Water</p>
+                    <p className="text-[10px] text-muted-foreground/60">What this means for Indigo</p>
                   </div>
                 </div>
 

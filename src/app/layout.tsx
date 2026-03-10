@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "STRATIS — Deep Water Prototype",
+  title: "STRATIS — Indigo",
   description: "Unified intelligence layer for global campaign performance",
 };
 

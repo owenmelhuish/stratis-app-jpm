@@ -11,6 +11,7 @@ import { Dialog as DialogPrimitive } from 'radix-ui';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,40 +19,80 @@ import {
   Check,
   Circle,
   MoreHorizontal,
-  TrendingUp,
+  Info,
+  ExternalLink,
+  ChevronDown,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
-  AreaChart,
+  ComposedChart,
   Area,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
   ReferenceLine,
-  BarChart,
-  Bar,
+  ReferenceArea,
 } from 'recharts';
-import type { Insight, InsightActionStep } from '@/types';
+import type { Insight } from '@/types';
 import { cn } from '@/lib/utils';
 import {
   generateInsightChartData,
   interpolateImproved,
-  interpolateAdSets,
+  interpolateChannels,
   type MetricsHint,
 } from '@/lib/insight-chart-data';
-import type { InsightChartData } from '@/lib/insight-chart-data';
+import type { InsightChartData, ChannelAllocation } from '@/lib/insight-chart-data';
 
-// --- Step-type configuration ---
-const STEP_TYPE_CONFIG: Record<
-  InsightActionStep['type'],
-  { unit: string; label: string; min: number; max: number; defaultVal: number }
-> = {
-  budget: { unit: '%', label: 'Budget reallocation', min: 0, max: 100, defaultVal: 50 },
-  creative: { unit: '%', label: 'Creative refresh', min: 0, max: 100, defaultVal: 50 },
-  targeting: { unit: '%', label: 'Targeting adjustment', min: 0, max: 100, defaultVal: 50 },
-  bidding: { unit: '%', label: 'Bid adjustment', min: 0, max: 100, defaultVal: 50 },
-  scheduling: { unit: '%', label: 'Schedule shift', min: 0, max: 100, defaultVal: 50 },
-};
+// --- Derive metrics hint from insight ---
+function deriveMetricsHint(insight: Insight): MetricsHint {
+  const t = insight.title;
+  if (t.includes('Pacing') || t.includes('Budget')) return 'budget-spend';
+  if (t.includes('Hook Retention') || t.includes('View Rate')) return 'viewrate-impressions';
+  if (t.includes('Saturation') || t.includes('Frequency Cap')) return 'engagement-frequency';
+  if (t.includes('Channel') || t.includes('Dependence') || t.includes('Divergence') || t.includes('Opportunity')) return 'engagement-spend';
+  if (insight.category === 'creative') return 'engagement-frequency';
+  return 'engagement-frequency';
+}
+
+// --- Generate asset name from insight ID ---
+function generateAssetName(insightId: string): string {
+  let hash = 0;
+  for (let i = 0; i < insightId.length; i++) {
+    hash = ((hash << 5) - hash) + insightId.charCodeAt(i);
+    hash |= 0;
+  }
+  hash = Math.abs(hash);
+  const adNum = (hash % 20) + 1;
+  const formats = ['V', 'I', 'C'];
+  const fmt = formats[hash % 3];
+  const langs = ['EN', 'FR', 'ES'];
+  const lang = langs[(hash >> 4) % 3];
+  const durations = ['09', '15', '30'];
+  const dur = durations[(hash >> 8) % 3];
+  const aspects = ['1x1', '16x9', '9x16'];
+  const aspect = aspects[(hash >> 12) % 3];
+  const code = insightId.replace(/[^a-zA-Z0-9]/g, '').slice(-3).toUpperCase();
+  return `DEEPWTR25-${code}-Ad${String(adNum).padStart(2, '0')}-${fmt}-${lang}-Trailer-${dur}-${aspect}`;
+}
+
+// --- Check if insight is creative/ad type ---
+function isCreativeType(insight: Insight): boolean {
+  return insight.category === 'creative';
+}
+
+// --- Check if insight is channel optimization type ---
+function isChannelOptType(insight: Insight): boolean {
+  const t = insight.title;
+  return (
+    t.includes('Saturation') ||
+    t.includes('Dependence') ||
+    t.includes('Divergence') ||
+    t.includes('Opportunity') ||
+    t.includes('Channel Mix') ||
+    t.includes('Diminishing')
+  );
+}
 
 interface InsightDetailModalProps {
   insight: Insight | null;
@@ -77,57 +118,35 @@ export function InsightDetailModal({
   hasNext,
 }: InsightDetailModalProps) {
   const [activeTab, setActiveTab] = useState(0);
-  // Slider values keyed by step id, 0-100
-  const [stepValues, setStepValues] = useState<Record<string, number>>({});
+  const [budgetIntensity, setBudgetIntensity] = useState(50);
 
-  // Derive metrics hint from title
-  const metricsHint: MetricsHint = insight?.title.includes('Pacing') || insight?.title.includes('Budget')
-    ? 'budget-spend'
-    : 'roas-frequency';
+  const metricsHint = insight ? deriveMetricsHint(insight) : 'engagement-frequency';
 
-  // Base chart data (static per insight)
   const chartData = useMemo<InsightChartData | null>(
     () => (insight ? generateInsightChartData(insight.id, metricsHint) : null),
     [insight, metricsHint]
   );
 
-  // Reset sliders when insight changes
+  // Reset state when insight changes
   useEffect(() => {
     if (!insight) return;
-    const defaults: Record<string, number> = {};
-    for (const step of insight.actionSteps) {
-      defaults[step.id] = STEP_TYPE_CONFIG[step.type].defaultVal;
-    }
-    setStepValues(defaults);
     setActiveTab(0);
+    setBudgetIntensity(50);
   }, [insight]);
 
-  const setStepValue = useCallback((stepId: string, value: number) => {
-    setStepValues((prev) => ({ ...prev, [stepId]: value }));
-  }, []);
+  const intensity = budgetIntensity / 100;
 
-  // Aggregate intensity = average of all step sliders (0-1)
-  const aggregateIntensity = useMemo(() => {
-    if (!insight || insight.actionSteps.length === 0) return 0;
-    const vals = insight.actionSteps.map((s) => (stepValues[s.id] ?? 50) / 100);
-    return vals.reduce((a, b) => a + b, 0) / vals.length;
-  }, [insight, stepValues]);
-
-  // Adjusted improved line and ad sets based on aggregate intensity
   const adjustedImproved = useMemo(() => {
     if (!chartData) return [];
-    return interpolateImproved(chartData.predicted, chartData.improved, aggregateIntensity);
-  }, [chartData, aggregateIntensity]);
+    return interpolateImproved(chartData.predicted, chartData.improved, intensity);
+  }, [chartData, intensity]);
 
-  const adjustedAdSets = useMemo(() => {
+  const adjustedChannels = useMemo(() => {
     if (!chartData) return [];
-    // For budget steps, use the budget step's own slider value
-    const budgetStep = insight?.actionSteps.find((s) => s.type === 'budget');
-    const budgetIntensity = budgetStep ? (stepValues[budgetStep.id] ?? 50) / 100 : aggregateIntensity;
-    return interpolateAdSets(chartData.adSets, budgetIntensity);
-  }, [chartData, insight, stepValues, aggregateIntensity]);
+    return interpolateChannels(chartData.channelAllocations, intensity);
+  }, [chartData, intensity]);
 
-  // Build the combined chart data array
+  // Build the combined chart data
   const combinedForChart = useMemo(() => {
     if (!chartData) return [];
 
@@ -142,7 +161,6 @@ export function InsightDetailModal({
       });
     }
 
-    // Bridge from last historical into predicted
     const lastHist = chartData.historical[chartData.historical.length - 1];
     const predictedWithBridge = [lastHist, ...chartData.predicted];
     for (const p of predictedWithBridge) {
@@ -150,7 +168,6 @@ export function InsightDetailModal({
       map.set(p.day, { ...existing, predicted: p.primary, predSecondary: p.secondary });
     }
 
-    // Bridge from last historical into adjusted improved
     const improvedWithBridge = [
       { ...lastHist, improved: lastHist.primary },
       ...adjustedImproved,
@@ -165,7 +182,37 @@ export function InsightDetailModal({
       .map(([, v]) => v);
   }, [chartData, adjustedImproved]);
 
+  // Compute average for legend
+  const avgPrimary = useMemo(() => {
+    if (!chartData) return 0;
+    const vals = chartData.historical.map(p => p.primary);
+    return vals.length > 0
+      ? +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(
+          metricsHint === 'budget-spend' ? 0 : metricsHint === 'engagement-spend' ? 4 : 1
+        )
+      : 0;
+  }, [chartData, metricsHint]);
+
+  // Budget move amount for channel insights
+  const budgetMoveAmount = useMemo(() => {
+    if (!adjustedChannels.length) return { amount: 0, percent: 0 };
+    const totalSpend = adjustedChannels.reduce((s, c) => s + c.spend, 0);
+    const reduced = adjustedChannels.filter(c => c.direction === 'reduced');
+    const moveAmount = reduced.reduce((s, c) => s + Math.abs(c.recommendedSpend - c.spend), 0);
+    return {
+      amount: moveAmount,
+      percent: totalSpend > 0 ? Math.round((moveAmount / totalSpend) * 100) : 0,
+    };
+  }, [adjustedChannels]);
+
   if (!insight || !chartData) return null;
+
+  const creative = isCreativeType(insight);
+  const channelOpt = isChannelOptType(insight);
+  const assetName = creative ? generateAssetName(insight.id) : '';
+
+  // TODAY index label for reference area
+  const todayLabel = chartData.todayIndex;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -194,50 +241,69 @@ export function InsightDetailModal({
             </button>
           )}
 
-          <ScrollArea className="max-h-[80vh]">
-            <div className="p-5 space-y-4">
-              {/* Metric Tabs */}
-              <div className="flex items-center gap-1 border-b border-border/30 pb-2">
+          <ScrollArea className="max-h-[85vh]">
+            <div className="p-5 space-y-0">
+
+              {/* ─── Metric Tabs ─── */}
+              <div className="flex items-center gap-1 bg-muted/30 rounded-full p-1 mb-4">
                 {chartData.metricTabs.map((tab, i) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(i)}
                     className={cn(
-                      'px-3 py-1.5 text-xs font-medium rounded-md transition-colors',
+                      'px-3.5 py-1.5 rounded-full text-xs font-medium transition-all',
                       activeTab === i
-                        ? 'bg-muted text-foreground'
+                        ? 'bg-card-elevated text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
                     {tab}
                   </button>
                 ))}
-                <button className="ml-auto p-1 text-muted-foreground hover:text-foreground">
+                <button className="ml-auto p-1.5 text-muted-foreground hover:text-foreground">
                   <MoreHorizontal className="h-4 w-4" />
                 </button>
               </div>
 
-              {/* Main Chart — reactive to slider intensity */}
-              <div className="h-[200px]">
+              {/* ─── Main Chart ─── */}
+              <div className="h-[220px] -mx-1">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
+                  <ComposedChart
                     data={combinedForChart}
-                    margin={{ top: 5, right: 5, bottom: 0, left: 5 }}
+                    margin={{ top: 5, right: 8, bottom: 0, left: 8 }}
                   >
                     <defs>
                       <linearGradient id="improvedGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#2dd4bf" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0.05} />
+                        <stop offset="0%" stopColor="#93c5fd" stopOpacity={0.15} />
+                        <stop offset="100%" stopColor="#93c5fd" stopOpacity={0.02} />
                       </linearGradient>
                     </defs>
+
                     <XAxis
                       dataKey="label"
-                      tick={{ fontSize: 10, fill: '#666' }}
+                      tick={{ fontSize: 10, fill: '#888' }}
                       axisLine={false}
                       tickLine={false}
                       interval="preserveStartEnd"
                     />
-                    <YAxis hide />
+                    <YAxis
+                      yAxisId="left"
+                      tick={{ fontSize: 9, fill: '#888' }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={45}
+                      tickCount={5}
+                    />
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      tick={{ fontSize: 9, fill: '#888' }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={40}
+                      tickCount={5}
+                    />
+
                     <Tooltip
                       contentStyle={{
                         background: 'rgba(20,24,28,0.95)',
@@ -249,207 +315,148 @@ export function InsightDetailModal({
                       itemStyle={{ color: '#ccc' }}
                       labelStyle={{ color: '#fff', fontWeight: 600 }}
                     />
-                    <ReferenceLine
-                      x={chartData.todayIndex}
-                      stroke="#555"
-                      strokeDasharray="3 3"
-                      label={{ value: 'TODAY', position: 'top', fontSize: 9, fill: '#888' }}
+
+                    {/* Pink/red band around TODAY */}
+                    <ReferenceArea
+                      x1={combinedForChart.find(d => d.label === 'TODAY')?.day !== undefined
+                        ? String(combinedForChart.findIndex(d => d.label === 'TODAY') > 0
+                          ? combinedForChart[combinedForChart.findIndex(d => d.label === 'TODAY') - 2]?.label || ''
+                          : '')
+                        : ''}
+                      x2="TODAY"
+                      fill="rgba(239,68,68,0.06)"
+                      fillOpacity={1}
                     />
-                    <Area
+
+                    <ReferenceLine
+                      x="TODAY"
+                      stroke="#999"
+                      strokeWidth={0.5}
+                      label={{ value: 'TODAY', position: 'top', fontSize: 9, fill: '#999' }}
+                    />
+
+                    {/* Historical primary - solid line */}
+                    <Line
+                      yAxisId="left"
                       type="monotone"
                       dataKey="primary"
                       stroke="#e5e5e5"
                       strokeWidth={2}
-                      fill="none"
                       dot={false}
                       name={chartData.primaryLabel}
                       isAnimationActive={false}
                     />
-                    <Area
+
+                    {/* Historical secondary - solid gray line */}
+                    <Line
+                      yAxisId="right"
                       type="monotone"
                       dataKey="secondary"
                       stroke="#888"
-                      strokeWidth={1}
-                      strokeDasharray="4 4"
-                      fill="none"
+                      strokeWidth={1.5}
                       dot={false}
                       name={chartData.secondaryLabel}
                       isAnimationActive={false}
                     />
-                    <Area
+
+                    {/* Predicted - dashed dark line */}
+                    <Line
+                      yAxisId="left"
                       type="monotone"
                       dataKey="predicted"
                       stroke="#888"
                       strokeWidth={1.5}
-                      strokeDasharray="6 3"
-                      fill="none"
+                      strokeDasharray="5 3"
                       dot={false}
                       name="Predicted"
                       connectNulls={false}
                       isAnimationActive={false}
                     />
+
+                    {/* Possible improvement - dashed light blue with fill */}
                     <Area
+                      yAxisId="left"
                       type="monotone"
                       dataKey="improved"
-                      stroke="#2dd4bf"
+                      stroke="#93c5fd"
                       strokeWidth={1.5}
+                      strokeDasharray="5 3"
                       fill="url(#improvedGrad)"
                       dot={false}
-                      name="With optimization"
+                      name="Possible Improvement"
                       connectNulls={false}
                       isAnimationActive={false}
                     />
-                  </AreaChart>
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
 
-              {/* Chart legend + intensity readout */}
-              <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <span className="inline-block w-3 h-0.5 bg-white/80 rounded" />
-                  {chartData.primaryLabel}
+              {/* ─── Legend ─── */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground mt-2 mb-1">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-[2px] bg-white/80 rounded" />
+                  {chartData.primaryLabel} (AVG {avgPrimary})
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="inline-block w-3 h-0.5 bg-muted-foreground/50 rounded" />
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-[1.5px] bg-muted-foreground/60 rounded" />
                   {chartData.secondaryLabel}
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="inline-block w-3 h-0.5 bg-teal-400 rounded" />
-                  With optimization
-                </span>
-                <span className="ml-auto font-medium text-teal-400">
-                  {Math.round(aggregateIntensity * 100)}% applied
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-[1.5px] border-t-[1.5px] border-dashed border-muted-foreground/60" />
+                  PREDICTED
                 </span>
               </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mb-3">
+                <span className="inline-block w-4 h-[1.5px] border-t-[1.5px] border-dashed border-blue-300/60" />
+                POSSIBLE IMPROVEMENT
+              </div>
 
-              {/* Title & Summary */}
-              <div>
-                <h2 className="text-lg font-bold">{insight.title}</h2>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5 line-clamp-2">
+              {/* ─── Separator ─── */}
+              <Separator className="mb-4" />
+
+              {/* ─── Title & Summary ─── */}
+              <div className="mb-3">
+                <h2 className="text-xl font-bold leading-tight">{insight.title}</h2>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold mt-1">
                   {insight.recommendedAction}
                 </p>
               </div>
 
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 {insight.summary}
               </p>
 
-              {/* Action Steps with Sliders */}
-              {insight.actionSteps.length > 0 && (
-                <div className="space-y-3">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    Action Steps
-                  </p>
-                  {insight.actionSteps.map((step) => {
-                    const config = STEP_TYPE_CONFIG[step.type];
-                    const val = stepValues[step.id] ?? config.defaultVal;
-                    return (
-                      <div
-                        key={step.id}
-                        className="rounded-lg border border-border/30 bg-muted/20 p-3 space-y-3"
-                      >
-                        {/* Step header */}
-                        <div className="flex items-start gap-2">
-                          <Circle className="h-4 w-4 text-muted-foreground/50 mt-0.5 shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold">{step.title}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                              {step.subtitle}
-                            </p>
-                          </div>
-                        </div>
+              {/* ─── Separator ─── */}
+              <Separator className="mb-4" />
 
-                        {/* Slider */}
-                        <div className="space-y-1.5 px-1">
-                          <div className="flex items-center justify-between text-[10px]">
-                            <span className="text-muted-foreground">{config.label}</span>
-                            <span className="font-semibold text-teal-400 tabular-nums">
-                              {val}{config.unit}
-                            </span>
-                          </div>
-                          <Slider
-                            value={[val]}
-                            min={config.min}
-                            max={config.max}
-                            step={1}
-                            onValueChange={([v]) => setStepValue(step.id, v)}
-                          />
-                          <div className="flex justify-between text-[9px] text-muted-foreground/60">
-                            <span>No change</span>
-                            <span>Full recommendation</span>
-                          </div>
-                        </div>
-
-                        {/* Step-specific visualization driven by slider */}
-                        {step.type === 'budget' && (
-                          <ActionStepBudgetChart adSets={adjustedAdSets} />
-                        )}
-                        {step.type === 'creative' && (
-                          <ActionStepCreativeChart insightId={insight.id} intensity={val / 100} />
-                        )}
-                        {(step.type === 'bidding' ||
-                          step.type === 'targeting' ||
-                          step.type === 'scheduling') && (
-                          <ActionStepMetricBar
-                            type={step.type}
-                            insightId={insight.id}
-                            intensity={val / 100}
-                          />
-                        )}
-
-                        {/* Summary + actions */}
-                        <div className="flex items-center justify-between pt-1">
-                          <p className="text-[11px] text-muted-foreground">
-                            {step.type === 'budget'
-                              ? 'Redistribute spend across top-performing ad sets'
-                              : step.type === 'creative'
-                                ? 'Replace underperforming assets with new variants'
-                                : 'Apply recommended adjustments'}
-                          </p>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 text-[10px] px-2 text-muted-foreground"
-                              onClick={() => setStepValue(step.id, 0)}
-                            >
-                              Skip
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="h-6 text-[10px] px-2 bg-teal-600 hover:bg-teal-700 text-white"
-                              onClick={() => setStepValue(step.id, 100)}
-                            >
-                              Apply
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+              {/* ─── Action Section ─── */}
+              {creative ? (
+                <CreativeActionSection
+                  insight={insight}
+                  assetName={assetName}
+                  onSkip={() => onDiscard(insight.id)}
+                  onPause={() => onComplete(insight.id)}
+                />
+              ) : channelOpt ? (
+                <ChannelOptActionSection
+                  insight={insight}
+                  channels={adjustedChannels}
+                  avgEngagementRate={chartData.avgEngagementRate}
+                  avgSpend={chartData.avgSpend}
+                  budgetIntensity={budgetIntensity}
+                  onBudgetChange={setBudgetIntensity}
+                  moveAmount={budgetMoveAmount.amount}
+                  movePercent={budgetMoveAmount.percent}
+                  onDiscard={() => onDiscard(insight.id)}
+                  onComplete={() => onComplete(insight.id)}
+                />
+              ) : (
+                <DefaultActionSection
+                  insight={insight}
+                  onDiscard={() => onDiscard(insight.id)}
+                  onComplete={() => onComplete(insight.id)}
+                />
               )}
-
-              {/* Bottom action bar */}
-              <div className="flex items-center gap-3 pt-2 border-t border-border/30">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 h-9 text-xs gap-1.5 border-border/50 text-muted-foreground hover:text-red-400 hover:border-red-500/30"
-                  onClick={() => onDiscard(insight.id)}
-                >
-                  <X className="h-3.5 w-3.5" />
-                  Discard Insight
-                </Button>
-                <Button
-                  size="sm"
-                  className="flex-1 h-9 text-xs gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
-                  onClick={() => onComplete(insight.id)}
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  Mark as Complete
-                </Button>
-              </div>
             </div>
           </ScrollArea>
         </DialogPrimitive.Content>
@@ -458,151 +465,367 @@ export function InsightDetailModal({
   );
 }
 
-// --- Mini visualizations for action steps ---
+// ─── Creative Action Section (Pause Asset) ───
 
-function ActionStepBudgetChart({
-  adSets,
+function CreativeActionSection({
+  insight,
+  assetName,
+  onSkip,
+  onPause,
 }: {
-  adSets: { name: string; current: number; recommended: number }[];
+  insight: Insight;
+  assetName: string;
+  onSkip: () => void;
+  onPause: () => void;
 }) {
-  const data = adSets.map((a) => ({
-    name: a.name.length > 20 ? a.name.slice(0, 18) + '...' : a.name,
-    current: Math.round(a.current),
-    recommended: Math.round(a.recommended),
-  }));
-
   return (
-    <div className="h-[90px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={data}
-          layout="vertical"
-          margin={{ top: 0, right: 5, bottom: 0, left: 5 }}
+    <div className="space-y-4">
+      {/* Action header */}
+      <div className="flex items-start gap-3">
+        <Circle className="h-5 w-5 text-muted-foreground/40 mt-0.5 shrink-0" />
+        <div>
+          <p className="text-base font-bold">Pause Asset</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+            {insight.recommendedAction}
+          </p>
+        </div>
+      </div>
+
+      {/* Asset selector */}
+      <div className="border border-border/40 rounded-lg px-4 py-3 flex items-center justify-between bg-muted/10">
+        <span className="text-xs font-mono text-muted-foreground tracking-tight">
+          {assetName}
+        </span>
+        <ChevronDown className="h-4 w-4 text-muted-foreground/50" />
+      </div>
+
+      {/* Bottom action buttons */}
+      <div className="flex items-center gap-3 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-none h-10 px-6 text-xs font-semibold border-border/60 rounded-full"
+          onClick={onSkip}
         >
-          <XAxis type="number" hide />
-          <YAxis
-            dataKey="name"
-            type="category"
-            tick={{ fontSize: 9, fill: '#888' }}
-            width={110}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip
-            contentStyle={{
-              background: 'rgba(20,24,28,0.95)',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 10,
-            }}
-          />
-          <Bar
-            dataKey="current"
-            fill="#555"
-            radius={[0, 2, 2, 0]}
-            barSize={6}
-            name="Current"
-            isAnimationActive={false}
-          />
-          <Bar
-            dataKey="recommended"
-            fill="#2dd4bf"
-            radius={[0, 2, 2, 0]}
-            barSize={6}
-            name="Adjusted"
-            isAnimationActive={false}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-function ActionStepCreativeChart({
-  insightId,
-  intensity,
-}: {
-  insightId: string;
-  intensity: number;
-}) {
-  const seed = insightId.length * 7;
-  const before = 25 + (seed % 30);
-  const maxAfter = before + 10 + (seed % 20);
-  // Interpolate based on slider
-  const after = before + (maxAfter - before) * intensity;
-
-  return (
-    <div className="flex items-center gap-4 py-2 px-1">
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center justify-between text-[10px]">
-          <span className="text-muted-foreground">Current CTR</span>
-          <span className="font-medium">{(before / 10).toFixed(1)}%</span>
-        </div>
-        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-          <div
-            className="h-full rounded-full bg-muted-foreground/50"
-            style={{ width: `${before}%` }}
-          />
-        </div>
-      </div>
-      <TrendingUp className="h-3.5 w-3.5 text-teal-400 shrink-0" />
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center justify-between text-[10px]">
-          <span className="text-muted-foreground">Projected CTR</span>
-          <span className="font-medium text-teal-400">
-            {(after / 10).toFixed(1)}%
-          </span>
-        </div>
-        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-          <div
-            className="h-full rounded-full bg-teal-400 transition-all duration-150"
-            style={{ width: `${after}%` }}
-          />
-        </div>
+          Skip
+        </Button>
+        <Button
+          size="sm"
+          className="flex-1 h-10 text-xs font-semibold bg-foreground text-background hover:bg-foreground/90 rounded-full"
+          onClick={onPause}
+        >
+          Pause Spend
+        </Button>
       </div>
     </div>
   );
 }
 
-function ActionStepMetricBar({
-  type,
-  insightId,
-  intensity,
-}: {
-  type: string;
-  insightId: string;
-  intensity: number;
-}) {
-  const seed = insightId.length * 13 + type.length;
-  const currentVal = 30 + (seed % 40);
-  const maxTarget = Math.min(95, currentVal + 10 + (seed % 20));
-  // Interpolate based on slider
-  const targetVal = currentVal + (maxTarget - currentVal) * intensity;
-  const label =
-    type === 'bidding'
-      ? 'Win Rate'
-      : type === 'targeting'
-        ? 'Audience Match'
-        : 'Delivery Score';
+// ─── Channel Optimization Action Section ───
 
+function ChannelOptActionSection({
+  insight,
+  channels,
+  avgEngagementRate,
+  avgSpend,
+  budgetIntensity,
+  onBudgetChange,
+  moveAmount,
+  movePercent,
+  onDiscard,
+  onComplete,
+}: {
+  insight: Insight;
+  channels: ChannelAllocation[];
+  avgEngagementRate: number;
+  avgSpend: number;
+  budgetIntensity: number;
+  onBudgetChange: (v: number) => void;
+  moveAmount: number;
+  movePercent: number;
+  onDiscard: () => void;
+  onComplete: () => void;
+}) {
   return (
-    <div className="py-2 px-1 space-y-1.5">
-      <div className="flex items-center justify-between text-[10px]">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="text-muted-foreground">
-          <span className="font-medium text-foreground">{currentVal}%</span> →{' '}
-          <span className="text-teal-400 font-medium">{Math.round(targetVal)}%</span>
+    <div className="space-y-4">
+      {/* Action header */}
+      <div className="flex items-start gap-3">
+        <Circle className="h-5 w-5 text-muted-foreground/40 mt-0.5 shrink-0" />
+        <div>
+          <p className="text-base font-bold">Optimize Budget Allocation</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+            SHIFT SPEND TO HIGH EFFICIENCY (ENGAGEMENT RATE)
+          </p>
+        </div>
+      </div>
+
+      {/* Channel bar chart */}
+      <ChannelBarChart
+        channels={channels}
+        avgEngagementRate={avgEngagementRate}
+      />
+
+      {/* Chart legend */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] text-muted-foreground">
+        <span className="font-semibold text-foreground text-[9px] uppercase tracking-wider">CHANNELS</span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[#555]" />
+          ENGAGEMENT RATE (AVG: {avgEngagementRate.toFixed(2)})
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-500" />
+          SPEND (AVG: ${avgSpend.toLocaleString()})
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block w-2.5 h-2.5 rounded-sm border border-emerald-500 bg-emerald-500/20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(34,197,94,0.3) 2px, rgba(34,197,94,0.3) 4px)' }} />
+          INCREASED
         </span>
       </div>
-      <div className="relative h-1.5 rounded-full bg-muted overflow-hidden">
-        <div
-          className="absolute h-full rounded-full bg-muted-foreground/40"
-          style={{ width: `${currentVal}%` }}
+      <div className="flex items-center gap-1 text-[10px] text-muted-foreground -mt-2">
+        <span className="inline-block w-2.5 h-2.5 rounded-sm border border-red-500 bg-red-500/20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(239,68,68,0.3) 2px, rgba(239,68,68,0.3) 4px)' }} />
+        REDUCED
+      </div>
+
+      {/* Budget move text */}
+      <p className="text-sm font-semibold">
+        Move ${moveAmount.toFixed(2)} ({movePercent}%) to top performers
+      </p>
+
+      {/* Budget slider */}
+      <div className="px-1">
+        <Slider
+          value={[budgetIntensity]}
+          min={0}
+          max={100}
+          step={1}
+          onValueChange={([v]) => onBudgetChange(v)}
         />
+      </div>
+
+      {/* Info disclaimer */}
+      <div className="flex items-start gap-2.5 bg-muted/20 rounded-lg p-3">
+        <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
+          Platform-specific structures like budget minimums or campaign-level settings may affect how you apply these shifts.
+        </p>
+      </div>
+
+      {/* Platform action items */}
+      {channels.map((ch) => {
+        const delta = ch.recommendedSpend - ch.spend;
+        const verb = delta >= 0 ? 'Increase' : 'Reduce';
+        const icon = ch.channel === 'TT' ? '\uD83C\uDFB5' : ch.channel === 'IG' ? '\uD83D\uDCF7' : '\uD83D\uDCF1';
+        return (
+          <div
+            key={ch.channel}
+            className="flex items-center gap-3 bg-muted/30 rounded-lg px-4 py-3 border border-border/20"
+          >
+            <span className="text-sm">{icon}</span>
+            <p className="text-xs flex-1">
+              {verb} {ch.channelLabel} budget by ${Math.abs(delta).toFixed(2)} to ${ch.recommendedSpend.toLocaleString()}.00
+            </p>
+            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
+          </div>
+        );
+      })}
+
+      {/* Bottom action buttons */}
+      <div className="flex items-center gap-3 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1 h-10 text-xs font-semibold gap-1.5 border-border/60 rounded-full"
+          onClick={onDiscard}
+        >
+          <X className="h-3.5 w-3.5" />
+          Discard Insight
+        </Button>
+        <Button
+          size="sm"
+          className="flex-1 h-10 text-xs font-semibold gap-1.5 bg-foreground text-background hover:bg-foreground/90 rounded-full"
+          onClick={onComplete}
+        >
+          <Check className="h-3.5 w-3.5" />
+          Mark as Complete
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Default Action Section (non-creative, non-channel) ───
+
+function DefaultActionSection({
+  insight,
+  onDiscard,
+  onComplete,
+}: {
+  insight: Insight;
+  onDiscard: () => void;
+  onComplete: () => void;
+}) {
+  return (
+    <div className="space-y-4">
+      {/* Action steps */}
+      {insight.actionSteps.map((step) => (
+        <div key={step.id} className="flex items-start gap-3">
+          <Circle className="h-5 w-5 text-muted-foreground/40 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-semibold">{step.title}</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+              {step.subtitle}
+            </p>
+          </div>
+        </div>
+      ))}
+
+      {/* Bottom action buttons */}
+      <div className="flex items-center gap-3 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1 h-10 text-xs font-semibold gap-1.5 border-border/60 rounded-full"
+          onClick={onDiscard}
+        >
+          <X className="h-3.5 w-3.5" />
+          Discard Insight
+        </Button>
+        <Button
+          size="sm"
+          className="flex-1 h-10 text-xs font-semibold gap-1.5 bg-foreground text-background hover:bg-foreground/90 rounded-full"
+          onClick={onComplete}
+        >
+          <Check className="h-3.5 w-3.5" />
+          Mark as Complete
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Channel Bar Chart ───
+
+function ChannelBarChart({
+  channels,
+  avgEngagementRate,
+}: {
+  channels: ChannelAllocation[];
+  avgEngagementRate: number;
+}) {
+  const maxEng = Math.max(
+    ...channels.flatMap(c => [c.engagementRate, c.recommendedEngagementRate])
+  );
+  const chartMax = maxEng * 1.4;
+  const chartHeight = 160;
+  const barAreaHeight = chartHeight - 30; // leave room for labels
+
+  const groupWidth = 100 / channels.length;
+
+  return (
+    <div className="relative" style={{ height: chartHeight }}>
+      {/* Y-axis labels */}
+      <div className="absolute left-0 top-0 bottom-[30px] w-10 flex flex-col justify-between text-[9px] text-muted-foreground">
+        {[chartMax, chartMax * 0.75, chartMax * 0.5, chartMax * 0.25, 0].map((v, i) => (
+          <span key={i}>{v.toFixed(v < 0.01 ? 4 : v < 1 ? 3 : 2)}</span>
+        ))}
+      </div>
+
+      {/* Chart area */}
+      <div className="ml-12 relative" style={{ height: barAreaHeight }}>
+        {/* AVG line */}
         <div
-          className="absolute h-full rounded-full bg-teal-400/50 transition-all duration-150"
-          style={{ width: `${targetVal}%` }}
-        />
+          className="absolute left-0 right-0 border-t border-dashed border-muted-foreground/40 z-10"
+          style={{ top: `${(1 - avgEngagementRate / chartMax) * 100}%` }}
+        >
+          <span className="absolute right-0 -top-3 text-[9px] text-muted-foreground">
+            AVG {avgEngagementRate.toFixed(avgEngagementRate < 0.01 ? 4 : 1)}
+          </span>
+        </div>
+
+        {/* Channel groups */}
+        <div className="flex h-full items-end">
+          {channels.map((ch) => {
+            const engHeight = (ch.engagementRate / chartMax) * 100;
+            const recEngHeight = (ch.recommendedEngagementRate / chartMax) * 100;
+            const isIncreased = ch.direction === 'increased';
+
+            // Normalize spend to engagement scale for visual comparison
+            const maxSpend = Math.max(...channels.map(c => Math.max(c.spend, c.recommendedSpend)));
+            const spendHeight = (ch.spend / maxSpend) * (chartMax * 0.8 / chartMax) * 100;
+            const recSpendHeight = (ch.recommendedSpend / maxSpend) * (chartMax * 0.8 / chartMax) * 100;
+
+            return (
+              <div
+                key={ch.channel}
+                className="flex items-end justify-center gap-1"
+                style={{ width: `${groupWidth}%` }}
+              >
+                {/* Engagement rate bar */}
+                <div className="relative" style={{ width: 28 }}>
+                  {/* Base bar */}
+                  <div
+                    className="w-full bg-[#555] rounded-t-sm relative"
+                    style={{ height: `${Math.min(engHeight, recEngHeight)}%`, minHeight: 2 }}
+                  />
+                  {/* Delta portion */}
+                  {Math.abs(recEngHeight - engHeight) > 0.5 && (
+                    <div
+                      className={cn(
+                        'w-full rounded-t-sm absolute bottom-full',
+                        isIncreased ? 'border border-emerald-500/60' : 'border border-red-500/60'
+                      )}
+                      style={{
+                        height: `${Math.abs(recEngHeight - engHeight)}%`,
+                        minHeight: 2,
+                        backgroundImage: isIncreased
+                          ? 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(34,197,94,0.25) 2px, rgba(34,197,94,0.25) 4px)'
+                          : 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(239,68,68,0.25) 2px, rgba(239,68,68,0.25) 4px)',
+                        backgroundColor: isIncreased ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+                      }}
+                    />
+                  )}
+                </div>
+
+                {/* Spend bar */}
+                <div className="relative" style={{ width: 28 }}>
+                  <div
+                    className="w-full bg-blue-500 rounded-t-sm"
+                    style={{ height: `${Math.min(spendHeight, recSpendHeight)}%`, minHeight: 2 }}
+                  />
+                  {Math.abs(recSpendHeight - spendHeight) > 0.5 && (
+                    <div
+                      className={cn(
+                        'w-full rounded-t-sm absolute bottom-full',
+                        ch.recommendedSpend > ch.spend ? 'border border-emerald-500/60' : 'border border-red-500/60'
+                      )}
+                      style={{
+                        height: `${Math.abs(recSpendHeight - spendHeight)}%`,
+                        minHeight: 2,
+                        backgroundImage: ch.recommendedSpend > ch.spend
+                          ? 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(34,197,94,0.25) 2px, rgba(34,197,94,0.25) 4px)'
+                          : 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(239,68,68,0.25) 2px, rgba(239,68,68,0.25) 4px)',
+                        backgroundColor: ch.recommendedSpend > ch.spend ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* X-axis labels */}
+      <div className="ml-12 flex h-[30px] items-center">
+        {channels.map((ch) => (
+          <div
+            key={ch.channel}
+            className="text-center text-xs text-muted-foreground font-medium"
+            style={{ width: `${groupWidth}%` }}
+          >
+            {ch.channel}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -24,6 +24,14 @@ import {
   Pin,
   Maximize2,
   MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  ShoppingCart,
+  DollarSign,
+  Target,
+  Repeat,
+  Heart,
 } from "lucide-react";
 import {
   KPI_CONFIGS,
@@ -76,6 +84,7 @@ const METRIC_COLORS: Record<string, string> = {
   frequency: "#8b7ec8",
   videoViews3s: "#50b89a",
   videoCompletionRate: "#50b89a",
+  threeSecondViewRate: "#50b89a",
   engagementRate: "#8b7ec8",
   budgetPacing: "#50b89a",
 };
@@ -96,6 +105,8 @@ const CHANNEL_IDS: ChannelId[] = [
   "tiktok",
   "google-search",
   "ttd",
+  "ctv",
+  "spotify",
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -1129,28 +1140,68 @@ function BudgetGauge({ pacing }: { pacing: number }) {
 interface Persona {
   id: string;
   name: string;
-  reachShare: number;   // % of total audience
-  engagementIdx: number; // 0-100 engagement index
-  deltaPercent: number;  // period-over-period change
+  shortName: string;
+  reachShare: number;
+  engagementIdx: number;
+  deltaPercent: number;
   color: string;
+  kpis: {
+    cvr: number;
+    cvrDelta: number;
+    cpa: number;
+    cpaDelta: number;
+    aov: number;
+    aovDelta: number;
+    roas: number;
+    roasDelta: number;
+    ltv: number;
+    ltvDelta: number;
+    frequency: number;
+    frequencyDelta: number;
+  };
+  topChannels: { name: string; share: number }[];
+  topCategories: { name: string; share: number }[];
 }
 
 const PERSONAS: Persona[] = [
-  { id: "thrill-seekers",            name: "Thrill Seekers",              reachShare: 34, engagementIdx: 87, deltaPercent: 6,   color: "#50b89a" },
-  { id: "big-screen-chasers",        name: "Big Screen Chasers",          reachShare: 28, engagementIdx: 82, deltaPercent: 15,  color: "#3d8c76" },
-  { id: "opening-weekend-superfans", name: "Opening Weekend Superfans",   reachShare: 22, engagementIdx: 91, deltaPercent: 21,  color: "#2d6658" },
-  { id: "adrenaline-athletes",       name: "Adrenaline Athletes",         reachShare: 16, engagementIdx: 68, deltaPercent: 32,  color: "#1e453b" },
+  {
+    id: "booktok-discovery", name: "BookTok Discovery Reader", shortName: "BookTok",
+    reachShare: 32, engagementIdx: 93, deltaPercent: 18, color: "#50b89a",
+    kpis: { cvr: 4.2, cvrDelta: 12, cpa: 8.40, cpaDelta: -15, aov: 34.50, aovDelta: 6, roas: 3.8, roasDelta: 22, ltv: 142, ltvDelta: 9, frequency: 2.4, frequencyDelta: 5 },
+    topChannels: [{ name: "TikTok", share: 42 }, { name: "Instagram", share: 28 }, { name: "Spotify", share: 18 }],
+    topCategories: [{ name: "Fiction", share: 38 }, { name: "Romance", share: 24 }, { name: "Fantasy", share: 20 }],
+  },
+  {
+    id: "plum-value-maxer", name: "The Plum+ Value Maxer", shortName: "Plum+",
+    reachShare: 28, engagementIdx: 89, deltaPercent: 8, color: "#3d8c76",
+    kpis: { cvr: 6.1, cvrDelta: 4, cpa: 5.20, cpaDelta: -8, aov: 52.80, aovDelta: 11, roas: 5.2, roasDelta: 14, ltv: 289, ltvDelta: 16, frequency: 3.8, frequencyDelta: 3 },
+    topChannels: [{ name: "Google Search", share: 34 }, { name: "Meta", share: 26 }, { name: "CTV", share: 22 }],
+    topCategories: [{ name: "Bestsellers", share: 30 }, { name: "Home & Gift", share: 28 }, { name: "Stationery", share: 22 }],
+  },
+  {
+    id: "literary-traditionalist", name: "The Literary Traditionalist", shortName: "Literary",
+    reachShare: 24, engagementIdx: 76, deltaPercent: 3, color: "#2d6658",
+    kpis: { cvr: 3.4, cvrDelta: 1, cpa: 11.60, cpaDelta: -2, aov: 41.20, aovDelta: 3, roas: 2.9, roasDelta: 5, ltv: 198, ltvDelta: 4, frequency: 1.6, frequencyDelta: -1 },
+    topChannels: [{ name: "Google Search", share: 40 }, { name: "The Trade Desk", share: 24 }, { name: "CTV", share: 20 }],
+    topCategories: [{ name: "Literary Fiction", share: 44 }, { name: "Non-Fiction", share: 32 }, { name: "Biography", share: 14 }],
+  },
+  {
+    id: "selfcare-lifestyle", name: "The Self Care Lifestyle Shopper", shortName: "Self Care",
+    reachShare: 16, engagementIdx: 82, deltaPercent: 14, color: "#1e453b",
+    kpis: { cvr: 5.6, cvrDelta: 18, cpa: 6.80, cpaDelta: -12, aov: 48.60, aovDelta: 15, roas: 4.1, roasDelta: 19, ltv: 176, ltvDelta: 12, frequency: 2.1, frequencyDelta: 8 },
+    topChannels: [{ name: "Instagram", share: 36 }, { name: "TikTok", share: 28 }, { name: "Spotify", share: 20 }],
+    topCategories: [{ name: "Wellness", share: 34 }, { name: "Home & Gift", share: 30 }, { name: "Candles & Fragrance", share: 22 }],
+  },
 ];
 
-// ─── L. Persona Donut (like "Viewers Age") ──────────────────────────────────
+// ─── L. Persona Donut (compact, for left column) ────────────────────────────
 
-function PersonaDonut() {
-  const top = PERSONAS[0];
+function PersonaDonut({ activeIndex, onSelect }: { activeIndex: number; onSelect: (i: number) => void }) {
+  const active = PERSONAS[activeIndex];
   const data = PERSONAS.map((p) => ({ name: p.name, value: p.reachShare, color: p.color }));
 
   return (
     <div className="flex items-center gap-4">
-      {/* Donut */}
       <div className="relative shrink-0" style={{ width: 110, height: 110 }}>
         <ResponsiveContainer width={110} height={110}>
           <PieChart>
@@ -1165,94 +1216,186 @@ function PersonaDonut() {
               stroke="none"
             >
               {data.map((entry, i) => (
-                <Cell key={i} fill={entry.color} />
+                <Cell key={i} fill={entry.color} opacity={i === activeIndex ? 1 : 0.35} className="cursor-pointer" onClick={() => onSelect(i)} />
               ))}
             </Pie>
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-lg font-bold">{top.reachShare}%</span>
+          <span className="text-lg font-bold">{active.reachShare}%</span>
           <span className="text-[8px] text-muted-foreground leading-tight text-center max-w-[60px]">
-            {top.name}
+            reach
           </span>
         </div>
       </div>
-      {/* Side legend */}
       <div className="flex flex-col gap-2 min-w-0 flex-1">
-        {PERSONAS.map((p) => (
-          <div key={p.id} className="flex items-center gap-2">
-            <span
-              className="w-2 h-2 rounded-full shrink-0"
-              style={{ backgroundColor: p.color }}
-            />
-            <span className="text-[11px] text-muted-foreground truncate flex-1">
-              {p.name}
+        {PERSONAS.map((p, i) => (
+          <button
+            key={p.id}
+            onClick={() => onSelect(i)}
+            className={cn(
+              "flex items-center gap-2 text-left rounded-md px-1.5 py-0.5 transition-colors",
+              i === activeIndex ? "bg-muted/60" : "hover:bg-muted/30"
+            )}
+          >
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+            <span className={cn("text-[11px] truncate flex-1", i === activeIndex ? "text-foreground font-medium" : "text-muted-foreground")}>
+              {p.shortName}
             </span>
-            <span className="text-[11px] font-semibold tabular-nums shrink-0">
-              {p.reachShare}%
-            </span>
-          </div>
+            <span className="text-[11px] font-semibold tabular-nums shrink-0">{p.reachShare}%</span>
+          </button>
         ))}
       </div>
     </div>
   );
 }
 
-// ─── M. Persona Engagement Bars (like "Viewer Interest Per Age Group") ──────
+// ─── M. Persona KPI Detail Card ─────────────────────────────────────────────
 
-function PersonaEngagementBars() {
-  const maxIdx = Math.max(...PERSONAS.map((p) => p.engagementIdx));
+const KPI_ICON_MAP: Record<string, React.ElementType> = {
+  cvr: Target,
+  cpa: DollarSign,
+  aov: ShoppingCart,
+  roas: TrendingUp,
+  ltv: Heart,
+  frequency: Repeat,
+};
+
+const KPI_LABEL_MAP: Record<string, string> = {
+  cvr: "CVR",
+  cpa: "CPA",
+  aov: "AOV",
+  roas: "ROAS",
+  ltv: "LTV",
+  frequency: "Frequency",
+};
+
+function formatPersonaKPI(key: string, val: number): string {
+  if (key === "cpa" || key === "aov") return `$${val.toFixed(2)}`;
+  if (key === "ltv") return `$${val}`;
+  if (key === "cvr") return `${val}%`;
+  if (key === "roas") return `${val.toFixed(1)}x`;
+  if (key === "frequency") return `${val.toFixed(1)}x`;
+  return String(val);
+}
+
+function PersonaKPIDetail({ persona }: { persona: Persona }) {
+  const kpiKeys = ["cvr", "cpa", "aov", "roas", "ltv", "frequency"] as const;
 
   return (
-    <div className="flex items-end gap-2" style={{ height: 170 }}>
-      {PERSONAS.map((p, i) => {
-        const barPct = maxIdx > 0 ? (p.engagementIdx / maxIdx) * 100 : 0;
-        const barH = Math.max(barPct * 0.85, 8);
-        const words = p.name.split(" ");
-        const shortName = words.length > 1 ? words[0] : p.name;
+    <div className="space-y-4">
+      {/* KPI Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        {kpiKeys.map((key) => {
+          const Icon = KPI_ICON_MAP[key];
+          const value = persona.kpis[key];
+          const delta = persona.kpis[`${key}Delta` as keyof typeof persona.kpis] as number;
+          const isGood = key === "cpa" ? delta < 0 : delta > 0;
 
-        return (
-          <div
-            key={p.id}
-            className="flex-1 flex flex-col items-center min-w-0"
-            style={{ height: "100%" }}
-          >
-            {/* Delta annotation */}
-            <span
-              className={cn(
-                "text-[9px] font-semibold tabular-nums mb-1 h-3",
-                p.deltaPercent > 0
-                  ? "text-emerald-400"
-                  : p.deltaPercent < 0
-                    ? "text-red-400"
-                    : "text-muted-foreground"
-              )}
-            >
-              {p.deltaPercent > 0 ? "+" : ""}
-              {p.deltaPercent}%
-            </span>
-            {/* Bar area */}
-            <div className="flex-1 w-full flex items-end justify-center">
-              <div
-                className="rounded-t-sm"
-                style={{
-                  width: "65%",
-                  height: `${barH}%`,
-                  backgroundColor: p.color,
-                }}
-              />
+          return (
+            <div key={key} className="rounded-lg bg-muted/30 p-3 flex flex-col gap-1">
+              <div className="flex items-center gap-1.5">
+                <Icon className="h-3 w-3 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                  {KPI_LABEL_MAP[key]}
+                </span>
+              </div>
+              <span className="text-base font-bold tabular-nums">{formatPersonaKPI(key, value)}</span>
+              <span className={cn("text-[10px] font-semibold tabular-nums", isGood ? "text-emerald-400" : "text-red-400")}>
+                {delta > 0 ? "+" : ""}{delta}%
+              </span>
             </div>
-            {/* Value */}
-            <span className="text-[10px] font-bold tabular-nums mt-1">
-              {p.engagementIdx}%
-            </span>
-            {/* Label */}
-            <span className="text-[8px] text-muted-foreground text-center leading-tight w-full truncate">
-              {shortName}
+          );
+        })}
+      </div>
+
+      {/* Bottom row: Top Channels + Top Categories */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Top Channels</span>
+          <div className="space-y-1.5">
+            {persona.topChannels.map((ch) => (
+              <div key={ch.name} className="flex items-center gap-2">
+                <div className="flex-1 h-1.5 rounded-full bg-muted/40 overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${ch.share}%`, backgroundColor: persona.color }} />
+                </div>
+                <span className="text-[10px] text-muted-foreground w-16 truncate">{ch.name}</span>
+                <span className="text-[10px] font-semibold tabular-nums w-7 text-right">{ch.share}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Top Categories</span>
+          <div className="space-y-1.5">
+            {persona.topCategories.map((cat) => (
+              <div key={cat.name} className="flex items-center gap-2">
+                <div className="flex-1 h-1.5 rounded-full bg-muted/40 overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${cat.share}%`, backgroundColor: persona.color, opacity: 0.7 }} />
+                </div>
+                <span className="text-[10px] text-muted-foreground w-24 truncate">{cat.name}</span>
+                <span className="text-[10px] font-semibold tabular-nums w-7 text-right">{cat.share}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── N. Interactive Persona Explorer ─────────────────────────────────────────
+
+function PersonaExplorer() {
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const persona = PERSONAS[activeIndex];
+
+  const prev = () => setActiveIndex((i) => (i - 1 + PERSONAS.length) % PERSONAS.length);
+  const next = () => setActiveIndex((i) => (i + 1) % PERSONAS.length);
+
+  return (
+    <div className="grid grid-cols-[280px_1fr] gap-5">
+      {/* Left: Donut + persona selector */}
+      <div className="flex flex-col gap-4">
+        <PersonaDonut activeIndex={activeIndex} onSelect={setActiveIndex} />
+        {/* Engagement index bar for selected persona */}
+        <div className="rounded-lg bg-muted/30 p-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Engagement Index</span>
+            <span className={cn("text-[10px] font-semibold tabular-nums", persona.deltaPercent > 0 ? "text-emerald-400" : "text-red-400")}>
+              {persona.deltaPercent > 0 ? "+" : ""}{persona.deltaPercent}%
             </span>
           </div>
-        );
-      })}
+          <div className="h-2 rounded-full bg-muted/40 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${persona.engagementIdx}%`, backgroundColor: persona.color }}
+            />
+          </div>
+          <span className="text-[11px] font-bold tabular-nums mt-1 block">{persona.engagementIdx}/100</span>
+        </div>
+      </div>
+
+      {/* Right: KPI detail for active persona */}
+      <div className="flex flex-col min-w-0">
+        {/* Persona name header with nav */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4" style={{ color: persona.color }} />
+            <span className="text-sm font-semibold">{persona.name}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={prev} className="p-1 rounded hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="text-[10px] text-muted-foreground tabular-nums">{activeIndex + 1}/{PERSONAS.length}</span>
+            <button onClick={next} className="p-1 rounded hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <PersonaKPIDetail persona={persona} />
+      </div>
     </div>
   );
 }
@@ -1303,18 +1446,14 @@ export function BentoKPIGrid({ data, compareEnabled }: BentoKPIGridProps) {
           <ChannelHorizontalBars channelData={channelData} metricKey="cpm" />
         </BentoCard>
 
-        {/* Video Completion Rate – scatter plot – 1col */}
+        {/* ROAS – line chart – 1col */}
         <BentoCard
-          kpiKey="videoCompletionRate"
-          value={currentKPIs.videoCompletionRate}
-          deltaInfo={delta("videoCompletionRate")}
+          kpiKey="roas"
+          value={currentKPIs.roas}
+          deltaInfo={delta("roas")}
           compareEnabled={compareEnabled}
         >
-          <ChannelScatterPlot
-            channelData={channelData}
-            campaignData={campaignData}
-            metricKey="videoCompletionRate"
-          />
+          <AreaMiniChart data={timeSeries} metricKey="roas" />
         </BentoCard>
 
         {/* ── Row 2 ─────────────────────────────────────────── */}
@@ -1402,36 +1541,16 @@ export function BentoKPIGrid({ data, compareEnabled }: BentoKPIGridProps) {
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mt-6">
         Audience Personas
       </h2>
-      <div className="grid grid-cols-2 gap-4">
-        {/* Persona Distribution – donut with side legend */}
-        <div className="rounded-xl border border-border/40 bg-card p-5 flex flex-col min-w-0">
-          <div className="flex items-start justify-between mb-4">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
-              Persona Distribution
-            </span>
-            <button className="p-1 rounded hover:bg-muted/50 text-muted-foreground/40 hover:text-muted-foreground transition-colors">
-              <Maximize2 className="h-3 w-3" />
-            </button>
-          </div>
-          <div className="flex-1 min-h-0">
-            <PersonaDonut />
-          </div>
+      <div className="rounded-xl border border-border/40 bg-card p-5">
+        <div className="flex items-start justify-between mb-4">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+            Persona Explorer
+          </span>
+          <button className="p-1 rounded hover:bg-muted/50 text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+            <Maximize2 className="h-3 w-3" />
+          </button>
         </div>
-
-        {/* Engagement by Persona – hatched bars with delta annotations */}
-        <div className="rounded-xl border border-border/40 bg-card p-5 flex flex-col min-w-0">
-          <div className="flex items-start justify-between mb-4">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
-              Engagement by Persona
-            </span>
-            <button className="p-1 rounded hover:bg-muted/50 text-muted-foreground/40 hover:text-muted-foreground transition-colors">
-              <Maximize2 className="h-3 w-3" />
-            </button>
-          </div>
-          <div className="flex-1 min-h-0">
-            <PersonaEngagementBars />
-          </div>
-        </div>
+        <PersonaExplorer />
       </div>
     </div>
   );

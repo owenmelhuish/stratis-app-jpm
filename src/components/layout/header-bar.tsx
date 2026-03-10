@@ -16,6 +16,7 @@ import { STATE_NAMES } from '@/lib/geo';
 import { generateAllData } from '@/lib/mock-data';
 
 const DATE_PILLS: { value: DateRangePreset; label: string }[] = [
+  { value: '1d', label: '1D' },
   { value: '7d', label: '7D' },
   { value: '14d', label: '14D' },
   { value: '30d', label: '30D' },
@@ -64,7 +65,7 @@ function MultiSelectFilter({
   );
 }
 
-/** Region → State[] map — all US states belong to north-america */
+/** Region → Province[] map — all Canadian provinces belong to north-america */
 const REGION_COUNTRIES: Record<RegionId, { code: string; name: string }[]> = (() => {
   const map: Record<string, { code: string; name: string }[]> = {};
   for (const regionId of Object.keys(REGION_LABELS)) {
@@ -73,7 +74,7 @@ const REGION_COUNTRIES: Record<RegionId, { code: string; name: string }[]> = (()
   for (const [code, name] of Object.entries(STATE_NAMES)) {
     map['north-america']?.push({ code, name });
   }
-  // Sort states alphabetically
+  // Sort provinces alphabetically
   for (const list of Object.values(map)) {
     list.sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -138,7 +139,7 @@ function RegionCountryFilter({
                   <div className="ml-5 border-l border-border/40 pl-2 mt-0.5 mb-1">
                     <div className="flex items-center justify-between mb-0.5 px-1">
                       <span className="text-[10px] text-muted-foreground">
-                        {selectedInRegion.length === 0 ? 'All countries' : `${selectedInRegion.length} selected`}
+                        {selectedInRegion.length === 0 ? 'All provinces' : `${selectedInRegion.length} selected`}
                       </span>
                       {selectedInRegion.length > 0 && selectedInRegion.length < countries.length && (
                         <button
@@ -315,7 +316,7 @@ export function HeaderBar() {
       <div className="flex items-center justify-between px-8 h-12">
         <div className="flex items-center gap-1.5 min-w-0">
           <button onClick={() => { setSelectedRegion(null); setSelectedCampaign(null); }} className="text-sm font-semibold text-foreground hover:text-teal transition-colors">
-            Deep Water
+            Indigo
           </button>
           {selectedRegion && (
             <>

@@ -33,6 +33,7 @@ function generateId(): string {
 function computeDateRange(preset: DateRangePreset): DateRange {
   const end = format(TODAY, 'yyyy-MM-dd');
   switch (preset) {
+    case '1d': return { preset, start: format(subDays(TODAY, 1), 'yyyy-MM-dd'), end };
     case '7d': return { preset, start: format(subDays(TODAY, 7), 'yyyy-MM-dd'), end };
     case '14d': return { preset, start: format(subDays(TODAY, 14), 'yyyy-MM-dd'), end };
     case '30d': return { preset, start: format(subDays(TODAY, 30), 'yyyy-MM-dd'), end };

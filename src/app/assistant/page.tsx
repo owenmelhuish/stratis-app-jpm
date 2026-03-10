@@ -99,17 +99,18 @@ Want me to create an implementation plan for any of these?`;
   }
 
   if (lower.includes("audience") || lower.includes("insight")) {
-    return `Here's what I'm seeing across your audience segments:
+    return `Here's what I'm seeing across your audience personas:
 
-**Top Converting Audiences:**
-- **In-Market: Wealth Management (25-54)** — 3.8% CVR, $12.40 CPA
-- **Retargeting: Product Page Visitors** — 6.2% CVR, $8.90 CPA
-- **Lookalike: Existing Clients 1%** — 2.1% CVR, $18.60 CPA
+**Top Converting Personas:**
+- **BookTok Discovery Reader (18-34)** — 4.2% CVR, $9.80 CPA — Social-first discovery driving strong conversion on trending titles and genre fiction. TikTok and Instagram are primary channels.
+- **The Plum+ Value Maxer** — 5.8% CVR, $7.20 CPA — Highest conversion rate across all personas. Plum+ members respond strongly to exclusive offers, points multipliers, and member-only pricing.
+- **The Literary Traditionalist (35-65)** — 2.9% CVR, $14.50 CPA — Steady, high-AOV buyers driven by reviews, award lists, and staff picks. Strongest on Google Search and Facebook.
+- **The Self Care Lifestyle Shopper** — 3.4% CVR, $11.30 CPA — Cross-category buyers purchasing books alongside candles, journals, and Love & Lore accessories. Instagram and CTV driving awareness.
 
 **Emerging Opportunity:**
-The 35-54 age group on TikTok is showing a 340% increase in engagement over the past 30 days. This demographic wasn't previously a primary target on the platform but is responding strongly to the "Your Future, Our Commitment" brand messaging.
+The BookTok Discovery Reader persona is showing a 340% increase in engagement with romantasy and horror content on TikTok and Spotify over the past 30 days. This segment is also driving unexpected cross-sell into lifestyle products — 28% of BookTok-influenced purchases include a non-book item.
 
-**Recommendation:** Create a TikTok ad set specifically targeting 35-54 with trust-focused creatives. Estimated incremental reach: 2.8M uniques/month.
+**Recommendation:** Expand BookTok Readers campaign with Spotify audio ads targeting readers during commute hours. Estimated incremental reach: 1.8M uniques/month with strong cross-category potential.
 
 Shall I draft a targeting strategy?`;
   }
@@ -118,7 +119,7 @@ Shall I draft a targeting strategy?`;
 
 Based on your current campaign data across all channels, I can see several patterns worth highlighting:
 
-- Your overall portfolio ROAS of 20.9x is strong and above the financial services benchmark of 15-18x
+- Your overall portfolio ROAS is strong and trending above the specialty retail benchmark
 - Spend pacing is on track at 94% of monthly budget with 8 days remaining
 - 3 campaigns have been flagged for creative refresh based on declining engagement metrics
 

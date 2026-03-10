@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Newspaper, Lightbulb, Paintbrush, MessageSquareText, FlaskConical, Zap, BarChart3, DollarSign, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Newspaper, Lightbulb, Paintbrush, MessageSquareText, FlaskConical, BarChart3, DollarSign, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navSections = [
@@ -47,8 +47,7 @@ export function SidebarNav() {
       {/* Logo */}
       <div className="px-6 py-6">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <Zap className="h-5 w-5 text-teal" />
-          <span className="text-base font-bold tracking-tight text-foreground">STRATIS</span>
+          <img src="/stratis-logo.svg" alt="STRATIS" className="h-5 invert" />
         </Link>
       </div>
 

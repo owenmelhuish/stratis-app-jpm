@@ -20,11 +20,11 @@ import { KPI_CONFIGS, CHANNEL_LABELS, type KPIKey, type ChannelId, type Aggregat
 import { formatCurrency, formatKPIValue, formatPercent } from '@/lib/format';
 import Link from 'next/link';
 
-const HERO_KPIS: KPIKey[] = ['spend', 'impressions', 'cpm'];
-const HERO_COLORS: Record<string, string> = { spend: '#e07060', impressions: '#6b8aad', cpm: '#50b89a' };
+const HERO_KPIS: KPIKey[] = ['spend', 'cpm', 'roas'];
+const HERO_COLORS: Record<string, string> = { spend: '#e07060', cpm: '#6b8aad', roas: '#50b89a' };
 
 const stateColumns: Column<StateDatum>[] = [
-  { key: 'state', label: 'State', sortable: true, getValue: (r) => r.stateName,
+  { key: 'state', label: 'Province', sortable: true, getValue: (r) => r.stateName,
     render: (r) => (
       <div className="flex items-center gap-2">
         <span className="font-medium">{r.stateName}</span>
@@ -127,11 +127,11 @@ export function BrandView() {
       </div>
 
       <Card className="p-6 bg-card border-border/40">
-        <h3 className="text-sm font-semibold mb-4">State Performance</h3>
+        <h3 className="text-sm font-semibold mb-4">Province Performance</h3>
         <DataTableWrapper<StateDatum>
           data={sortedStateData}
           columns={stateColumns}
-          searchable searchPlaceholder="Search states..." searchKey={(row) => row.stateName}
+          searchable searchPlaceholder="Search provinces..." searchKey={(row) => row.stateName}
         />
       </Card>
 

@@ -168,6 +168,7 @@ export function useDashboardData(): DashboardData {
         cpa: d.conversions > 0 ? d.spend / d.conversions : 0,
         engagementRate: (d.engagements / imp) * 100,
         videoViews3s: d.videoViews3s,
+        threeSecondViewRate: imp > 0 ? (d.videoViews3s / imp) * 100 : 0,
         frequency: d.reach > 0 ? d.impressions / d.reach : 0,
         creativeFatigueIndex: 30 + Math.random() * 40,
       };
@@ -201,7 +202,7 @@ export function useDashboardData(): DashboardData {
 
     // Channel data
     const channelDataMap: Record<string, AggregatedKPIs> = {};
-    const allChannels: ChannelId[] = ['instagram', 'facebook', 'tiktok', 'google-search', 'ttd'];
+    const allChannels: ChannelId[] = ['instagram', 'facebook', 'tiktok', 'google-search', 'ttd', 'ctv', 'spotify'];
     for (const ch of allChannels) {
       const chDays: DailyMetrics[][] = [];
       for (const camp of viewCampaigns) {
@@ -250,18 +251,24 @@ export function useDashboardData(): DashboardData {
 
     const selectedCampaignObj = selectedCampaign ? store.campaigns.find(c => c.id === selectedCampaign) : undefined;
 
-    // State-level data: split each campaign's metrics evenly across its states
+    // Province-level data: distribute each campaign's metrics weighted by store footprint
+    const PROVINCE_STORE_WEIGHT: Record<string, number> = {
+      'ON': 0.456, 'AB': 0.158, 'BC': 0.152, 'NS': 0.063, 'QC': 0.038,
+      'SK': 0.038, 'MB': 0.032, 'NL': 0.025, 'NB': 0.019, 'PE': 0.013, 'YT': 0.006,
+    };
     const stateAccum: Record<string, { spend: number; impressions: number; conversions: number; revenue: number; campaignCount: number }> = {};
     for (const cd of campaignData) {
-      const states = cd.campaign.countries;
-      if (!states || states.length === 0) continue;
-      const n = states.length;
-      for (const code of states) {
+      const provinces = cd.campaign.countries;
+      if (!provinces || provinces.length === 0) continue;
+      // Calculate total weight for provinces in this campaign
+      const totalWeight = provinces.reduce((sum, code) => sum + (PROVINCE_STORE_WEIGHT[code] || 0.005), 0);
+      for (const code of provinces) {
+        const weight = (PROVINCE_STORE_WEIGHT[code] || 0.005) / totalWeight;
         if (!stateAccum[code]) stateAccum[code] = { spend: 0, impressions: 0, conversions: 0, revenue: 0, campaignCount: 0 };
-        stateAccum[code].spend += cd.kpis.spend / n;
-        stateAccum[code].impressions += cd.kpis.impressions / n;
-        stateAccum[code].conversions += cd.kpis.conversions / n;
-        stateAccum[code].revenue += cd.kpis.revenue / n;
+        stateAccum[code].spend += cd.kpis.spend * weight;
+        stateAccum[code].impressions += cd.kpis.impressions * weight;
+        stateAccum[code].conversions += cd.kpis.conversions * weight;
+        stateAccum[code].revenue += cd.kpis.revenue * weight;
         stateAccum[code].campaignCount += 1;
       }
     }

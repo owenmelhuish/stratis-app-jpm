@@ -1,5 +1,9 @@
 // Deterministic chart data generator seeded by insight ID
 
+import { format, subDays, addDays } from 'date-fns';
+
+const TODAY_DATE = new Date();
+
 function hashString(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -35,7 +39,17 @@ export interface AdSetData {
   recommended: number;
 }
 
-export type MetricsHint = 'roas-frequency' | 'budget-spend';
+export interface ChannelAllocation {
+  channel: string;
+  channelLabel: string;
+  engagementRate: number;
+  spend: number;
+  recommendedEngagementRate: number;
+  recommendedSpend: number;
+  direction: 'increased' | 'reduced';
+}
+
+export type MetricsHint = 'roas-frequency' | 'budget-spend' | 'engagement-frequency' | 'engagement-spend' | 'viewrate-impressions';
 
 export interface InsightChartData {
   historical: ChartPoint[];
@@ -43,9 +57,107 @@ export interface InsightChartData {
   improved: ChartPoint[];
   todayIndex: number;
   adSets: AdSetData[];
+  channelAllocations: ChannelAllocation[];
+  avgEngagementRate: number;
+  avgSpend: number;
   primaryLabel: string;
   secondaryLabel: string;
   metricTabs: string[];
+}
+
+interface MetricConfig {
+  primaryLabel: string;
+  secondaryLabel: string;
+  metricTabs: string[];
+  basePMin: number;
+  basePMax: number;
+  baseSMin: number;
+  baseSMax: number;
+  noiseP: number;
+  noiseS: number;
+  trendMin: number;
+  trendMax: number;
+  improveDeltaMin: number;
+  improveDeltaMax: number;
+  roundP: number;
+  roundS: number;
+  minP: number;
+  minS: number;
+}
+
+const METRIC_CONFIGS: Record<MetricsHint, MetricConfig> = {
+  'roas-frequency': {
+    primaryLabel: 'ROAS',
+    secondaryLabel: 'FREQUENCY',
+    metricTabs: ['Comparison', 'ROAS', 'Frequency'],
+    basePMin: 1.5, basePMax: 2.7,
+    baseSMin: 1.0, baseSMax: 2.5,
+    noiseP: 0.12, noiseS: 0.1,
+    trendMin: -0.03, trendMax: 0.03,
+    improveDeltaMin: 0.3, improveDeltaMax: 0.9,
+    roundP: 2, roundS: 2,
+    minP: 0.2, minS: 0.2,
+  },
+  'budget-spend': {
+    primaryLabel: 'BUDGET TARGET',
+    secondaryLabel: 'ACTUAL SPEND',
+    metricTabs: ['Spend Pacing', 'Budget', 'Forecast'],
+    basePMin: 400, basePMax: 1000,
+    baseSMin: 280, baseSMax: 850,
+    noiseP: 30, noiseS: 50,
+    trendMin: 8, trendMax: 23,
+    improveDeltaMin: 80, improveDeltaMax: 280,
+    roundP: 0, roundS: 0,
+    minP: 50, minS: 30,
+  },
+  'engagement-frequency': {
+    primaryLabel: 'ENGAGEMENT',
+    secondaryLabel: 'FREQUENCY',
+    metricTabs: ['Comparison', 'Engagement', 'Frequency'],
+    basePMin: 0.08, basePMax: 0.22,
+    baseSMin: 0.5, baseSMax: 1.1,
+    noiseP: 0.025, noiseS: 0.06,
+    trendMin: -0.004, trendMax: 0.001,
+    improveDeltaMin: 0.04, improveDeltaMax: 0.12,
+    roundP: 4, roundS: 2,
+    minP: 0.01, minS: 0.1,
+  },
+  'engagement-spend': {
+    primaryLabel: 'ENGAGEMENT',
+    secondaryLabel: 'SPEND',
+    metricTabs: ['Comparison', 'Engagement', 'Spend'],
+    basePMin: 0.001, basePMax: 0.004,
+    baseSMin: 2, baseSMax: 7,
+    noiseP: 0.0004, noiseS: 0.4,
+    trendMin: -0.0002, trendMax: 0.0001,
+    improveDeltaMin: 0.0008, improveDeltaMax: 0.002,
+    roundP: 4, roundS: 1,
+    minP: 0.0002, minS: 0.5,
+  },
+  'viewrate-impressions': {
+    primaryLabel: '3S VIEW RATE',
+    secondaryLabel: 'IMPRESSIONS',
+    metricTabs: ['Comparison', '3s View Rate', 'Impressions'],
+    basePMin: 0.04, basePMax: 0.08,
+    baseSMin: 8000, baseSMax: 18000,
+    noiseP: 0.008, noiseS: 1500,
+    trendMin: -0.002, trendMax: 0.001,
+    improveDeltaMin: 0.015, improveDeltaMax: 0.04,
+    roundP: 4, roundS: 0,
+    minP: 0.005, minS: 2000,
+  },
+};
+
+function roundTo(val: number, decimals: number): number {
+  if (decimals === 0) return Math.round(val);
+  const factor = Math.pow(10, decimals);
+  return Math.round(val * factor) / factor;
+}
+
+function formatDateLabel(dayOffset: number, todayIndex: number): string {
+  const daysFromToday = dayOffset - todayIndex;
+  const date = daysFromToday === 0 ? TODAY_DATE : (daysFromToday < 0 ? subDays(TODAY_DATE, -daysFromToday) : addDays(TODAY_DATE, daysFromToday));
+  return format(date, 'MMM d');
 }
 
 export function generateInsightChartData(
@@ -58,21 +170,13 @@ export function generateInsightChartData(
   const totalDays = 42;
   const todayIndex = 28;
 
-  // Metric labels based on hint
-  const isBudget = metricsHint === 'budget-spend';
-  const primaryLabel = isBudget ? 'BUDGET TARGET' : 'ROAS';
-  const secondaryLabel = isBudget ? 'ACTUAL SPEND' : 'FREQUENCY';
-  const metricTabs = isBudget
-    ? ['Spend Pacing', 'Budget', 'Forecast']
-    : ['Comparison', 'ROAS', 'Frequency'];
+  const config = METRIC_CONFIGS[metricsHint];
+  const { primaryLabel, secondaryLabel, metricTabs } = config;
 
-  // Value ranges based on hint
-  const baseP = isBudget ? 400 + rng() * 600 : 1.5 + rng() * 1.2;
-  const baseS = isBudget ? baseP * (0.7 + rng() * 0.15) : 1.0 + rng() * 1.5;
-  const noiseP = isBudget ? 30 : 0.12;
-  const noiseS = isBudget ? 50 : 0.1;
-  const trend = isBudget ? 8 + rng() * 15 : (rng() - 0.35) * 0.06;
-  const improveDelta = isBudget ? 80 + rng() * 200 : 0.3 + rng() * 0.6;
+  const baseP = config.basePMin + rng() * (config.basePMax - config.basePMin);
+  const baseS = config.baseSMin + rng() * (config.baseSMax - config.baseSMin);
+  const trend = config.trendMin + rng() * (config.trendMax - config.trendMin);
+  const improveDelta = config.improveDeltaMin + rng() * (config.improveDeltaMax - config.improveDeltaMin);
 
   const historical: ChartPoint[] = [];
   const predicted: ChartPoint[] = [];
@@ -81,38 +185,35 @@ export function generateInsightChartData(
   let pVal = baseP;
   let sVal = baseS;
 
+  // Which days get labels (first, ~1/3, TODAY, last)
+  const labelDays = new Set([0, Math.round(totalDays * 0.33), todayIndex, totalDays - 1]);
+
   for (let d = 0; d < totalDays; d++) {
-    const noise1 = (rng() - 0.5) * noiseP * 2;
-    const noise2 = (rng() - 0.5) * noiseS * 2;
-    pVal = Math.max(isBudget ? 50 : 0.2, pVal + trend + noise1);
-    sVal = Math.max(isBudget ? 30 : 0.2, sVal + trend * 0.6 + noise2);
+    const noise1 = (rng() - 0.5) * config.noiseP * 2;
+    const noise2 = (rng() - 0.5) * config.noiseS * 2;
+    pVal = Math.max(config.minP, pVal + trend + noise1);
+    sVal = Math.max(config.minS, sVal + trend * 0.6 + noise2);
 
-    const dayLabel =
-      d === 0
-        ? 'APR 6'
-        : d === todayIndex
-          ? 'TODAY'
-          : d === totalDays - 1
-            ? 'MAY 9'
-            : '';
+    const dayLabel = d === todayIndex ? 'TODAY' : (labelDays.has(d) ? formatDateLabel(d, todayIndex) : '');
 
-    const point: ChartPoint = isBudget
-      ? { day: d, label: dayLabel, primary: Math.round(pVal), secondary: Math.round(sVal) }
-      : { day: d, label: dayLabel, primary: Math.round(pVal * 10) / 10, secondary: Math.round(sVal * 10) / 10 };
+    const point: ChartPoint = {
+      day: d,
+      label: dayLabel,
+      primary: roundTo(pVal, config.roundP),
+      secondary: roundTo(sVal, config.roundS),
+    };
 
     if (d <= todayIndex) {
       historical.push(point);
     } else {
       predicted.push(point);
-      const impVal = isBudget
-        ? Math.round(pVal + improveDelta * (0.8 + rng() * 0.4))
-        : Math.round((pVal + improveDelta * (0.5 + rng() * 0.5)) * 10) / 10;
+      const impVal = roundTo(pVal + improveDelta * (0.5 + rng() * 0.5), config.roundP);
       improved.push({ ...point, improved: impVal });
     }
   }
 
   // Generate ad set data for budget action steps
-  const adSetNames = ['Lookalike – US HNW', 'Interest – Financial Planners', 'Retarget – Site Visitors', 'Broad – Affluent 25-54', 'Custom – Client CRM Match'];
+  const adSetNames = ['Lookalike \u2013 US HNW', 'Interest \u2013 Financial Planners', 'Retarget \u2013 Site Visitors', 'Broad \u2013 Affluent 25-54', 'Custom \u2013 Client CRM Match'];
   const numSets = 3 + (seed % 3);
   const adSets: AdSetData[] = [];
   for (let i = 0; i < numSets; i++) {
@@ -125,12 +226,49 @@ export function generateInsightChartData(
     });
   }
 
+  // Generate channel allocation data for budget optimization
+  const channelDefs = [
+    { channel: 'TT', channelLabel: 'TikTok' },
+    { channel: 'IG', channelLabel: 'Instagram' },
+    { channel: 'FB', channelLabel: 'Facebook' },
+    { channel: 'GS', channelLabel: 'Google Search' },
+    { channel: 'TTD', channelLabel: 'The Trade Desk' },
+    { channel: 'CTV', channelLabel: 'CTV' },
+    { channel: 'SP', channelLabel: 'Spotify' },
+  ];
+  const channelAllocations: ChannelAllocation[] = channelDefs.map((ch, i) => {
+    const engRate = roundTo(0.005 + rng() * 0.04, 4);
+    const spend = Math.round(200 + rng() * 1600);
+    const direction: 'increased' | 'reduced' = (i + seed) % 2 === 0 ? 'reduced' : 'increased';
+    const spendDelta = direction === 'increased' ? spend * (0.1 + rng() * 0.3) : -(spend * (0.05 + rng() * 0.15));
+    const engDelta = direction === 'increased' ? engRate * (0.1 + rng() * 0.2) : -(engRate * (0.05 + rng() * 0.1));
+    return {
+      ...ch,
+      engagementRate: engRate,
+      spend,
+      recommendedEngagementRate: roundTo(engRate + engDelta, 4),
+      recommendedSpend: Math.round(spend + spendDelta),
+      direction,
+    };
+  });
+
+  const avgEngagementRate = roundTo(
+    channelAllocations.reduce((s, c) => s + c.engagementRate, 0) / channelAllocations.length,
+    4
+  );
+  const avgSpend = Math.round(
+    channelAllocations.reduce((s, c) => s + c.spend, 0) / channelAllocations.length
+  );
+
   return {
     historical,
     predicted,
     improved,
     todayIndex,
     adSets,
+    channelAllocations,
+    avgEngagementRate,
+    avgSpend,
     primaryLabel,
     secondaryLabel,
     metricTabs,
@@ -172,5 +310,20 @@ export function interpolateAdSets(
   return adSets.map((a) => ({
     ...a,
     recommended: Math.round((a.current + (a.recommended - a.current) * t) * 100) / 100,
+  }));
+}
+
+/**
+ * Interpolate channel allocations by intensity.
+ */
+export function interpolateChannels(
+  channels: ChannelAllocation[],
+  intensity: number,
+): ChannelAllocation[] {
+  const t = Math.max(0, Math.min(1, intensity));
+  return channels.map((ch) => ({
+    ...ch,
+    recommendedSpend: Math.round(ch.spend + (ch.recommendedSpend - ch.spend) * t),
+    recommendedEngagementRate: +(ch.engagementRate + (ch.recommendedEngagementRate - ch.engagementRate) * t).toFixed(4),
   }));
 }

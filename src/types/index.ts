@@ -5,7 +5,7 @@ export const REGION_LABELS: Record<RegionId, string> = {
   'north-america': 'North America',
 };
 
-export type ChannelId = 'instagram' | 'facebook' | 'tiktok' | 'google-search' | 'ttd';
+export type ChannelId = 'instagram' | 'facebook' | 'tiktok' | 'google-search' | 'ttd' | 'ctv' | 'spotify';
 
 export const CHANNEL_LABELS: Record<ChannelId, string> = {
   'instagram': 'Instagram',
@@ -13,6 +13,8 @@ export const CHANNEL_LABELS: Record<ChannelId, string> = {
   'tiktok': 'TikTok',
   'google-search': 'Google Search',
   'ttd': 'The Trade Desk',
+  'ctv': 'CTV',
+  'spotify': 'Spotify',
 };
 
 export const CHANNEL_COLORS: Record<ChannelId, string> = {
@@ -21,6 +23,8 @@ export const CHANNEL_COLORS: Record<ChannelId, string> = {
   'tiktok': '#00F2EA',
   'google-search': '#FBBC05',
   'ttd': '#22C55E',
+  'ctv': '#A855F7',
+  'spotify': '#1DB954',
 };
 
 export type CampaignObjective = 'awareness' | 'consideration' | 'performance';
@@ -66,6 +70,7 @@ export interface AggregatedKPIs extends DailyMetrics {
   cpa: number;
   roas: number;
   videoCompletionRate: number;
+  threeSecondViewRate: number;
   engagementRate: number;
   brandSearchLift: number;
   shareOfVoice: number;
@@ -113,6 +118,7 @@ export const KPI_CONFIGS: KPIConfig[] = [
   { key: 'videoViews3s', label: 'Video Views (3s)', format: 'number', higherIsBetter: true, category: 'video' },
   { key: 'videoViewsThruplay', label: 'ThruPlay Views', format: 'number', higherIsBetter: true, category: 'video' },
   { key: 'videoCompletionRate', label: 'Video Completion Rate', format: 'percent', higherIsBetter: true, category: 'video' },
+  { key: 'threeSecondViewRate', label: '3s View Rate', format: 'percent', higherIsBetter: true, category: 'video' },
   { key: 'engagements', label: 'Engagements', format: 'number', higherIsBetter: true, category: 'engagement' },
   { key: 'engagementRate', label: 'Engagement Rate', format: 'percent', higherIsBetter: true, category: 'engagement' },
   { key: 'assistedConversions', label: 'Assisted Conversions', format: 'number', higherIsBetter: true, category: 'conversion' },
@@ -126,7 +132,7 @@ export const KPI_CONFIGS: KPIConfig[] = [
 
 export const DEFAULT_BRAND_KPIS: KPIKey[] = [
   'spend', 'impressions', 'reach', 'clicks', 'ctr', 'cpc', 'cpm',
-  'conversions', 'cpa', 'revenue', 'roas', 'engagementRate', 'videoCompletionRate', 'budgetPacing'
+  'conversions', 'cpa', 'revenue', 'roas', 'engagementRate', 'threeSecondViewRate', 'budgetPacing'
 ];
 
 export const DEFAULT_EXEC_KPIS: KPIKey[] = [
@@ -135,7 +141,7 @@ export const DEFAULT_EXEC_KPIS: KPIKey[] = [
 ];
 
 // ===== Date Range =====
-export type DateRangePreset = '7d' | '14d' | '30d' | '90d' | 'ytd' | 'custom';
+export type DateRangePreset = '1d' | '7d' | '14d' | '30d' | '90d' | 'ytd' | 'custom';
 
 export interface DateRange {
   preset: DateRangePreset;
@@ -153,7 +159,7 @@ export type UserRole = 'agency' | 'exec';
 export type ViewLevel = 'brand' | 'region' | 'campaign';
 
 // ===== News =====
-export type NewsTag = 'brand' | 'cast' | 'competitor' | 'genre' | 'sentiment' | 'platform' | 'audience' | 'macro';
+export type NewsTag = 'brand' | 'publishing' | 'genre' | 'amazon' | 'social' | 'gifting' | 'macro';
 export type NewsUrgency = 'low' | 'medium' | 'high';
 
 export interface NewsItem {

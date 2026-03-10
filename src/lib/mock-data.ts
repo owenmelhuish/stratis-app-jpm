@@ -50,7 +50,7 @@ const END_DATE = new Date('2026-02-11');
 const DATA_DAYS = 180;
 const START_DATE = subDays(END_DATE, DATA_DAYS - 1);
 const ALL_REGIONS: RegionId[] = ['north-america'];
-const ALL_CHANNELS: ChannelId[] = ['instagram', 'facebook', 'tiktok', 'google-search', 'ttd'];
+const ALL_CHANNELS: ChannelId[] = ['instagram', 'facebook', 'tiktok', 'google-search', 'ttd', 'ctv', 'spotify'];
 
 // ===== Channel Profiles =====
 interface ChannelProfile {
@@ -71,6 +71,8 @@ const CHANNEL_PROFILES: Record<ChannelId, ChannelProfile> = {
   'instagram': { baseSpend: 1535, cpmRange: [8, 20], ctrRange: [1, 2.2], cvrRange: [2.5, 4.5], cpcRange: [1, 3], videoViewRate: 0.4, videoCompletionRate: 0.3, engagementMultiplier: 1.5, volatility: 0.1 },
   'tiktok': { baseSpend: 1185, cpmRange: [5, 15], ctrRange: [0.8, 2], cvrRange: [1.5, 3.5], cpcRange: [0.5, 2], videoViewRate: 0.8, videoCompletionRate: 0.15, engagementMultiplier: 2.0, volatility: 0.25 },
   'ttd': { baseSpend: 2570, cpmRange: [5, 15], ctrRange: [0.3, 1], cvrRange: [1, 2.5], cpcRange: [1, 4], videoViewRate: 0.2, videoCompletionRate: 0.2, engagementMultiplier: 0.3, volatility: 0.08 },
+  'ctv': { baseSpend: 3200, cpmRange: [20, 40], ctrRange: [0.2, 0.6], cvrRange: [0.8, 2.0], cpcRange: [3, 8], videoViewRate: 0.9, videoCompletionRate: 0.7, engagementMultiplier: 0.2, volatility: 0.06 },
+  'spotify': { baseSpend: 1400, cpmRange: [10, 25], ctrRange: [0.5, 1.5], cvrRange: [1.2, 3.0], cpcRange: [1.5, 4], videoViewRate: 0.0, videoCompletionRate: 0.0, engagementMultiplier: 0.4, volatility: 0.10 },
 };
 
 // ===== Region multipliers =====
@@ -86,35 +88,51 @@ interface CampaignDef {
 }
 
 const CAMPAIGN_DEFS: CampaignDef[] = [
-  // Deep Water movie launch — 40% Seed Superfans, 10% each for the other 6
-  // Cast a Wide Net (10%) — broad national awareness
-  { id: 'dw-cast-wide-net', name: 'Cast a Wide Net', region: 'north-america', objective: 'awareness', status: 'live',
-    channels: ['instagram', 'facebook', 'ttd'], budgetMultiplier: 0.6286, plannedBudget: 930000,
-    countries: ['36', '06', '48', '12', '17', '39', '42', '34', '13', '25', '51', '53', '08', '04', '37', '26', '27', '24', '47', '55'] },
-  // Amplify Fear (10%) — horror/thriller social push
-  { id: 'dw-amplify-fear', name: 'Amplify Fear', region: 'north-america', objective: 'awareness', status: 'live',
-    channels: ['instagram', 'facebook', 'tiktok', 'ttd'], budgetMultiplier: 0.5231, plannedBudget: 930000,
-    countries: ['36', '06', '48', '12', '17', '39', '42', '34', '13', '25', '51', '53', '08', '04', '37'] },
-  // Seed Superfans (40%) — largest campaign, full-funnel national
-  { id: 'dw-seed-superfans', name: 'Seed Superfans', region: 'north-america', objective: 'performance', status: 'live',
-    channels: ['instagram', 'facebook', 'tiktok', 'google-search', 'ttd'], budgetMultiplier: 1.6116, plannedBudget: 3720000,
-    countries: ['36', '06', '12', '42', '34', '25', '48', '17', '39', '13', '37', '51', '53', '08', '04', '24', '27', '41', '47', '26', '29', '55', '45', '18', '21', '22', '32', '49', '40', '01'] },
-  // Thrill Seekers (10%) — niche horror/action audience
-  { id: 'dw-thrill-seekers', name: 'Thrill Seekers', region: 'north-america', objective: 'consideration', status: 'live',
-    channels: ['instagram', 'tiktok'], budgetMultiplier: 1.349, plannedBudget: 930000,
-    countries: ['36', '06', '48', '12', '17', '13', '39', '42', '37', '51'] },
-  // Big Screen Chasers (10%) — theatrical moviegoers
-  { id: 'dw-big-screen-chasers', name: 'Big Screen Chasers', region: 'north-america', objective: 'consideration', status: 'live',
-    channels: ['facebook', 'google-search'], budgetMultiplier: 0.9619, plannedBudget: 930000,
-    countries: ['36', '06', '48', '12', '17', '42', '25', '13', '34', '39', '51', '53'] },
-  // Adrenaline Athletes (10%) — action/sports audience crossover
-  { id: 'dw-adrenaline-athletes', name: 'Adrenaline Athletes', region: 'north-america', objective: 'consideration', status: 'live',
-    channels: ['instagram', 'tiktok'], budgetMultiplier: 1.349, plannedBudget: 930000,
-    countries: ['36', '06', '08', '53', '04', '32', '12', '48', '41', '37'] },
-  // Opening Weekend Superfans (10%) — intent-driven conversion
-  { id: 'dw-opening-weekend', name: 'Opening Weekend Superfans', region: 'north-america', objective: 'performance', status: 'live',
-    channels: ['google-search', 'instagram'], budgetMultiplier: 1.0136, plannedBudget: 930000,
-    countries: ['36', '06', '48', '12', '17', '42', '25', '34'] },
+  // ── Plum+ Loyalty Campaigns ──
+  // Plum+ Membership Growth — drive new sign-ups and upgrades from free Plum to paid Plum+
+  { id: 'ind-plum-growth', name: 'Plum+ Membership Growth', region: 'north-america', objective: 'performance', status: 'live',
+    channels: ['google-search', 'facebook', 'instagram', 'ttd', 'spotify'], budgetMultiplier: 1.0136, plannedBudget: 1600000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB'] },
+  // Plum+ Retention & Upsell — re-engage existing members, drive renewals and higher AOV
+  { id: 'ind-plum-retain', name: 'Plum+ Retention & Upsell', region: 'north-america', objective: 'performance', status: 'live',
+    channels: ['facebook', 'instagram', 'google-search'], budgetMultiplier: 0.8450, plannedBudget: 980000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB', 'NL'] },
+
+  // ── Persona-Based Campaigns ──
+  // BookTok Readers — social-first discovery audience, 18-34, genre fiction and trending titles
+  { id: 'ind-booktok-readers', name: 'BookTok Readers', region: 'north-america', objective: 'awareness', status: 'live',
+    channels: ['tiktok', 'instagram', 'spotify'], budgetMultiplier: 1.2200, plannedBudget: 1100000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'NS'] },
+  // Gift Givers & Seasonal Shoppers — high-intent gifting audience, seasonal moments
+  { id: 'ind-gift-givers', name: 'Gift Givers & Seasonal Shoppers', region: 'north-america', objective: 'performance', status: 'live',
+    channels: ['google-search', 'facebook', 'instagram', 'ttd', 'ctv'], budgetMultiplier: 1.4800, plannedBudget: 2200000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB', 'NL', 'PE', 'YT'] },
+  // Millennial Parents — 28-42, education, kids books, baby registry, IndigoKids
+  { id: 'ind-millennial-parents', name: 'Millennial Parents', region: 'north-america', objective: 'consideration', status: 'live',
+    channels: ['facebook', 'instagram', 'google-search'], budgetMultiplier: 1.1050, plannedBudget: 1050000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB'] },
+  // Cozy Lifestyle Enthusiasts — home décor, candles, journals, Love & Lore, Nota
+  { id: 'ind-cozy-lifestyle', name: 'Cozy Lifestyle Enthusiasts', region: 'north-america', objective: 'consideration', status: 'live',
+    channels: ['instagram', 'tiktok', 'facebook', 'ctv'], budgetMultiplier: 1.1500, plannedBudget: 980000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'NS'] },
+
+  // ── Core Retail Campaigns ──
+  // Holiday Gift Guide — peak seasonal push across all provinces
+  { id: 'ind-holiday-gift', name: 'Holiday Gift Guide', region: 'north-america', objective: 'performance', status: 'live',
+    channels: ['instagram', 'facebook', 'tiktok', 'google-search', 'ttd', 'ctv', 'spotify'], budgetMultiplier: 1.6116, plannedBudget: 3720000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB', 'NL', 'PE', 'YT'] },
+  // Bestseller Awareness — new releases and bestseller lists
+  { id: 'ind-bestseller', name: 'Bestseller Awareness', region: 'north-america', objective: 'awareness', status: 'live',
+    channels: ['instagram', 'facebook', 'ttd', 'ctv', 'spotify'], budgetMultiplier: 0.6286, plannedBudget: 1400000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB', 'NL', 'PE'] },
+  // Private Label Push — Love & Lore, Nota, OUI Studio
+  { id: 'ind-private-label', name: 'Private Label Push', region: 'north-america', objective: 'consideration', status: 'live',
+    channels: ['instagram', 'tiktok', 'facebook'], budgetMultiplier: 1.349, plannedBudget: 1400000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'NS'] },
+  // E-Commerce Retargeting — Indigo.ca conversion
+  { id: 'ind-ecom-retarget', name: 'E-Commerce Retargeting', region: 'north-america', objective: 'performance', status: 'live',
+    channels: ['google-search', 'ttd', 'facebook'], budgetMultiplier: 0.5231, plannedBudget: 930000,
+    countries: ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB', 'NL', 'PE'] },
 ];
 
 // ===== Events (anomaly generators) =====
@@ -124,11 +142,11 @@ interface DataEvent {
 }
 
 const DATA_EVENTS: DataEvent[] = [
-  { name: 'Trailer #2 Drop', dayOffset: 45, duration: 7, regions: ['north-america'], spendMult: 1.8, cvrMult: 1.3, engageMult: 2.0 },
-  { name: 'Competing Film Release', dayOffset: 90, duration: 10, regions: ['north-america'], spendMult: 1.0, cvrMult: 0.8, engageMult: 0.7 },
-  { name: 'Awards Season Buzz', dayOffset: 70, duration: 14, regions: ALL_REGIONS, spendMult: 1.3, cvrMult: 1.15, engageMult: 1.4 },
+  { name: 'Spring Campaign Launch', dayOffset: 45, duration: 7, regions: ['north-america'], spendMult: 1.8, cvrMult: 1.3, engageMult: 2.0 },
+  { name: 'Amazon Prime Day Competition', dayOffset: 90, duration: 10, regions: ['north-america'], spendMult: 1.0, cvrMult: 0.8, engageMult: 0.7 },
+  { name: 'Giller Prize Season Buzz', dayOffset: 70, duration: 14, regions: ALL_REGIONS, spendMult: 1.3, cvrMult: 1.15, engageMult: 1.4 },
   { name: 'TikTok Algorithm Shift', dayOffset: 100, duration: 5, regions: ALL_REGIONS, spendMult: 1.0, cvrMult: 0.75, engageMult: 1.6 },
-  { name: 'Opening Weekend Push', dayOffset: 150, duration: 10, regions: ['north-america'], spendMult: 1.5, cvrMult: 1.1, engageMult: 1.1 },
+  { name: 'Holiday Season Push', dayOffset: 150, duration: 10, regions: ['north-america'], spendMult: 1.5, cvrMult: 1.1, engageMult: 1.1 },
 ];
 
 // ===== Data Generation =====
@@ -206,7 +224,7 @@ export function aggregateMetrics(dailyData: DailyMetrics[]): AggregatedKPIs {
       leads: 0, conversions: 0, revenue: 0, videoViews3s: 0, videoViewsThruplay: 0,
       engagements: 0, assistedConversions: 0,
       frequency: 0, ctr: 0, cpc: 0, cpm: 0, lpvRate: 0, cpl: 0, cpa: 0, roas: 0,
-      videoCompletionRate: 0, engagementRate: 0, brandSearchLift: 0, shareOfVoice: 0,
+      videoCompletionRate: 0, threeSecondViewRate: 0, engagementRate: 0, brandSearchLift: 0, shareOfVoice: 0,
       volatilityScore: 0, anomalyCount: 0, budgetPacing: 0, creativeFatigueIndex: 0,
     };
   }
@@ -235,6 +253,7 @@ export function aggregateMetrics(dailyData: DailyMetrics[]): AggregatedKPIs {
   const cpa = conversions > 0 ? spend / conversions : 0;
   const roas = spend > 0 ? revenue / spend : 0;
   const videoCompletionRate = videoViews3s > 0 ? (videoViewsThruplay / videoViews3s) * 100 : 0;
+  const threeSecondViewRate = impressions > 0 ? (videoViews3s / impressions) * 100 : 0;
   const engagementRate = impressions > 0 ? (engagements / impressions) * 100 : 0;
 
   // Mock health indicators
@@ -261,7 +280,7 @@ export function aggregateMetrics(dailyData: DailyMetrics[]): AggregatedKPIs {
     spend, impressions, reach, clicks, landingPageViews, leads, conversions, revenue,
     videoViews3s, videoViewsThruplay, engagements, assistedConversions,
     frequency, ctr, cpc, cpm, lpvRate, cpl, cpa, roas,
-    videoCompletionRate, engagementRate, brandSearchLift, shareOfVoice,
+    videoCompletionRate, threeSecondViewRate, engagementRate, brandSearchLift, shareOfVoice,
     volatilityScore, anomalyCount, budgetPacing, creativeFatigueIndex,
   };
 }
@@ -272,7 +291,7 @@ export function computeDeltas(current: AggregatedKPIs, previous: AggregatedKPIs)
     'spend', 'impressions', 'reach', 'clicks', 'landingPageViews', 'leads', 'conversions', 'revenue',
     'videoViews3s', 'videoViewsThruplay', 'engagements', 'assistedConversions',
     'frequency', 'ctr', 'cpc', 'cpm', 'lpvRate', 'cpl', 'cpa', 'roas',
-    'videoCompletionRate', 'engagementRate', 'brandSearchLift', 'shareOfVoice',
+    'videoCompletionRate', 'threeSecondViewRate', 'engagementRate', 'brandSearchLift', 'shareOfVoice',
     'volatilityScore', 'anomalyCount', 'budgetPacing', 'creativeFatigueIndex',
   ];
   for (const key of keys) {
@@ -333,8 +352,15 @@ function detectAnomalies(dailyData: Record<string, Record<string, DailyMetrics[]
 }
 
 // ===== News Generation =====
-const NEWS_SOURCES = ['Variety', 'Deadline', 'The Hollywood Reporter', 'Entertainment Weekly', 'IndieWire', 'Screen Rant', 'Collider'];
-const COMPETITORS = ['Devil Wears Prada 2', 'Mission Impossible 8', 'Thunderbolts*', 'The Beast (Netflix)', 'A Quiet Place: Day One'];
+const NEWS_SOURCES_BY_TAG: Record<string, string[]> = {
+  brand: ['Retail Insider', 'Financial Post', 'Strategy Online', 'The Globe and Mail', 'Marketing Magazine', 'CBC News'],
+  publishing: ['Publishers Weekly', 'BookNet Canada', 'Canadian Bookseller', 'The Globe and Mail', 'Quill & Quire'],
+  genre: ['BookNet Canada', 'Publishers Weekly', 'Goodreads', 'Amazon.ca Bestsellers', 'Library Journal'],
+  amazon: ['Amazon.ca Bestsellers', 'Amazon.ca Category Data', 'Amazon.ca New Releases', 'Jungle Scout'],
+  social: ['Reddit r/books', 'Reddit r/suggestmeabook', 'Reddit r/CanLit', 'Reddit r/RomanceBooks', 'Reddit r/bookshelf'],
+  gifting: ['Retail Insider', 'Trend Hunter', 'Pinterest Trends', 'Shopify Canada', 'Financial Post'],
+  macro: ['Statistics Canada', 'The Globe and Mail', 'Financial Post', 'Deloitte Canada', 'CBC News'],
+};
 
 function generateNews(): NewsItem[] {
   const items: NewsItem[] = [];
@@ -342,142 +368,133 @@ function generateNews(): NewsItem[] {
     titleTemplate: (c?: string) => string; tags: NewsTag[]; urgency: NewsUrgency;
     summary: string; whyItMatters: string; competitor?: string;
   }> = [
-    // ── 1. Emerging Conversation (exactly 3 — Reddit/social mentions of "Deep Water") ──
-    { titleTemplate: () => 'r/movies: "Deep Water looks insane — the practical underwater stunts are giving Jaws vibes"', tags: ['brand'], urgency: 'high', summary: 'A Reddit post on r/movies comparing Deep Water\'s practical effects to Jaws has reached 14.2K upvotes and 1,800+ comments, with users debating whether it could revive the ocean thriller genre.', whyItMatters: 'Organic Reddit hype signals core audience excitement — amplify with paid social targeting r/movies and film enthusiast lookalikes.' },
-    { titleTemplate: () => 'Deep Water Subway Takeover in NYC and LA Drives 12M Impressions in 48 Hours', tags: ['brand'], urgency: 'high', summary: 'A full subway station takeover in Times Square and Hollywood/Highland featuring immersive Deep Water ocean-themed wraps has generated 12M OOH impressions and gone viral on social media, with commuters sharing photos across Instagram and TikTok.', whyItMatters: 'OOH activations are driving outsized social amplification — experiential placements are earning 3-5x their paid value in organic reach.' },
-    { titleTemplate: () => 'r/boxoffice tracks Deep Water pre-sale mentions surging 280% week-over-week', tags: ['brand'], urgency: 'medium', summary: 'The r/boxoffice community is tracking a 280% week-over-week increase in Deep Water mentions, with multiple threads predicting a $35M+ opening weekend based on social momentum.', whyItMatters: 'Box office prediction communities influence wider media coverage — monitor sentiment and seed positive data points for earned media pickup.' },
+    // ── 1. Brand & Corporate Narrative (3 pinned) ──
+    { titleTemplate: () => 'Indigo Mentions Surge After CEO Interview on Canadian Cultural Retail Vision', tags: ['brand'], urgency: 'high', summary: 'Indigo CEO\'s interview on BNN Bloomberg discussing the "cultural department store" strategy generated significant media pickup and social conversation, with brand mentions up 280% in 48 hours. Coverage framed Indigo as a differentiated Canadian retailer rather than a bookstore under pressure.', whyItMatters: 'The narrative is shifting toward strategic relevance and cultural positioning — this is the story Indigo wants the market to tell. Amplify before the news cycle moves on.' },
+    { titleTemplate: () => 'Plum+ Pricing Narrative Shifts as Membership Passes 1.2M — Value Perception Rising', tags: ['brand'], urgency: 'high', summary: 'Indigo\'s Plum+ paid membership has surpassed 1.2M subscribers. Media coverage has shifted from questioning the pricing model to framing it as a loyalty success story, with analysts noting the 3.4x higher AOV among members.', whyItMatters: 'The loyalty narrative is now working in Indigo\'s favour — membership is being framed as value, not cost. This supports premium positioning across all customer-facing communications.' },
+    { titleTemplate: () => 'Indigo ESG Report Highlights Nota Brand\'s Sustainable Sourcing — Mixed Reception', tags: ['brand'], urgency: 'medium', summary: 'Indigo\'s latest ESG report highlights sustainable sourcing for the Nota brand and packaging reduction initiatives. Reception is mixed: sustainability advocates praise the direction while critics question the pace relative to peers.', whyItMatters: 'ESG narrative requires careful management — positive signals exist but the story isn\'t fully landed. Monitor sentiment and consider proactive communication to control the framing.' },
 
-    // ── 2. Cast & Talent Signals (exactly 3 — one per talent, order: Eckhart → Gale → Kingsley) ──
-    { titleTemplate: () => 'Aaron Eckhart Talks Deep Water Role on The Tonight Show, Clip Goes Viral', tags: ['cast'], urgency: 'high', summary: 'Aaron Eckhart appeared on The Tonight Show discussing his preparation for Deep Water, including learning to hold his breath for 4 minutes. The segment has been viewed 6M+ times.', whyItMatters: 'Talk show virality creates earned media spike — amplify with paid video ads featuring Aaron Eckhart clips and quotes.' },
-    { titleTemplate: () => 'Kelly Gale Deep Water Interview Drives 800K Instagram Impressions', tags: ['cast'], urgency: 'high', summary: 'Kelly Gale\'s Instagram interview about her Deep Water role generated 800K impressions and 45K engagements, with strong response from 18-34 female audiences.', whyItMatters: 'Kelly Gale content resonates with younger demographics — feature in Seed Superfans and social-first creative.' },
-    { titleTemplate: () => 'Ben Kingsley Praised for Deep Water Performance in Early Press Reactions', tags: ['cast'], urgency: 'medium', summary: 'Early press screenings are singling out Ben Kingsley\'s performance as a standout, with critics calling it "his best work in a decade."', whyItMatters: 'Critical praise for cast strengthens credibility messaging — incorporate review quotes into Amplify Fear creative.' },
+    // ── 2. Book Industry & Publishing Shifts (3 pinned) ──
+    { titleTemplate: () => 'Canadian Publishing Revenue Hits $1.7B — Digital Formats and Social Discovery Drive Growth', tags: ['publishing'], urgency: 'high', summary: 'StatCan reports Canadian publishing industry revenue rose to $1.7B in 2024, with continued growth from digital reading formats and social media-driven discovery. Physical book sales remain strong but audiobook and eBook adoption is accelerating, particularly among 18-34 readers.', whyItMatters: 'The Canadian book market is growing and diversifying. Indigo must track where the growth is coming from — physical vs. digital, discovery-driven vs. backlist — to ensure assortment and merchandising stay aligned with actual demand patterns.' },
+    { titleTemplate: () => 'Audiobook Sales in Canada Grow 23% YoY — Subscription Models Gaining Ground', tags: ['publishing'], urgency: 'medium', summary: 'Canadian audiobook sales grew 23% year-over-year, with subscription platforms like Audible and Libro.fm driving adoption. BookNet Canada notes that 31% of audiobook listeners also buy physical copies of the same titles, suggesting format complementarity rather than cannibalization.', whyItMatters: 'Audiobook growth represents both opportunity and risk for Indigo. Format complementarity is encouraging, but if subscription platforms capture the discovery moment, Indigo\'s role in the purchase journey could diminish.' },
+    { titleTemplate: () => 'Canadian Publishers Report Backlist Resurgence — Adaptation-Driven Demand Spikes Across Catalogues', tags: ['publishing'], urgency: 'medium', summary: 'Multiple Canadian publishers report surging backlist sales driven by film/TV adaptations, BookTok rediscovery, and award-cycle momentum. Titles 3-10 years old are seeing 40-60% sales increases when triggered by cultural moments.', whyItMatters: 'Backlist resurgence is predictable and actionable — Indigo should build merchandising playbooks around known adaptation schedules and social rediscovery patterns to capture demand before it peaks.' },
 
-    // ── 3. Competitive Movie Releases (exactly 3 — all Devil Wears Prada 2) ──
-    { titleTemplate: () => 'Devil Wears Prada 2 Trailer Drops to 32M Views — Meryl Streep Return Breaks Social Media', tags: ['competitor'], urgency: 'high', summary: 'The first trailer for Devil Wears Prada 2 has amassed 32M views in 72 hours, making it the most-watched comedy sequel trailer of the year. Meryl Streep and Anne Hathaway\'s return is dominating social conversation across all platforms.', whyItMatters: 'DWP2 is absorbing massive share of voice in the theatrical marketing space — Deep Water needs to surge social spend to maintain visibility during this attention spike.', competitor: 'Devil Wears Prada 2' },
-    { titleTemplate: () => 'r/movies megathread: "Devil Wears Prada 2 looks incredible — opening weekend is going to be huge"', tags: ['competitor'], urgency: 'high', summary: 'A Reddit megathread on r/movies discussing the DWP2 trailer has reached 22K upvotes with 4,100+ comments. Community sentiment is overwhelmingly positive, with users predicting a $60M+ opening weekend.', whyItMatters: 'Reddit hype for DWP2 is pulling attention from other releases — consider targeted Reddit ads positioning Deep Water as the alternative for audiences seeking intensity over comedy.', competitor: 'Devil Wears Prada 2' },
-    { titleTemplate: () => 'Devil Wears Prada 2 Fandango Pre-Sales Track for $58M Opening Weekend', tags: ['competitor'], urgency: 'high', summary: 'Fandango reports Devil Wears Prada 2 advance ticket sales are pacing toward a $58M domestic opening weekend, driven by 25-44 women who made up 72% of first-day pre-sale buyers across New York, Los Angeles, and Chicago.', whyItMatters: 'DWP2 is commanding massive pre-sale volume in top DMAs — increased theatrical competition will raise CPMs and fragment audience attention across all concurrent releases.', competitor: 'Devil Wears Prada 2' },
+    // ── 3. Genre & Title Momentum (3 pinned) ──
+    { titleTemplate: () => 'Horror and Dark Fiction Surge — BookNet Canada Flags Genre as Fastest-Growing Category', tags: ['genre'], urgency: 'high', summary: 'BookNet Canada\'s latest genre report shows horror and dark fiction as the fastest-growing book category in Canada, with unit sales up 34% year-over-year. The surge is driven by BookTok horror recommendations, seasonal reading trends, and crossover appeal from thriller readers.', whyItMatters: 'Horror is accelerating faster than most retailers have adjusted for. Indigo should evaluate shelf allocation, online merchandising, and marketing creative to capture this momentum while it\'s still building.' },
+    { titleTemplate: () => 'Romantasy Continues to Dominate — Fourth Wing Sequel Pre-Orders Break Indigo Records', tags: ['genre'], urgency: 'high', summary: 'The romantasy genre continues its dominance, with the next Fourth Wing sequel pre-orders setting records at Indigo and across Canadian retailers. Sarah J. Maas, Rebecca Yarros, and Holly Black remain the genre\'s anchors, while breakout authors are emerging rapidly from BookTok.', whyItMatters: 'Romantasy is not a trend — it\'s a category shift. Indigo should treat it as a permanent merchandising pillar with dedicated shelf space, curated collections, and sustained marketing investment.' },
+    { titleTemplate: () => 'r/booktalk Buzzing Over Debut Novel "The Returning Tide" — Thread Hits 4.2K Upvotes in 48 Hours', tags: ['genre'], urgency: 'high', summary: 'A recommendation thread for debut Canadian author Maren Calloway\'s "The Returning Tide" has exploded on r/booktalk, hitting 4.2K upvotes and 800+ comments in 48 hours. Readers describe it as "literary fiction meets magical realism set on the BC coast" with comparisons to Miriam Toews and Eden Robinson. Multiple commenters report driving to Indigo to find it after seeing the thread.', whyItMatters: 'Reddit-driven breakout signals are early and high-conviction — when a thread hits this velocity, mainstream demand follows within 2-4 weeks. Indigo should verify inventory depth on "The Returning Tide," consider featuring it in Staff Picks or Heather\'s Picks, and align social content to the conversation already happening.' },
 
-    // ── 4. Genre & Theme Signals (exactly 3 pinned) ──
-    { titleTemplate: () => '#SharkTok Surges 340% on TikTok — Ocean Content Hits All-Time High', tags: ['genre'], urgency: 'high', summary: 'Ocean and shark-themed content is experiencing a massive surge on TikTok, with #SharkTok and related hashtags generating 340% more views than the monthly average. Creators are posting shark encounter stories, deep-sea footage, and ocean survival challenges.', whyItMatters: 'Trending genre interest creates organic tailwind — create shark/ocean themed Deep Water ads for TikTok to ride the wave.' },
-    { titleTemplate: () => 'Underwater Thriller Genre Sees 28% Box Office Growth Year-Over-Year', tags: ['genre'], urgency: 'medium', summary: 'Box office data shows underwater and ocean thriller films have outperformed the broader thriller category by 28% this year, with audiences showing strong appetite for high-tension maritime narratives.', whyItMatters: 'Genre tailwind supports bullish box office projections — lean into the underwater thriller positioning in all creative.' },
-    { titleTemplate: () => 'Ocean Survival Podcasts Climb Charts as Maritime Peril Trend Accelerates', tags: ['genre'], urgency: 'medium', summary: 'Multiple ocean survival and "lost at sea" podcasts have climbed the Apple and Spotify charts, indicating elevated public interest in maritime survival narratives ahead of summer movie season.', whyItMatters: 'Genre conversation is primed for Deep Water — sponsor relevant podcasts and test audio ad placements to capture high-intent listeners.' },
+    // ── 4. Amazon Bestseller & Assortment Intelligence (3 pinned) ──
+    { titleTemplate: () => 'Amazon.ca Bestsellers: Romance and Romantasy Hold 11 of Top 20 Spots for Third Consecutive Month', tags: ['amazon'], urgency: 'high', summary: 'Amazon.ca\'s bestseller list remains dominated by romance and romantasy titles, with 11 of the top 20 spots held by the genre. Fourth Wing, Iron Flame, and new entries from Sarah J. Maas and Ali Hazelwood are driving volume. Review velocity on breakout titles suggests sustained demand.', whyItMatters: 'Amazon\'s bestseller list is a real-time demand signal. When a genre holds this concentration for three consecutive months, it confirms category-level demand that Indigo should match in inventory depth and marketing allocation.' },
+    { titleTemplate: () => 'Amazon.ca New Releases Climbing Fast — Self-Help and "Slow Living" Titles Breaking Through', tags: ['amazon'], urgency: 'medium', summary: 'Amazon.ca\'s "Hot New Releases" list shows rapid climbing by self-help and "slow living" titles, including books on digital detox, intentional routines, and mindful consumption. Several have moved from outside the top 100 to the top 20 within two weeks.', whyItMatters: 'Titles climbing quickly on Amazon signal emerging demand before it peaks. Indigo can use these signals to position early and capture the demand curve while Amazon competes on price and convenience.' },
+    { titleTemplate: () => 'Amazon.ca BookTok Bestseller List Diverges from Main List — Signals Distinct Demand Pattern', tags: ['amazon'], urgency: 'high', summary: 'Amazon.ca\'s BookTok-specific bestseller list now diverges meaningfully from the main bestseller list, with different titles, genres, and velocity patterns. BookTok bestsellers skew younger, more genre-diverse, and more influenced by trope-based discovery than traditional review-driven purchasing.', whyItMatters: 'The divergence confirms that BookTok-driven demand is a distinct market segment with its own discovery and purchase behaviour. Indigo should track both lists separately and merchandise accordingly.' },
 
-    // ── 5. Review & Sentiment Signals ──
-    { titleTemplate: () => 'Deep Water Early Reviews: 82% Fresh on Rotten Tomatoes', tags: ['sentiment'], urgency: 'high', summary: 'Early critic reviews have pushed Deep Water to an 82% Fresh rating on Rotten Tomatoes, with praise for practical effects and lead performances.', whyItMatters: 'Strong RT score is a powerful trust signal — feature the rating prominently in all ad creative and landing pages.' },
-    { titleTemplate: () => 'Deep Water IMDb Rating Holds Steady at 7.4 After Early Screenings', tags: ['sentiment'], urgency: 'medium', summary: 'The IMDb audience rating for Deep Water is holding at 7.4 based on early screening attendees, indicating strong audience satisfaction.', whyItMatters: 'Audience score validates word-of-mouth potential — lean into "audiences love it" messaging in week 2 campaigns.' },
-    { titleTemplate: () => 'Social Sentiment for Deep Water Running 78% Positive Across Platforms', tags: ['sentiment'], urgency: 'medium', summary: 'Social listening tools show Deep Water sentiment is 78% positive, 15% neutral, and only 7% negative — well above thriller genre averages.', whyItMatters: 'Positive sentiment supports scaling spend — increase budget confidence and extend campaign flights if trends hold.' },
-    { titleTemplate: () => 'Deep Water Letterboxd Score Surpasses Genre Average by 0.8 Points', tags: ['sentiment'], urgency: 'low', summary: 'Film enthusiasts on Letterboxd are rating Deep Water 3.9/5, significantly above the thriller genre average of 3.1, with praise for cinematography.', whyItMatters: 'Letterboxd audience skews cinephile — use as proof point for Big Screen Chasers campaign targeting film enthusiasts.' },
-    { titleTemplate: () => '"Is Deep Water Worth Watching?" Search Volume Spikes 420%', tags: ['sentiment'], urgency: 'high', summary: 'Google search volume for "Deep Water worth watching" and "Deep Water good or bad" has surged 420%, indicating audiences are in the consideration phase.', whyItMatters: 'High-intent search signals demand — ensure branded search campaigns capture consideration-phase queries with review-led creative.' },
-    { titleTemplate: () => 'Deep Water Audience Exit Polls Show 91% Would Recommend to Friends', tags: ['sentiment'], urgency: 'medium', summary: 'Post-screening exit polls show 91% of audiences would recommend Deep Water, with "edge-of-your-seat tension" cited most frequently.', whyItMatters: 'Word-of-mouth metric is exceptional — shift post-opening budget toward social proof and testimonial-style creative.' },
+    // ── 5. Social & Cultural Book Conversation (3 pinned) ──
+    { titleTemplate: () => 'r/books "What Are You Reading?" Weekly Thread Surfaces 3 Breakout Titles — Canadian Authors Overrepresented', tags: ['social'], urgency: 'high', summary: 'The r/books weekly "What Are You Reading?" thread has surfaced three titles gaining rapid momentum, two by Canadian authors. Comments mentioning these titles have 4x the average engagement, and multiple users report purchasing after seeing the thread. The pattern mirrors previous Reddit-driven breakouts that later hit mainstream bestseller lists.', whyItMatters: 'Reddit reading threads are high-signal discovery channels — engaged readers sharing genuine recommendations carry more purchase conviction than algorithmic feeds. Indigo should monitor these weekly threads as early demand indicators and cross-reference with inventory and merchandising.' },
+    { titleTemplate: () => 'r/suggestmeabook "Dark Academia" Requests Up 280% — Cross-Category Purchasing Signal Strengthening', tags: ['social'], urgency: 'medium', summary: 'The r/suggestmeabook community is seeing a 280% increase in "dark academia" recommendation requests, with readers seeking not just books but associated stationery, candles, journals, and home décor. Thread discussions frequently mention Indigo as a destination for building the full aesthetic.', whyItMatters: 'Aesthetic-driven purchasing is a merchandising opportunity that spans Indigo\'s entire assortment — books, Nota stationery, candles, and lifestyle. Curating around aesthetic themes rather than just categories could unlock cross-sell potential.' },
+    { titleTemplate: () => 'r/CanLit Community Drives Pre-Order Surge for Giller Prize Longlist — Correlation Strengthening', tags: ['social'], urgency: 'medium', summary: 'The r/CanLit subreddit\'s discussion threads around the Giller Prize longlist are increasingly correlated with pre-order surges at Canadian retailers. Titles featured in top r/CanLit threads see 3-5x higher pre-order rates than comparable titles, with the effect strongest in literary fiction and Canadian-authored works.', whyItMatters: 'Reddit literary communities surface demand signals that are higher-conviction than algorithmic recommendations. Indigo should monitor r/CanLit systematically and use discussion velocity to inform pre-order marketing, inventory allocation, and Staff Picks curation.' },
 
-    // ── 6. Platform & Ad Tech ──
-    { titleTemplate: () => 'TikTok Launches Movie Ticket Integration for In-App Purchases', tags: ['platform'], urgency: 'high', summary: 'TikTok has rolled out native ticket purchasing for movie content, allowing users to buy tickets directly from video ads without leaving the app.', whyItMatters: 'Native ticketing removes friction from the conversion funnel — test in-app ticket purchase CTAs across all TikTok campaigns.' },
-    { titleTemplate: () => 'Meta Introduces New Advantage+ for Entertainment Vertical', tags: ['platform'], urgency: 'medium', summary: 'Meta has launched an entertainment-specific Advantage+ campaign type optimized for movie awareness and ticket conversions.', whyItMatters: 'Entertainment-specific optimization could improve efficiency — test against current campaign structures on Facebook and Instagram.' },
-    { titleTemplate: () => 'Google Search Adds Movie Showtime Cards to AI Overview Results', tags: ['platform'], urgency: 'high', summary: 'Google is now displaying interactive showtime cards within AI-generated search results for movie queries, changing how users discover films.', whyItMatters: 'New SERP format changes search behavior — ensure Deep Water structured data is optimized for showtime card eligibility.' },
-    { titleTemplate: () => 'The Trade Desk Launches CTV Movie Trailer Ad Format', tags: ['platform'], urgency: 'medium', summary: 'TTD has introduced a new pre-roll format specifically designed for movie trailers on connected TV, with enhanced engagement tracking.', whyItMatters: 'CTV trailer format is ideal for Deep Water — test across Thrill Seekers and Cast a Wide Net campaigns for upper-funnel reach.' },
-    { titleTemplate: () => 'Instagram Reels Tests "Swipe to Buy Tickets" Feature for Movies', tags: ['platform'], urgency: 'medium', summary: 'Instagram is testing a swipe-to-purchase feature for movie tickets in Reels, enabling seamless conversion from trailer content to ticket sale.', whyItMatters: 'Reduces conversion friction on Instagram — prioritize Reels creative in Seed Superfans and Opening Weekend campaigns.' },
+    // ── 6. Gifting, Lifestyle & Home Trends (3 pinned) ──
+    { titleTemplate: () => 'Emotional-Value Gifting Rises as Canadians Pull Back on Discretionary Spending', tags: ['gifting'], urgency: 'high', summary: 'Retail research shows Canadian consumers are shifting toward "emotional-value" gifts — thoughtful, curated items that feel personal rather than expensive. Books, journals, candles, and curated gift sets are outperforming generic luxury gifts, with 67% of consumers saying they prefer "meaningful over expensive."', whyItMatters: 'Indigo\'s entire assortment — from curated book selections to Love & Lore accessories to Nota stationery — is perfectly positioned for the emotional-value gifting trend. This should be the core narrative for all gift-season marketing.' },
+    { titleTemplate: () => 'Mother\'s Day Gift Search Volume Up 38% — "Books for Mom" and "Self-Care Gifts" Leading', tags: ['gifting'], urgency: 'high', summary: 'Google Trends and Pinterest data show Mother\'s Day gift search volume is up 38% year-over-year in Canada, with "books for mom," "self-care gift sets," and "journal gift" among the fastest-growing queries. Search intent is shifting earlier, with peak research starting 3 weeks before the holiday.', whyItMatters: 'Mother\'s Day is a high-intent gifting moment that aligns directly with Indigo\'s strengths. Campaign timing should start earlier this year to match the shifted search curve, with creative featuring curated gift sets and book-lover bundles.' },
+    { titleTemplate: () => 'Cozy Living and "Dopamine Décor" Trends Drive Home Category Growth Across Canadian Retail', tags: ['gifting'], urgency: 'medium', summary: 'Pinterest and Trend Hunter report that "cozy living" and "dopamine décor" — bright, mood-boosting home accessories — are the two dominant home trend aesthetics heading into spring/summer 2026. Candles, throw blankets, desk accessories, and reading nooks remain core to the cozy trend.', whyItMatters: 'These lifestyle aesthetics directly overlap with Indigo\'s home and lifestyle assortment. Merchandising and marketing should explicitly use the trending language — "cozy," "dopamine décor," "reading nook" — to connect with what consumers are already searching for.' },
 
-    // ── 7. Audience Behaviour ──
-    { titleTemplate: () => 'Gen Z Moviegoers Spend 3.2x More on Opening Weekends Than Millennials', tags: ['audience'], urgency: 'high', summary: 'New research shows Gen Z audiences are 3.2x more likely to attend opening weekend screenings, driven by FOMO and social media conversation.', whyItMatters: 'Opening Weekend Superfans campaign should over-index on Gen Z targeting — increase TikTok and Instagram allocation.' },
-    { titleTemplate: () => 'Thriller Audiences Show 45% Higher Engagement With Behind-the-Scenes Content', tags: ['audience'], urgency: 'medium', summary: 'A study of thriller movie marketing shows BTS content drives 45% higher engagement than standard trailer ads among core thriller audiences.', whyItMatters: 'Shift creative mix toward BTS content for Thrill Seekers and Adrenaline Athletes — test against standard trailer cuts.' },
-    { titleTemplate: () => 'Social Media Drives 62% of Movie Discovery for 18-34 Audiences', tags: ['audience'], urgency: 'medium', summary: 'New data confirms social media has overtaken traditional trailers as the primary movie discovery channel for 18-34 year olds.', whyItMatters: 'Social-first strategy is validated — ensure majority of Cast a Wide Net budget flows through social platforms.' },
-    { titleTemplate: () => 'Group Ticket Purchases Up 28% as Moviegoing Becomes Social Event Again', tags: ['audience'], urgency: 'low', summary: 'Theaters report a 28% increase in group ticket purchases, with friend groups and couples driving the return to theatrical experiences.', whyItMatters: 'Social moviegoing trend supports group-targeted messaging — test "bring your friends" CTAs in Adrenaline Athletes creative.' },
+    // ── 7. Macro Consumer & Retail Environment (3 pinned) ──
+    { titleTemplate: () => 'Canadian Consumer Confidence Dips in Q1 2026 — Discretionary Spending Under Pressure', tags: ['macro'], urgency: 'high', summary: 'The Conference Board of Canada reports consumer confidence declined in Q1 2026, with 62% of Canadians reporting they plan to reduce discretionary spending over the next 6 months. Specialty retail and non-essential categories face the most pressure, while value-oriented and experience-driven retailers show relative resilience.', whyItMatters: 'A cautious spending environment means Indigo must emphasize value, emotional resonance, and the unique in-store experience in all communications. Volume-driven strategies will underperform; curated, intentional positioning wins.' },
+    { titleTemplate: () => 'E-Commerce Share of Canadian Retail Reaches 14.2% — Omnichannel Retailers Outperform', tags: ['macro'], urgency: 'medium', summary: 'Statistics Canada reports e-commerce now represents 14.2% of total retail sales, up from 12.8% a year ago. Retailers with strong omnichannel capabilities — seamless online-to-store, BOPIS, and unified loyalty — are growing 2.3x faster than pure-play e-commerce or brick-and-mortar-only competitors.', whyItMatters: 'Omnichannel is no longer optional — it\'s the growth driver. Indigo\'s investment in Indigo.ca, in-store pickup, and Plum+ integration positions it well, but execution must keep pace with rising consumer expectations for seamlessness.' },
+    { titleTemplate: () => 'Canadian Mall Foot Traffic Stabilizes But Shifts to Experience-Led Retailers', tags: ['macro'], urgency: 'medium', summary: 'Mall foot traffic data shows overall visits have stabilized after two years of decline, but traffic is redistributing toward experience-led and destination retailers. Book and lifestyle retailers are among the beneficiaries, while commodity-focused tenants continue to lose share of visits.', whyItMatters: 'Foot traffic stabilization with a shift toward experience-led retail is a positive signal for Indigo\'s store model. The "cultural department store" positioning is exactly the kind of destination retail that is capturing redirected foot traffic.' },
 
-    // ── 8. Box Office & Industry Macro ──
-    { titleTemplate: () => 'Domestic Box Office Tracking 22% Above 2025 Pace Through Q1', tags: ['macro'], urgency: 'medium', summary: 'The domestic box office is on a strong recovery trajectory, with Q1 2026 revenues tracking 22% above the same period in 2025.', whyItMatters: 'Rising box office tide lifts all boats — macro conditions favor aggressive spend for Deep Water opening weekend.' },
-    { titleTemplate: () => 'IMAX and Premium Format Screens Show Record Demand for Thrillers', tags: ['macro'], urgency: 'high', summary: 'IMAX and Dolby Cinema screenings of thriller films are seeing record attendance, with premium formats commanding 40% higher ticket prices.', whyItMatters: 'Premium format demand aligns with Deep Water\'s visual spectacle — emphasize IMAX experience in Big Screen Chasers creative.' },
-    { titleTemplate: () => 'Theatrical Window Shortening Pressures Opening Weekend Performance', tags: ['macro'], urgency: 'high', summary: 'Studios are shortening theatrical windows to 45 days, making opening weekend box office performance more critical than ever for total revenue.', whyItMatters: 'Compressed windows mean opening weekend is make-or-break — front-load maximum budget into the first 5 days.' },
-    { titleTemplate: () => 'Summer Movie Season Ad Costs Expected to Rise 18% Year-Over-Year', tags: ['macro'], urgency: 'medium', summary: 'Media buyers forecast an 18% increase in entertainment advertising costs as studios compete for attention heading into summer blockbuster season.', whyItMatters: 'Rising costs mean earlier is better — lock in media buys now before CPMs spike in late March.' },
+    // ── Loop articles (recycled across dates) ──
+    // Brand loop
+    { titleTemplate: () => 'Indigo Brand Sentiment Turns Positive on Social After Heather\'s Picks Viral Moment', tags: ['brand'], urgency: 'medium', summary: 'A Heather\'s Picks recommendation went viral on BookTok, generating 1.2M views and shifting brand sentiment measurably positive across social platforms. The organic moment reinforced Indigo\'s curation credibility with younger audiences.', whyItMatters: 'Viral curation moments are high-value brand signals — they validate Indigo\'s positioning and generate organic reach that paid media should amplify before the moment fades.' },
+    { titleTemplate: () => 'Indigo Opens Three New Small-Format Stores in Suburban Ontario Markets', tags: ['brand'], urgency: 'medium', summary: 'Indigo has opened three new small-format stores in suburban Ontario communities, featuring a curated book selection, lifestyle products, and community event space. The format targets underserved markets with strong local demand for curated retail.', whyItMatters: 'New store openings signal confidence in the physical retail model and extend Indigo\'s reach. Each opening is an opportunity to generate local media coverage and geo-targeted marketing to build awareness in new markets.' },
+    { titleTemplate: () => 'Indigo Partners with Canadian Author for Exclusive Limited Edition — Sells Out in 48 Hours', tags: ['brand'], urgency: 'high', summary: 'Indigo\'s exclusive limited-edition partnership with a bestselling Canadian author sold out online and in stores within 48 hours. The partnership included exclusive cover art, signed copies, and a curated reading list, generating significant social buzz and media coverage.', whyItMatters: 'Exclusive partnerships reinforce Indigo\'s curation advantage and create urgency-driven purchase moments that competitors cannot replicate. The sell-through velocity validates the strategy.' },
+
+    // Publishing loop
+    { titleTemplate: () => 'Canadian Independent Publishers Report 22% Revenue Growth — Genre Fiction Leads', tags: ['publishing'], urgency: 'medium', summary: 'Canadian independent publishers report 22% revenue growth driven by genre fiction, including romance, horror, and speculative fiction. The growth is attributed to social media discovery, BookTok amplification, and renewed reader interest in diverse voices.', whyItMatters: 'Independent publisher growth expands the pool of titles Indigo can curate. Strong genre fiction performance from indie publishers could feed Indigo\'s "Discover" merchandising and differentiate from Amazon\'s algorithm-driven recommendations.' },
+    { titleTemplate: () => 'eBook Sales Flatten While Physical Books Continue to Grow — Format Shift Stabilizing', tags: ['publishing'], urgency: 'low', summary: 'Industry data shows eBook sales have flattened year-over-year while physical book sales continue to grow at 4-6% annually. The format shift appears to be stabilizing, with audiobooks as the primary digital growth driver rather than eBooks.', whyItMatters: 'Physical book resilience is positive for Indigo\'s core business model. The real digital disruption is audiobooks, not eBooks — Indigo should monitor audiobook platform partnerships rather than worrying about eBook cannibalization.' },
+    { titleTemplate: () => 'BookNet Canada Reports Children\'s Publishing as Fastest-Growing Segment for Third Year', tags: ['publishing'], urgency: 'medium', summary: 'BookNet Canada reports children\'s publishing remains the fastest-growing segment for the third consecutive year, with unit sales up 12% and revenue up 15%. Activity books, early readers, and middle-grade fiction are driving the growth.', whyItMatters: 'Sustained children\'s publishing growth reinforces IndigoKids as a strategic priority. Indigo should ensure its children\'s assortment depth and merchandising reflect the segment\'s importance to the overall market.' },
+
+    // Genre loop
+    { titleTemplate: () => 'Cozy Mystery and "Comfort Reading" Subgenre Emerges as BookTok-Driven Category', tags: ['genre'], urgency: 'medium', summary: 'A new "cozy mystery" and "comfort reading" subgenre is emerging rapidly on BookTok, characterized by low-stakes mysteries, small-town settings, and comforting narratives. The subgenre is attracting readers who want escapism without intensity, and titles are climbing bestseller lists.', whyItMatters: 'Emerging subgenres caught early give Indigo a curation advantage. Cozy mystery aligns perfectly with the "cozy living" lifestyle trend — an opportunity for cross-category merchandising linking books, candles, and reading accessories.' },
+    { titleTemplate: () => 'Literary Fiction Sees Unexpected Resurgence — Award Season and BookTok Converge', tags: ['genre'], urgency: 'medium', summary: 'Literary fiction is experiencing an unexpected resurgence, driven by the convergence of award-season buzz and BookTok literary communities. Titles from the Booker and Giller Prize longlists are seeing sustained sales momentum well beyond the typical award-cycle window.', whyItMatters: 'Literary fiction resurgence is good for Indigo\'s brand positioning — it reinforces the curation and cultural credibility that differentiates Indigo from mass-market competitors. Feature award-winning titles prominently in merchandising and marketing.' },
+    { titleTemplate: () => 'Thriller Genre Fragments — "Domestic Noir" and "Psychological Suspense" Split Into Distinct Categories', tags: ['genre'], urgency: 'low', summary: 'The thriller genre is fragmenting, with "domestic noir" and "psychological suspense" emerging as distinct subgenres with different reader profiles, discovery patterns, and purchase behaviour. BookNet data shows readers increasingly self-identify with specific subgenres rather than the broad "thriller" label.', whyItMatters: 'Genre fragmentation creates merchandising complexity but also opportunity. Indigo can use subgenre-specific curation to serve reader preferences more precisely than competitors who still merchandise by broad category.' },
+
+    // Amazon loop
+    { titleTemplate: () => 'Amazon.ca Gift Bundle Sales Surge 52% — Curated Book + Lifestyle Sets Leading', tags: ['amazon'], urgency: 'high', summary: 'Amazon.ca reports gift bundle sales are up 52% year-over-year, with curated "book + lifestyle" bundles (book + candle, book + journal, book + mug) among the fastest-growing product types. Review data shows gifting intent drives 78% of bundle purchases.', whyItMatters: 'Amazon proving demand for book + lifestyle bundles validates Indigo\'s cross-category merchandising strategy. Indigo can differentiate by offering higher-quality, private-label bundle components (Love & Lore, Nota) that Amazon can\'t match.' },
+    { titleTemplate: () => 'Amazon.ca Review Velocity Spikes on Three Debut Authors — Breakout Signals Emerging', tags: ['amazon'], urgency: 'medium', summary: 'Three debut authors have shown rapid review accumulation on Amazon.ca over the past two weeks, with review counts growing 5-8x faster than comparable new releases. The pattern typically precedes mainstream breakout by 4-6 weeks.', whyItMatters: 'Review velocity on Amazon is one of the strongest leading indicators of breakout demand. Indigo should flag these authors for early merchandising consideration and marketing alignment before the mainstream wave hits.' },
+    { titleTemplate: () => 'Amazon.ca Children\'s Category Sees 38% Unit Surge — STEM and Activity Books Lead', tags: ['amazon'], urgency: 'medium', summary: 'Amazon.ca children\'s book data shows a 38% unit sales surge, with STEM-themed books, activity books, and early readers leading growth. Parent reviewers consistently cite "educational but fun" as the purchase driver.', whyItMatters: 'Children\'s book demand on Amazon confirms the category momentum BookNet Canada is also reporting. Indigo should ensure IndigoKids inventory depth matches the demand signal, particularly in STEM and activity books.' },
+
+    // Social loop
+    { titleTemplate: () => 'r/bookshelf "Reading Nook" Posts Drive Cross-Category Purchasing — Books, Décor, and Accessories', tags: ['social'], urgency: 'medium', summary: 'The r/bookshelf community\'s popular "reading nook" and "shelfie" posts are driving cross-category purchasing, with readers buying not just books but candles, bookmarks, reading accessories, and cozy home items to recreate featured setups. Multiple posts reference Indigo as the go-to destination for building the full look.', whyItMatters: 'The "reading as lifestyle" trend is exactly Indigo\'s brand positioning. Marketing should lean into the identity angle — Indigo isn\'t just where you buy books, it\'s where you build your reading life. Cross-category merchandising should follow.' },
+    { titleTemplate: () => 'r/CanadianBookClub Grows to 180K Members — Indie and Literary Titles Overindex', tags: ['social'], urgency: 'low', summary: 'Reddit\'s r/CanadianBookClub community has grown to 180K members, with discussion heavily skewed toward independent publishers, literary fiction, and Canadian authors. The community\'s recommendations increasingly influence purchase decisions among engaged readers.', whyItMatters: 'Reddit book communities surface high-conviction demand signals — more literary, more indie, more Canadian-author focused. Indigo\'s curation advantage is strongest with exactly this audience. Monitor for merchandising signals.' },
+    { titleTemplate: () => 'r/RomanceBooks "Enemies-to-Lovers" Mega-Thread Drives 340% Spike in Tagged Titles on Goodreads', tags: ['social'], urgency: 'medium', summary: 'A viral mega-thread on r/RomanceBooks requesting "enemies-to-lovers" recommendations has driven a 340% spike in Goodreads "want to read" additions for tagged titles. The trope-driven discovery pattern on Reddit continues to reshape how readers find and select books, with threads regularly surfacing 50+ title recommendations.', whyItMatters: 'Trope-driven discovery is becoming a primary navigation pattern for younger readers. Indigo should consider trope-based merchandising — in-store and online — alongside traditional genre and bestseller categories.' },
+
+    // Gifting loop
+    { titleTemplate: () => 'Teacher Appreciation and Graduation Gift Searches Begin Earlier Than Ever — Indigo Category Opportunity', tags: ['gifting'], urgency: 'medium', summary: 'Google Trends data shows teacher appreciation and graduation gift searches are starting 4 weeks earlier than last year, with "book gift for teacher," "graduation journal," and "personalized stationery" among the fastest-growing queries.', whyItMatters: 'Earlier search intent means earlier marketing activation. Indigo should launch teacher appreciation and graduation gift campaigns now rather than waiting for the traditional window — the demand curve has shifted.' },
+    { titleTemplate: () => 'Personalization Trend Drives 28% Premium on Gifting Products — Journals and Stationery Lead', tags: ['gifting'], urgency: 'medium', summary: 'Retail data shows consumers are willing to pay a 28% premium for personalized gift items, with journals, stationery, and book accessories leading the personalization trend. Monogramming, custom covers, and curated sets are the most requested personalization types.', whyItMatters: 'Personalization commands a premium that aligns with Indigo\'s margin strategy. If Indigo can offer personalization on Nota stationery or Love & Lore accessories, it creates a defensible competitive advantage in the gifting category.' },
+    { titleTemplate: () => 'Baby Gifting Market Grows 24% in Canada — Curated Gift Sets Outperform Individual Items', tags: ['gifting'], urgency: 'medium', summary: 'The Canadian baby gifting market has grown 24% year-over-year, with curated gift sets (book + toy + keepsake) outperforming individual item purchases by 3:1. Millennial and Gen Z parents show strong preference for "expert-curated" gift selections.', whyItMatters: 'IndigoBaby is well-positioned for the curated gift set trend. Marketing should emphasize the "expertly curated" angle and feature bundle options prominently — this is where Indigo\'s curation advantage converts directly to revenue.' },
+
+    // Macro loop
+    { titleTemplate: () => 'Holiday Spending Forecast Cautious — Canadians Plan to Spend 8% Less on Discretionary Gifts', tags: ['macro'], urgency: 'high', summary: 'Early holiday spending forecasts show Canadian consumers planning to reduce discretionary gift spending by 8% compared to last year. However, spending on "meaningful" and "experience" gifts is expected to hold steady, suggesting a quality-over-quantity shift rather than across-the-board cuts.', whyItMatters: 'A quality-over-quantity gifting environment favours Indigo over mass-market competitors. Marketing should emphasize curation, thoughtfulness, and the emotional value of Indigo\'s assortment rather than competing on volume or price.' },
+    { titleTemplate: () => 'Inflation Sensitivity Rises for Non-Essential Retail — But Book Spending Remains Resilient', tags: ['macro'], urgency: 'medium', summary: 'Statistics Canada data shows rising inflation sensitivity across non-essential retail categories, but book spending has remained resilient, declining only 2% compared to 8-12% drops in apparel, electronics, and home furnishing. Books appear to benefit from their positioning as affordable indulgence.', whyItMatters: 'Book spending resilience is Indigo\'s anchor in a challenging retail environment. The "affordable indulgence" positioning should be emphasized in marketing — books as accessible luxury, especially relative to other discretionary categories.' },
+    { titleTemplate: () => 'Canadian Convenience Expectations Rise — 74% of Shoppers Expect Same-Day or Next-Day Options', tags: ['macro'], urgency: 'medium', summary: 'A Deloitte Canada study finds 74% of Canadian shoppers now expect same-day or next-day delivery options from specialty retailers, up from 58% two years ago. Retailers without competitive delivery are losing share to Amazon and other platforms offering speed.', whyItMatters: 'Rising convenience expectations put pressure on Indigo\'s fulfillment capabilities. The in-store experience and BOPIS (buy online, pick up in store) are Indigo\'s speed advantages — marketing should frame them as convenience, not compromise.' },
   ];
 
-  // Pinned tags: brand, cast, competitor, genre get fixed articles with pinned dates
-  const pinnedTags = new Set(['brand', 'cast', 'competitor', 'genre']);
-  const pinnedTemplates = templates.filter(t => pinnedTags.has(t.tags[0]));
-  const loopTemplates = templates.filter(t => !pinnedTags.has(t.tags[0]));
+  // First 21 templates are pinned (3 per category x 7 categories), rest are loop templates
+  const pinnedTemplates = templates.slice(0, 21);
+  const loopTemplates = templates.slice(21);
 
-  // Brand (emerging conversation) — 3 articles with pinned recent dates
-  const brandTemplates = pinnedTemplates.filter(t => t.tags.includes('brand'));
-  brandTemplates.forEach((bt, idx) => {
-    items.push({
-      id: `news-brand-${idx}`,
-      title: bt.titleTemplate(),
-      source: ['Reddit — r/movies', 'Variety', 'Reddit — r/boxoffice'][idx],
-      date: format(subDays(END_DATE, idx), 'yyyy-MM-dd'),
-      tags: bt.tags,
-      regions: ['north-america'] as RegionId[],
-      urgency: bt.urgency,
-      summary: bt.summary,
-      whyItMatters: bt.whyItMatters,
+  const categoryTags: NewsTag[] = ['brand', 'publishing', 'genre', 'amazon', 'social', 'gifting', 'macro'];
+  const categorySources: Record<string, string[][]> = {
+    brand: [['Retail Insider', 'Financial Post', 'Strategy Online']],
+    publishing: [['Publishers Weekly', 'BookNet Canada', 'Quill & Quire']],
+    genre: [['BookNet Canada', 'Publishers Weekly', 'Goodreads']],
+    amazon: [['Amazon.ca Bestsellers', 'Amazon.ca Category Data', 'Amazon.ca New Releases']],
+    social: [['Reddit r/books', 'Reddit r/suggestmeabook', 'Reddit r/CanLit']],
+    gifting: [['Retail Insider', 'Trend Hunter', 'Pinterest Trends']],
+    macro: [['Statistics Canada', 'The Globe and Mail', 'Deloitte Canada']],
+  };
+
+  // Generate pinned articles (3 per category)
+  categoryTags.forEach((tag, catIdx) => {
+    const catTemplates = pinnedTemplates.filter(t => t.tags.includes(tag));
+    const sources = categorySources[tag][0];
+    catTemplates.forEach((tmpl, idx) => {
+      items.push({
+        id: `news-${tag}-${idx}`,
+        title: tmpl.titleTemplate(),
+        source: sources[idx % sources.length],
+        date: format(subDays(END_DATE, catIdx + idx), 'yyyy-MM-dd'),
+        tags: tmpl.tags,
+        regions: ['north-america'] as RegionId[],
+        urgency: tmpl.urgency,
+        summary: tmpl.summary,
+        whyItMatters: tmpl.whyItMatters,
+        competitor: tmpl.competitor,
+      });
     });
   });
 
-  // Cast — 3 articles with pinned recent dates
-  const castTemplates = pinnedTemplates.filter(t => t.tags.includes('cast'));
-  castTemplates.forEach((ct, idx) => {
-    items.push({
-      id: `news-cast-${idx}`,
-      title: ct.titleTemplate(),
-      source: ['Variety', 'Entertainment Weekly', 'Collider'][idx],
-      date: format(subDays(END_DATE, idx + 3), 'yyyy-MM-dd'),
-      tags: ct.tags,
-      regions: ['north-america'] as RegionId[],
-      urgency: ct.urgency,
-      summary: ct.summary,
-      whyItMatters: ct.whyItMatters,
-    });
-  });
-
-  // Competitor (Devil Wears Prada 2) — 3 articles with pinned recent dates
-  const competitorTemplates = pinnedTemplates.filter(t => t.tags.includes('competitor'));
-  competitorTemplates.forEach((ct, idx) => {
-    items.push({
-      id: `news-competitor-${idx}`,
-      title: ct.titleTemplate(),
-      source: ['Deadline', 'Reddit — r/movies', 'Variety'][idx],
-      date: format(subDays(END_DATE, idx + 1), 'yyyy-MM-dd'),
-      tags: ct.tags,
-      regions: ['north-america'] as RegionId[],
-      urgency: ct.urgency,
-      summary: ct.summary,
-      whyItMatters: ct.whyItMatters,
-      competitor: ct.competitor,
-    });
-  });
-
-  // Genre & Theme — 3 articles with pinned recent dates
-  const genreTemplates = pinnedTemplates.filter(t => t.tags.includes('genre'));
-  genreTemplates.forEach((gt, idx) => {
-    items.push({
-      id: `news-genre-${idx}`,
-      title: gt.titleTemplate(),
-      source: ['TikTok Trending', 'Box Office Mojo', 'Apple Podcasts'][idx],
-      date: format(subDays(END_DATE, idx + 2), 'yyyy-MM-dd'),
-      tags: gt.tags,
-      regions: ['north-america'] as RegionId[],
-      urgency: gt.urgency,
-      summary: gt.summary,
-      whyItMatters: gt.whyItMatters,
-    });
-  });
-
-  for (let i = 0; i < 120; i++) {
-    const template = loopTemplates[i % loopTemplates.length];
+  // Generate loop articles — one per template to avoid duplicates
+  for (let i = 0; i < loopTemplates.length; i++) {
+    const template = loopTemplates[i];
+    const tag = template.tags[0];
     const daysAgo = randInt(0, 89);
     const date = format(subDays(END_DATE, daysAgo), 'yyyy-MM-dd');
-    const competitor = template.competitor ? pick(COMPETITORS) : undefined;
+    const sources = NEWS_SOURCES_BY_TAG[tag] || ['The Globe and Mail'];
     const regions = pickN(ALL_REGIONS, randInt(1, 3));
 
     items.push({
-      id: `news-${i}`,
-      title: template.titleTemplate(competitor),
-      source: pick(NEWS_SOURCES),
+      id: `news-loop-${i}`,
+      title: template.titleTemplate(),
+      source: pick(sources),
       date,
       tags: template.tags,
       regions: regions,
       urgency: template.urgency,
       summary: template.summary,
       whyItMatters: template.whyItMatters,
-      competitor,
+      competitor: template.competitor,
     });
   }
 
@@ -544,11 +561,11 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       scope: 'campaign',
       category: 'performance',
       region: 'north-america',
-      campaign: 'dw-seed-superfans',
+      campaign: 'ind-plum-growth',
       channels: ['instagram', 'facebook', 'tiktok'],
       title: 'Pacing to Underspend',
       recommendedAction: 'Increase daily budget or expand targeting to hit flight budget',
-      summary: 'Seed Superfans daily spend rate projects a $38K underspend by flight end. Expanding lookalike audiences or increasing bid caps will close the gap before opening weekend.',
+      summary: 'Plum+ Membership Growth daily spend rate projects a $38K underspend by flight end. Expanding Plum+ lookalike audiences or increasing bid caps will close the gap before the spring membership push.',
       evidence: ['Projected spend: $6.38M of $6.42M budget', 'Daily run rate $2.1K below target', '18 days remaining in flight'],
       impactEstimate: '+$38K utilization',
       confidence: 88,
@@ -556,33 +573,16 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       actionSteps: generateActionSteps('performance', 0),
     },
     {
-      id: 'insight-cvr-decline',
-      createdAt: yesterday,
-      scope: 'campaign',
-      category: 'performance',
-      region: 'north-america',
-      campaign: 'dw-amplify-fear',
-      channels: ['instagram', 'tiktok'],
-      title: 'Ticket Intent Declining',
-      recommendedAction: 'Refresh horror teasers and test new audience segments',
-      summary: 'Amplify Fear click-to-ticket-site rate has dropped 22% over 14 days while impressions remain steady, suggesting creative wear-out on horror audiences.',
-      evidence: ['CVR dropped from 3.2% to 2.5% over 14 days', 'Impression volume stable at ~180K/day', 'Bounce rate increased 15% on Fandango landing page'],
-      impactEstimate: '-$12K rev risk',
-      confidence: 82,
-      status: 'new',
-      actionSteps: generateActionSteps('performance', 1),
-    },
-    {
       id: 'insight-cpa-above',
       createdAt: twoDaysAgo,
       scope: 'campaign',
       category: 'performance',
       region: 'north-america',
-      campaign: 'dw-opening-weekend',
+      campaign: 'ind-holiday-gift',
       channels: ['google-search', 'instagram'],
       title: 'CPA Trending Above Target',
       recommendedAction: 'Tighten targeting or reduce bid caps on broad search terms',
-      summary: 'Opening Weekend Superfans cost per ticket conversion has risen 18% above target. Generic movie search terms are driving inefficiency.',
+      summary: 'Holiday Gift Guide cost per conversion has risen 18% above target. Generic gift search terms are driving inefficiency compared to branded Indigo queries.',
       evidence: ['Current CPA $53 vs $45 target', 'Generic terms CPA is 2.1x branded CPA', 'Bid cap exceeded on 3 ad groups'],
       impactEstimate: '-$8K efficiency',
       confidence: 79,
@@ -599,7 +599,7 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       channels: ['instagram', 'google-search', 'facebook'],
       title: 'Channel Mix Imbalance',
       recommendedAction: 'Shift budget from saturated social to high-intent search',
-      summary: 'Instagram is receiving 40% of total budget but generating only 18% of ticket conversions. Google Search shows 3.2x higher ROAS with room to scale pre-release.',
+      summary: 'Instagram is receiving 40% of total budget but generating only 18% of conversions. Google Search shows 3.2x higher ROAS with room to scale for seasonal gifting.',
       evidence: ['Instagram ROAS: 1.2x vs Google Search ROAS: 3.8x', '40% budget → 18% conversions on Instagram', 'Google Search impression share only 62%'],
       impactEstimate: '+$28K rev potential',
       confidence: 91,
@@ -615,7 +615,7 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       channels: ['facebook', 'google-search'],
       title: 'Diminishing Returns on Meta',
       recommendedAction: 'Reallocate excess Facebook spend to Google Search',
-      summary: 'Incremental CPA on Facebook has risen 35% as audience overlap between ad sets reaches 45%. Moving $5K weekly to Search would improve blended efficiency heading into opening weekend.',
+      summary: 'Incremental CPA on Facebook has risen 35% as audience overlap between ad sets reaches 45%. Moving $5K weekly to Search would improve blended efficiency heading into the spring gifting season.',
       evidence: ['Facebook incremental CPA up 35% MoM', 'Audience overlap at 45% across 4 ad sets', 'Google Search has 38% headroom on impression share'],
       impactEstimate: '-$4.2K CPA savings',
       confidence: 85,
@@ -629,8 +629,8 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       category: 'performance',
       channels: ['instagram', 'facebook', 'tiktok', 'ttd'],
       title: 'Cross-Channel Frequency Cap',
-      recommendedAction: 'Cap combined exposure to reduce trailer fatigue',
-      summary: 'Users are seeing Deep Water ads an average of 12.4 times per week across channels, well above the 8x optimal threshold. Excess frequency is driving CPM inflation without ticket conversion lift.',
+      recommendedAction: 'Cap combined exposure to reduce ad fatigue',
+      summary: 'Users are seeing Indigo ads an average of 12.4 times per week across channels, well above the 8x optimal threshold. Excess frequency is driving CPM inflation without conversion lift.',
       evidence: ['Average weekly frequency: 12.4x (target: 8x)', 'CTR drops 40% after 9th impression', 'Estimated waste: $6K/week in excess impressions'],
       impactEstimate: '-$6K waste/wk',
       confidence: 87,
@@ -645,11 +645,11 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       scope: 'campaign',
       category: 'creative',
       region: 'north-america',
-      campaign: 'dw-amplify-fear',
-      channels: ['instagram', 'facebook'],
+      campaign: 'ind-booktok-readers',
+      channels: ['instagram', 'tiktok'],
       title: 'Possible Creative Fatigue',
-      recommendedAction: 'Pause spend on underperforming ad',
-      summary: 'Primary horror teaser creative has been running for 21 days with CTR declining steadily. Frequency has reached 6.8x in core horror audience, indicating ad fatigue.',
+      recommendedAction: 'Refresh BookTok creative with new trending titles and UGC-style variants',
+      summary: 'Primary BookTok reader creative has been running for 21 days with CTR declining steadily. Frequency has reached 6.8x in the core 18-34 reader audience, indicating ad fatigue.',
       evidence: ['CTR declined 28% over 14 days', 'Frequency reached 6.8x in primary audience', 'Creative fatigue index: 72/100'],
       impactEstimate: '+18% CTR recovery',
       confidence: 84,
@@ -662,11 +662,11 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       scope: 'campaign',
       category: 'creative',
       region: 'north-america',
-      campaign: 'dw-seed-superfans',
+      campaign: 'ind-plum-growth',
       channels: ['instagram', 'tiktok'],
       title: 'Possible Creative Fatigue',
       recommendedAction: 'Pause spend on underperforming ad',
-      summary: 'Trailer clip variant B has reached saturation with completion rates dropping below 15%. Superfan audience has been heavily exposed over the past 3 weeks.',
+      summary: 'Plum+ membership promo video has reached saturation with completion rates dropping below 15%. The Plum+ Value Maxer audience has been heavily exposed over the past 3 weeks.',
       evidence: ['Video completion rate dropped from 28% to 14%', 'Frequency: 5.4x in lookalike audience', 'CPA increased 32% for this creative'],
       impactEstimate: '+22% VCR recovery',
       confidence: 78,
@@ -679,11 +679,11 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       scope: 'campaign',
       category: 'creative',
       region: 'north-america',
-      campaign: 'dw-thrill-seekers',
+      campaign: 'ind-gift-givers',
       channels: ['instagram', 'tiktok'],
       title: 'Possible Creative Fatigue',
       recommendedAction: 'Pause spend on underperforming ad',
-      summary: 'Action-focused carousel in Thrill Seekers campaign shows declining engagement. Swipe rate has halved while CPC has doubled, suggesting creative exhaustion.',
+      summary: 'Gift guide carousel in Gift Givers & Seasonal Shoppers campaign shows declining engagement. Swipe rate has halved while CPC has doubled, suggesting creative exhaustion.',
       evidence: ['Swipe rate dropped 52% in 10 days', 'CPC increased from $1.20 to $2.45', 'Engagement rate: 1.1% (was 2.8%)'],
       impactEstimate: '+$2.1K efficiency',
       confidence: 81,
@@ -696,11 +696,11 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       scope: 'campaign',
       category: 'creative',
       region: 'north-america',
-      campaign: 'dw-seed-superfans',
+      campaign: 'ind-plum-growth',
       channels: ['tiktok', 'instagram'],
       title: 'Top Performer Ready to Scale',
       recommendedAction: 'Increase budget allocation to top creative',
-      summary: 'New UGC-style Deep Water reaction video is outperforming all other creatives by 2.4x on ROAS. Currently capped at 15% of ad set budget — scaling to 35% is projected to improve overall campaign ROAS.',
+      summary: 'New UGC-style Plum+ member testimonial video is outperforming all other creatives by 2.4x on ROAS. Currently capped at 15% of ad set budget — scaling to 35% is projected to improve overall campaign ROAS.',
       evidence: ['Creative ROAS: 4.8x vs campaign avg 2.0x', 'Only receiving 15% of ad set budget', 'No fatigue signals after 12 days'],
       impactEstimate: '+$18K rev potential',
       confidence: 92,
@@ -713,16 +713,97 @@ function generateInsights(_anomalies: Anomaly[]): Insight[] {
       scope: 'campaign',
       category: 'creative',
       region: 'north-america',
-      campaign: 'dw-cast-wide-net',
+      campaign: 'ind-bestseller',
       channels: ['facebook', 'instagram'],
       title: 'Low Engagement Variant',
       recommendedAction: 'Replace or refresh underperforming creative',
-      summary: 'Static poster image variant C has the lowest engagement rate across all active creatives at 0.8%. Budget is being wasted on an asset that fails to capture attention.',
+      summary: 'Static bestseller list image variant C has the lowest engagement rate across all active creatives at 0.8%. Budget is being wasted on an asset that fails to capture attention in the Bestseller Awareness campaign.',
       evidence: ['Engagement rate: 0.8% (campaign avg: 2.3%)', 'CTR: 0.4% vs 1.2% campaign average', 'Zero conversions attributed in last 7 days'],
       impactEstimate: '+$3.5K reallocation',
       confidence: 90,
       status: 'new',
       actionSteps: generateActionSteps('creative', 10),
+    },
+
+    // ── Additional AD insights ──
+    {
+      id: 'insight-hook-retention',
+      createdAt: today,
+      scope: 'campaign',
+      category: 'creative',
+      region: 'north-america',
+      campaign: 'ind-plum-growth',
+      channels: ['instagram', 'tiktok'],
+      title: 'Low Early Hook Retention',
+      recommendedAction: 'Pause spend on underperforming ad',
+      summary: "Your 1-3 second view rate is declining, leading to early abandonment. This significantly lowers the algorithm's efficiency and increases your cost per result. Reduce delivery and test new hook variants or alternative opening sequences.",
+      evidence: ['3s view rate dropped from 45% to 28% over 10 days', 'Cost per result increased 34%', 'Algorithm efficiency score declining steadily'],
+      impactEstimate: '+32% view rate recovery',
+      confidence: 86,
+      status: 'new',
+      actionSteps: generateActionSteps('creative', 11),
+    },
+
+    // ── Additional CROSS CHANNEL insights ──
+    {
+      id: 'insight-channel-saturation',
+      createdAt: today,
+      scope: 'brand',
+      category: 'performance',
+      channels: ['instagram', 'tiktok'],
+      title: 'Channel Saturation Detected',
+      recommendedAction: 'Reallocate spend from Bowls product line',
+      summary: 'Performance is declining as frequency climbs, indicating this channel has reached its saturation point. Reallocating budget to channels with lower marginal costs will improve your overall portfolio efficiency.',
+      evidence: ['Frequency up 40% while CTR down 25%', 'Diminishing returns threshold exceeded', 'Alternative channels showing significant headroom'],
+      impactEstimate: '+$15K efficiency',
+      confidence: 88,
+      status: 'new',
+      actionSteps: generateActionSteps('performance', 12),
+    },
+    {
+      id: 'insight-channel-dependence',
+      createdAt: yesterday,
+      scope: 'brand',
+      category: 'performance',
+      channels: ['instagram', 'tiktok', 'facebook'],
+      title: 'Excessive Channel Dependence',
+      recommendedAction: 'Diversify portfolio to reduce risk',
+      summary: "A single channel currently accounts for an unusually high percentage of your total spend while performance metrics are declining. This over-reliance creates account instability; redistributing funds to diversified channels with comparable potential will lower your overall risk.",
+      evidence: ['Single channel at 65% of total spend', 'Channel ROAS declining 18% MoM', 'Portfolio risk score: High'],
+      impactEstimate: '-$12K risk reduction',
+      confidence: 83,
+      status: 'new',
+      actionSteps: generateActionSteps('performance', 13),
+    },
+    {
+      id: 'insight-channel-divergence',
+      createdAt: yesterday,
+      scope: 'brand',
+      category: 'performance',
+      channels: ['instagram', 'tiktok'],
+      title: 'Channel Performance Divergence',
+      recommendedAction: 'Reallocate spend from influencer content',
+      summary: "One channel's performance is improving while another is declining over the same period. This shift \u2014 likely driven by consumer behaviour or algorithm changes \u2014 presents an opportunity to reallocate spend toward the improving channel to protect your overall efficiency.",
+      evidence: ['TikTok ROAS up 25% vs Instagram down 15%', 'Audience engagement shifting platforms', 'Algorithm favouring short-form content'],
+      impactEstimate: '+$22K optimization',
+      confidence: 85,
+      status: 'new',
+      actionSteps: generateActionSteps('performance', 14),
+    },
+    {
+      id: 'insight-channel-opportunity',
+      createdAt: twoDaysAgo,
+      scope: 'brand',
+      category: 'performance',
+      channels: ['tiktok', 'instagram'],
+      title: 'New Channel Opportunity Detected',
+      recommendedAction: 'Reallocate spend to test potential on Bowls product line',
+      summary: 'This channel shows strong performance signals and low costs (CPM), but current spend remains low. Increasing the budget here while reducing your lowest-efficiency channels will test its full scaling potential.',
+      evidence: ['Channel CPM 40% below average', 'Early ROAS signals at 3.2x', 'Only 5% of total budget allocated'],
+      impactEstimate: '+$18K scaling potential',
+      confidence: 87,
+      status: 'new',
+      actionSteps: generateActionSteps('performance', 15),
     },
   ];
 

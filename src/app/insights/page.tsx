@@ -15,14 +15,14 @@ import {
   ListChecks, Activity, Zap, MoreHorizontal, TrendingUp, TrendingDown,
 } from 'lucide-react';
 import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, ReferenceLine,
+  ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, ReferenceLine, ReferenceArea,
 } from 'recharts';
 import {
   REGION_LABELS, CHANNEL_LABELS,
   type InsightCategory, type InsightStatus, type Insight,
 } from '@/types';
 import { cn } from '@/lib/utils';
-import { generateInsightChartData, type MetricsHint } from '@/lib/insight-chart-data';
+import { generateInsightChartData, interpolateImproved, type MetricsHint } from '@/lib/insight-chart-data';
 import { InsightDetailModal } from '@/components/insights/insight-detail-modal';
 
 const CATEGORY_CONFIG: Record<InsightCategory, { label: string; color: string }> = {
@@ -398,9 +398,13 @@ export default function InsightsPage() {
 
 // ===== InsightCard Component =====
 
-function getMetricsHint(title: string): MetricsHint {
+function getMetricsHint(title: string, category?: string): MetricsHint {
   if (title.includes('Pacing') || title.includes('Budget')) return 'budget-spend';
-  return 'roas-frequency';
+  if (title.includes('Hook Retention') || title.includes('View Rate')) return 'viewrate-impressions';
+  if (title.includes('Saturation') || title.includes('Frequency Cap')) return 'engagement-frequency';
+  if (title.includes('Channel') || title.includes('Dependence') || title.includes('Divergence') || title.includes('Opportunity')) return 'engagement-spend';
+  if (category === 'creative') return 'engagement-frequency';
+  return 'engagement-frequency';
 }
 
 function InsightCard({
@@ -412,18 +416,43 @@ function InsightCard({
   status: InsightStatus;
   onClick: () => void;
 }) {
-  const hint = getMetricsHint(insight.title);
+  const hint = getMetricsHint(insight.title, insight.category);
   const chartData = useMemo(() => generateInsightChartData(insight.id, hint), [insight.id, hint]);
 
-  const miniData = useMemo(() => {
-    const all = [...chartData.historical, ...chartData.predicted];
-    const step = Math.max(1, Math.floor(all.length / 14));
-    return all.filter((_, i) => i % step === 0).map((p) => ({
-      day: p.day,
-      label: p.label,
-      primary: p.primary,
-      secondary: p.secondary,
-    }));
+  // Build the same combined data used in the detail modal
+  const combinedForChart = useMemo(() => {
+    const map = new Map<number, Record<string, number | string | undefined>>();
+
+    for (const p of chartData.historical) {
+      map.set(p.day, {
+        day: p.day,
+        label: p.label,
+        primary: p.primary,
+        secondary: p.secondary,
+      });
+    }
+
+    const lastHist = chartData.historical[chartData.historical.length - 1];
+    const predictedWithBridge = [lastHist, ...chartData.predicted];
+    for (const p of predictedWithBridge) {
+      const existing = map.get(p.day) || { day: p.day, label: p.label };
+      map.set(p.day, { ...existing, predicted: p.primary, predSecondary: p.secondary });
+    }
+
+    // Use full improved (intensity=1) for preview
+    const improved = interpolateImproved(chartData.predicted, chartData.improved, 1);
+    const improvedWithBridge = [
+      { ...lastHist, improved: lastHist.primary },
+      ...improved,
+    ];
+    for (const p of improvedWithBridge) {
+      const existing = map.get(p.day) || { day: p.day, label: p.label };
+      map.set(p.day, { ...existing, improved: p.improved });
+    }
+
+    return Array.from(map.entries())
+      .sort(([a], [b]) => a - b)
+      .map(([, v]) => v);
   }, [chartData]);
 
   const lastHistorical = chartData.historical[chartData.historical.length - 1];
@@ -434,16 +463,6 @@ function InsightCard({
     lastHistorical && firstHistorical
       ? lastHistorical.secondary - firstHistorical.secondary
       : 0;
-
-  // Compute Y-axis ticks from data range
-  const allValues = miniData.flatMap((p) => [p.primary, p.secondary]);
-  const maxVal = Math.max(...allValues);
-  const yTicks = hint === 'budget-spend'
-    ? [0, Math.round(maxVal * 0.33), Math.round(maxVal * 0.66), Math.round(maxVal)]
-    : [0, 1.8, 2.7, 3.6];
-  const yDomain: [number, number] = hint === 'budget-spend'
-    ? [0, Math.ceil(maxVal * 1.1)]
-    : [0, 3.6];
 
   return (
     <div
@@ -467,14 +486,14 @@ function InsightCard({
         {insight.recommendedAction}
       </p>
 
-      {/* Mini area chart with visible Y-axis */}
-      <div className="h-[130px] mt-3 -mx-1">
+      {/* Chart matching the detail modal */}
+      <div className="h-[150px] mt-3 -mx-1">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={miniData} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
+          <ComposedChart data={combinedForChart} margin={{ top: 5, right: 4, bottom: 0, left: 4 }}>
             <defs>
-              <linearGradient id={`miniGrad-${insight.id}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#e5e5e5" stopOpacity={0.1} />
-                <stop offset="100%" stopColor="#e5e5e5" stopOpacity={0} />
+              <linearGradient id={`miniImpGrad-${insight.id}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#93c5fd" stopOpacity={0.15} />
+                <stop offset="100%" stopColor="#93c5fd" stopOpacity={0.02} />
               </linearGradient>
             </defs>
             <XAxis
@@ -485,40 +504,82 @@ function InsightCard({
               interval="preserveStartEnd"
             />
             <YAxis
-              domain={yDomain}
-              ticks={yTicks}
+              yAxisId="left"
               tick={{ fontSize: 8, fill: '#666' }}
               axisLine={false}
               tickLine={false}
               width={32}
-              tickFormatter={(v: number) =>
-                hint === 'budget-spend' ? `$${v}` : String(v)
-              }
+              tickCount={4}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              tick={{ fontSize: 8, fill: '#666' }}
+              axisLine={false}
+              tickLine={false}
+              width={32}
+              tickCount={4}
+            />
+            {/* Pink TODAY band */}
+            <ReferenceArea
+              x1={combinedForChart.length > 2
+                ? (combinedForChart[Math.max(0, combinedForChart.findIndex(d => d.label === 'TODAY') - 2)]?.label as string) || ''
+                : ''}
+              x2="TODAY"
+              fill="rgba(239,68,68,0.05)"
+              fillOpacity={1}
             />
             <ReferenceLine
               x="TODAY"
               stroke="#555"
-              strokeDasharray="2 2"
               strokeWidth={0.5}
             />
-            <Area
+            {/* Historical primary - solid white line */}
+            <Line
+              yAxisId="left"
               type="monotone"
               dataKey="primary"
               stroke="#e5e5e5"
               strokeWidth={1.5}
-              fill={`url(#miniGrad-${insight.id})`}
               dot={false}
+              isAnimationActive={false}
             />
-            <Area
+            {/* Historical secondary - solid gray line */}
+            <Line
+              yAxisId="right"
               type="monotone"
               dataKey="secondary"
-              stroke="#666"
+              stroke="#888"
               strokeWidth={1}
-              strokeDasharray="3 3"
-              fill="none"
               dot={false}
+              isAnimationActive={false}
             />
-          </AreaChart>
+            {/* Predicted - dashed gray */}
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="predicted"
+              stroke="#888"
+              strokeWidth={1}
+              strokeDasharray="4 3"
+              dot={false}
+              connectNulls={false}
+              isAnimationActive={false}
+            />
+            {/* Possible improvement - dashed light blue with fill */}
+            <Area
+              yAxisId="left"
+              type="monotone"
+              dataKey="improved"
+              stroke="#93c5fd"
+              strokeWidth={1}
+              strokeDasharray="4 3"
+              fill={`url(#miniImpGrad-${insight.id})`}
+              dot={false}
+              connectNulls={false}
+              isAnimationActive={false}
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
 
