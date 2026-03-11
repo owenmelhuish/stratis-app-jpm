@@ -70,5 +70,6 @@ export function getDateRangeLabel(range: DateRange): string {
       const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       return `${fmt(s)} – ${fmt(e)}, ${e.getFullYear()}`;
     }
+    default: return '';
   }
 }

@@ -102,7 +102,7 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
         <Geographies geography={GEO_URL}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const provinceName: string = geo.properties?.name || "";
+              const provinceName: string = typeof geo.properties?.name === "string" ? geo.properties.name : "";
               const provinceCode = PROVINCE_NAME_TO_CODE[provinceName] || provinceName;
               const fill = getFill(provinceCode);
               const hasData = intensityMap[provinceCode] !== undefined;
