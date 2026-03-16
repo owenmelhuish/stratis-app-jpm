@@ -23,38 +23,50 @@ const FEED_SECTIONS: FeedSection[] = [
     filterFn: (item) => item.tags.includes("brand"),
   },
   {
-    id: "publishing",
-    title: "Book Industry & Publishing Shifts",
-    sources: ["Publishers Weekly", "BookNet Canada", "Canadian Bookseller", "The Globe and Mail"],
-    filterFn: (item) => item.tags.includes("publishing"),
+    id: "qsr",
+    title: "QSR Industry & Market Trends",
+    sources: ["QSR Magazine", "Technomic", "Foodservice & Hospitality", "Restaurants Canada"],
+    filterFn: (item) => item.tags.includes("qsr"),
   },
   {
-    id: "genre",
-    title: "Genre & Title Momentum",
-    sources: ["BookNet Canada", "Publishers Weekly", "Amazon.ca Bestsellers", "Goodreads"],
-    filterFn: (item) => item.tags.includes("genre"),
+    id: "menu",
+    title: "Menu Innovation & Food Trends",
+    sources: ["Technomic", "QSR Magazine", "Food in Canada", "Restaurants Canada"],
+    filterFn: (item) => item.tags.includes("menu"),
   },
   {
-    id: "amazon",
-    title: "Amazon Bestseller & Assortment Intelligence",
-    sources: ["Amazon.ca Bestsellers", "Amazon.ca Category Data", "Amazon.ca New Releases", "Jungle Scout"],
-    filterFn: (item) => item.tags.includes("amazon"),
+    id: "delivery",
+    title: "Delivery Platform Intelligence",
+    sources: ["UberEats Data", "DoorDash Insights", "SkipTheDishes Analytics", "Technomic"],
+    filterFn: (item) => item.tags.includes("delivery"),
   },
   {
     id: "social",
-    title: "Social & Cultural Book Conversation",
-    sources: ["Reddit r/books", "Reddit r/suggestmeabook", "Reddit r/CanLit", "Goodreads"],
+    title: "Social & Food Culture",
+    sources: ["Reddit r/pizza", "Reddit r/foodToronto", "Reddit r/CanadianFood", "TikTok #FoodTok"],
     filterFn: (item) => item.tags.includes("social"),
   },
   {
-    id: "gifting",
-    title: "Gifting, Lifestyle & Home Trends",
-    sources: ["Retail Insider", "Trend Hunter", "Pinterest Trends", "Shopify Canada"],
-    filterFn: (item) => item.tags.includes("gifting"),
+    id: "sports",
+    title: "Sports, Events & Partnerships",
+    sources: ["TSN", "Sportsnet", "Retail Insider", "Strategy Online"],
+    filterFn: (item) => item.tags.includes("sports"),
+  },
+  {
+    id: "sponsorships",
+    title: "Corporate Sponsorships",
+    sources: ["TSN", "Sportsnet", "The Athletic", "CFL.ca", "PWHL News"],
+    filterFn: (item) => item.tags.includes("sponsorships"),
+  },
+  {
+    id: "competitors",
+    title: "Competitor Watch",
+    sources: ["Retail Insider", "QSR Magazine", "RedFlagDeals", "Financial Post", "Technomic"],
+    filterFn: (item) => item.tags.includes("competitors"),
   },
   {
     id: "macro",
-    title: "Macro Consumer & Retail Environment",
+    title: "Macro Consumer & QSR Environment",
     sources: ["Statistics Canada", "The Globe and Mail", "Financial Post", "Deloitte Canada"],
     filterFn: (item) => item.tags.includes("macro"),
   },
@@ -63,116 +75,92 @@ const FEED_SECTIONS: FeedSection[] = [
 // ─── Contextual image URL from article title ────────────────────────────────
 
 const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
-  // ── Brand & Corporate Narrative (pinned) — bookstore/retail imagery ──
-  // 1. CEO Interview / brand mentions surge
-  { match: /CEO Interview.*Cultural Retail/i, photos: ["photo-1568667256549-094345857637"] },
-  // 2. Plum+ pricing / membership
-  { match: /Plum\+ Pricing Narrative/i, photos: ["photo-1604866830893-c13cafa515d5"] },
-  // 3. ESG Report / Nota sustainable
-  { match: /ESG Report.*Nota/i, photos: ["photo-1559526324-4b87b5e36e44"] },
+  // ── Brand & Corporate Narrative (pinned) — QSR/pizza imagery ──
+  { match: /CEO Interview.*QSR Expansion/i, photos: ["photo-1565299624946-b28f40a0ae38"] },
+  { match: /Pizza Pizza Club.*Surpasses/i, photos: ["photo-1604382354936-07c5d9983bd3"] },
+  { match: /ESG Report.*Sustainable Packaging/i, photos: ["photo-1559526324-4b87b5e36e44"] },
   // Brand loop
-  // 22. Heather's Picks viral moment
-  { match: /Heather.*Picks.*Viral/i, photos: ["photo-1507842217343-583bb7270b66"] },
-  // 23. Small-format stores in Ontario
-  { match: /Small-Format Stores/i, photos: ["photo-1580537659466-0a9bfa916a54"] },
-  // 24. Exclusive limited edition sells out
-  { match: /Exclusive Limited Edition/i, photos: ["photo-1476275466078-4007374efbbe"] },
+  { match: /Viral TikTok.*Delivery Challenge/i, photos: ["photo-1513104890138-7c749659a591"] },
+  { match: /Opens 15 New Locations/i, photos: ["photo-1555396273-367ea4eb4db5"] },
+  { match: /NHL Team.*Game Day Combo/i, photos: ["photo-1574071318508-1cdbab80d002"] },
 
-  // ── Book Industry & Publishing Shifts (pinned) ──
-  // 4. Publishing revenue $1.7B
-  { match: /Publishing Revenue.*\$1\.7B/i, photos: ["photo-1524995997946-a1c2e315a42f"] },
-  // 5. Audiobook sales grow 23%
-  { match: /Audiobook Sales.*Grow/i, photos: ["photo-1478737270239-2f02b77fc618"] },
-  // 6. Backlist resurgence
-  { match: /Backlist Resurgence/i, photos: ["photo-1512820790803-83ca734da794"] },
-  // Publishing loop
-  // 25. Independent publishers 22% growth
-  { match: /Independent Publishers.*22%/i, photos: ["photo-1521587760476-6c12a4b040da"] },
-  // 26. eBook sales flatten
-  { match: /eBook Sales Flatten/i, photos: ["photo-1544716278-ca5e3f4abd8c"] },
-  // 27. Children's publishing fastest-growing
-  { match: /Children.*Publishing.*Fastest/i, photos: ["photo-1503454537195-1dcabb73ffb9"] },
+  // ── QSR Industry & Market Trends (pinned) ──
+  { match: /Canadian QSR Revenue.*\$38B/i, photos: ["photo-1552566626-52f8b828add9"] },
+  { match: /Third-Party Delivery Commission/i, photos: ["photo-1526367790999-0150786686a2"] },
+  { match: /Value Menu Resurgence/i, photos: ["photo-1571407970349-bc81e7e96d47"] },
+  // QSR loop
+  { match: /Independent QSR Operators.*22%/i, photos: ["photo-1590947132387-155cc02f3212"] },
+  { match: /Ghost Kitchen Model/i, photos: ["photo-1567620905732-2d1ec7ab7445"] },
+  { match: /Pizza as Most-Ordered/i, photos: ["photo-1528137871618-79d2761e3fd5"] },
 
-  // ── Genre & Title Momentum (pinned) ──
-  // 7. Horror and dark fiction surge
-  { match: /Horror and Dark Fiction/i, photos: ["photo-1519389950473-47ba0277781c"] },
-  // 8. Romantasy continues / Fourth Wing
-  { match: /Romantasy Continues.*Fourth Wing/i, photos: ["photo-1474932430478-367dbb6832c1"] },
-  // 9. r/booktalk "The Returning Tide"
-  { match: /Returning Tide|r\/booktalk/i, photos: ["photo-1495446815901-a7297e633e8d"] },
-  // Genre loop
-  // 28. Cozy mystery subgenre
-  { match: /Cozy Mystery.*Comfort Reading/i, photos: ["photo-1481627834876-b7833e8f5570"] },
-  // 29. Literary fiction resurgence
-  { match: /Literary Fiction.*Resurgence/i, photos: ["photo-1457369804613-52c61a468e7d"] },
-  // 30. Thriller genre fragments
-  { match: /Thriller Genre Fragments/i, photos: ["photo-1587876931567-564ce588bfbd"] },
+  // ── Menu Innovation & Food Trends (pinned) ──
+  { match: /Plant-Based Pizza Demand/i, photos: ["photo-1574071318508-1cdbab80d002"] },
+  { match: /Loaded Crust.*Premium Toppings/i, photos: ["photo-1565299624946-b28f40a0ae38"] },
+  { match: /Detroit-Style Deep Dish/i, photos: ["photo-1513104890138-7c749659a591"] },
+  // Menu loop
+  { match: /Spicy and Global Flavour/i, photos: ["photo-1604382354936-07c5d9983bd3"] },
+  { match: /Breakfast Pizza.*Demand Surge/i, photos: ["photo-1552566626-52f8b828add9"] },
+  { match: /Pizza Subscription Models/i, photos: ["photo-1571407970349-bc81e7e96d47"] },
 
-  // ── Amazon Bestseller & Assortment (pinned) ──
-  // 10. Amazon bestsellers romance/romantasy top 20
-  { match: /Amazon.*Bestsellers.*Romance.*Hold/i, photos: ["photo-1523474253046-8cd2748b5fd2"] },
-  // 11. Amazon new releases climbing / slow living
-  { match: /Amazon.*New Releases Climbing/i, photos: ["photo-1544947950-fa07a98d237f"] },
-  // 12. Amazon BookTok list diverges
-  { match: /Amazon.*BookTok.*Diverges/i, photos: ["photo-1472851294608-062f824d29cc"] },
-  // Amazon loop
-  // 31. Amazon gift bundle sales surge
-  { match: /Amazon.*Gift Bundle.*Surge/i, photos: ["photo-1513885535751-8b9238bd345a"] },
-  // 32. Amazon review velocity spikes / debut authors
-  { match: /Amazon.*Review Velocity/i, photos: ["photo-1516979187457-637abb4f9353"] },
-  // 33. Amazon children's category surge
-  { match: /Amazon.*Children.*Surge/i, photos: ["photo-1471970471555-19d4b113e9ed"] },
+  // ── Delivery Platform Intelligence (pinned) ──
+  { match: /UberEats.*Pizza Holds 3 of Top 5/i, photos: ["photo-1526367790999-0150786686a2"] },
+  { match: /DoorDash.*Healthy Pizza.*Cauliflower/i, photos: ["photo-1590947132387-155cc02f3212"] },
+  { match: /SkipTheDishes.*Daypart/i, photos: ["photo-1567620905732-2d1ec7ab7445"] },
+  // Delivery loop
+  { match: /UberEats.*Pizza Bundle Orders/i, photos: ["photo-1528137871618-79d2761e3fd5"] },
+  { match: /DoorDash Order Velocity/i, photos: ["photo-1555396273-367ea4eb4db5"] },
+  { match: /SkipTheDishes Late-Night/i, photos: ["photo-1513104890138-7c749659a591"] },
 
-  // ── Social & Cultural Book Conversation (pinned) ──
-  // 13. r/books weekly thread breakout titles
-  { match: /r\/books.*What Are You Reading/i, photos: ["photo-1543002588-bfa74002ed7e"] },
-  // 14. r/suggestmeabook dark academia
-  { match: /r\/suggestmeabook.*Dark Academia/i, photos: ["photo-1600880292203-757bb62b4baf"] },
-  // 15. r/CanLit Giller Prize pre-orders
-  { match: /r\/CanLit.*Giller Prize/i, photos: ["photo-1526243741027-444d633d7365"] },
+  // ── Social & Food Culture (pinned) ──
+  { match: /r\/pizza.*Go-To Order/i, photos: ["photo-1565299624946-b28f40a0ae38"] },
+  { match: /r\/foodToronto.*Late-Night Pizza/i, photos: ["photo-1604382354936-07c5d9983bd3"] },
+  { match: /r\/CanadianFood.*Regional Pizza/i, photos: ["photo-1574071318508-1cdbab80d002"] },
   // Social loop
-  // 34. r/bookshelf reading nook posts
-  { match: /r\/bookshelf.*Reading Nook/i, photos: ["photo-1535016120720-40c646be5580"] },
-  // 35. r/CanadianBookClub grows to 180K
-  { match: /r\/CanadianBookClub.*180K/i, photos: ["photo-1497633762265-9d179a990aa6"] },
-  // 36. r/RomanceBooks enemies-to-lovers
-  { match: /r\/RomanceBooks.*Enemies/i, photos: ["photo-1529590003495-b2646e2718bf"] },
+  { match: /r\/pizza.*Pizza Hack/i, photos: ["photo-1552566626-52f8b828add9"] },
+  { match: /r\/foodToronto Grows to 280K/i, photos: ["photo-1590947132387-155cc02f3212"] },
+  { match: /TikTok #PizzaReview/i, photos: ["photo-1571407970349-bc81e7e96d47"] },
 
-  // ── Gifting, Lifestyle & Home (pinned) ──
-  // 16. Emotional-value gifting
-  { match: /Emotional-Value Gifting/i, photos: ["photo-1557804506-669a67965ba0"] },
-  // 17. Mother's Day gift search
-  { match: /Mother.*Day Gift Search/i, photos: ["photo-1531983412531-1f49a365ffed"] },
-  // 18. Cozy living / dopamine décor
-  { match: /Cozy Living.*Dopamine/i, photos: ["photo-1513185041617-8ab03f83d6c5"] },
-  // Gifting loop
-  // 37. Teacher appreciation / graduation
-  { match: /Teacher Appreciation.*Graduation/i, photos: ["photo-1513542789411-b6a5d4f31634"] },
-  // 38. Personalization trend / journals
-  { match: /Personalization Trend.*Premium/i, photos: ["photo-1531346878377-a5be20888e57"] },
-  // 39. Baby gifting market
-  { match: /Baby Gifting Market/i, photos: ["photo-1515488042361-ee00e0ddd4e4"] },
+  // ── Sports, Events & Partnerships (pinned) ──
+  { match: /Game Day Pizza Orders Surge/i, photos: ["photo-1574071318508-1cdbab80d002"] },
+  { match: /Super Bowl Pizza Demand/i, photos: ["photo-1565299624946-b28f40a0ae38"] },
+  { match: /Raptors Partnership.*Arena/i, photos: ["photo-1546519638-68e109498ffc"] },
+  // Sports loop
+  { match: /March Madness.*NHL Playoffs.*Catering/i, photos: ["photo-1526367790999-0150786686a2"] },
+  { match: /Sports Sponsorship ROI/i, photos: ["photo-1528137871618-79d2761e3fd5"] },
+  { match: /FIFA World Cup 2026/i, photos: ["photo-1555396273-367ea4eb4db5"] },
 
-  // ── Macro Consumer & Retail (pinned) ──
-  // 19. Consumer confidence dips Q1
+  // ── Corporate Sponsorships (pinned) ──
+  { match: /Maple Leafs Playoff Push/i, photos: ["photo-1552566626-52f8b828add9"] },
+  { match: /PWHL Championship Series/i, photos: ["photo-1515703407324-5f753afd8be8"] },
+  { match: /BC Lions.*Season Opener/i, photos: ["photo-1487466365202-1afdb86c764e"] },
+  // Sponsorships loop
+  { match: /Maple Leafs Star Signs Extension/i, photos: ["photo-1552566626-52f8b828add9"] },
+  { match: /PWHL Toronto.*Community Arena/i, photos: ["photo-1515703407324-5f753afd8be8"] },
+  { match: /Grey Cup Week Programming/i, photos: ["photo-1487466365202-1afdb86c764e"] },
+
+  // ── Competitor Watch (pinned) ──
+  { match: /Domino.*Emergency Pizza/i, photos: ["photo-1571407970349-bc81e7e96d47"] },
+  { match: /Pizza Nova.*200 Locations/i, photos: ["photo-1590947132387-155cc02f3212"] },
+  { match: /Pizza Hut.*Lunch Combo/i, photos: ["photo-1528137871618-79d2761e3fd5"] },
+  // Competitors loop
+  { match: /Domino.*15-Minute Delivery/i, photos: ["photo-1567620905732-2d1ec7ab7445"] },
+  { match: /Pizza Nova.*Toppings Bar/i, photos: ["photo-1565299624946-b28f40a0ae38"] },
+  { match: /Pizza Hut.*DoorDash.*Bundle/i, photos: ["photo-1526367790999-0150786686a2"] },
+
+  // ── Macro Consumer & QSR (pinned) ──
   { match: /Consumer Confidence Dips/i, photos: ["photo-1460925895917-afdab827c52f"] },
-  // 20. E-commerce 14.2% / omnichannel
-  { match: /E-Commerce Share.*14\.2/i, photos: ["photo-1556742393-d75f468bfcb0"] },
-  // 21. Mall foot traffic stabilizes
-  { match: /Mall Foot Traffic Stabilizes/i, photos: ["photo-1441984904996-e0b6ba687e04"] },
+  { match: /Digital Ordering Share.*38%/i, photos: ["photo-1556742393-d75f468bfcb0"] },
+  { match: /QSR Foot Traffic Stabilizes/i, photos: ["photo-1441984904996-e0b6ba687e04"] },
   // Macro loop
-  // 40. Holiday spending forecast cautious
   { match: /Holiday Spending Forecast/i, photos: ["photo-1607083206968-13611e3d76db"] },
-  // 41. Inflation sensitivity / book spending resilient
-  { match: /Inflation Sensitivity.*Book Spending/i, photos: ["photo-1551288049-bebda4e38f71"] },
-  // 42. Convenience expectations / same-day
-  { match: /Convenience Expectations.*Same-Day/i, photos: ["photo-1586528116311-ad8dd3c8310d"] },
+  { match: /Inflation Sensitivity.*QSR Pizza/i, photos: ["photo-1551288049-bebda4e38f71"] },
+  { match: /Convenience Expectations.*Sub-30/i, photos: ["photo-1586528116311-ad8dd3c8310d"] },
 ];
 
 const FALLBACK_PHOTOS = [
-  "photo-1488190211105-8b0e65b80b4e",
-  "photo-1432821596592-e2c18b78144f",
-  "photo-1434030216411-0b793f4b4173",
+  "photo-1565299624946-b28f40a0ae38",
+  "photo-1513104890138-7c749659a591",
+  "photo-1574071318508-1cdbab80d002",
 ];
 
 function hashId(id: string): number {
@@ -215,12 +203,14 @@ function articleImageUrlLarge(title: string, id: string): string {
 
 const TAG_LABELS: Record<NewsTag, string> = {
   brand: "Brand & Corporate Narrative",
-  publishing: "Book Industry & Publishing",
-  genre: "Genre & Title Momentum",
-  amazon: "Amazon Intelligence",
-  social: "Social & Cultural Conversation",
-  gifting: "Gifting, Lifestyle & Home",
-  macro: "Macro Consumer & Retail",
+  qsr: "QSR Industry & Market Trends",
+  menu: "Menu Innovation & Food Trends",
+  delivery: "Delivery Platform Intelligence",
+  social: "Social & Food Culture",
+  sports: "Sports, Events & Partnerships",
+  sponsorships: "Corporate Sponsorships",
+  competitors: "Competitor Watch",
+  macro: "Macro Consumer & QSR",
 };
 
 function generateInsight(item: NewsItem): { impact: string; actions: Array<{ icon: React.ElementType; title: string; description: string }> } {
@@ -228,80 +218,100 @@ function generateInsight(item: NewsItem): { impact: string; actions: Array<{ ico
 
   if (tag === "brand") {
     return {
-      impact: "This signals a shift in how the market perceives Indigo's brand narrative. Whether it's store format changes, executive positioning, loyalty evolution, or sustainability messaging, every public-facing signal shapes market confidence and customer expectation. Indigo's ability to control this narrative directly affects brand equity, investor sentiment, and competitive positioning.",
+      impact: "This signals a shift in how the market perceives Pizza Pizza's brand narrative. Whether it's expansion strategy, executive positioning, loyalty evolution, or sustainability messaging, every public-facing signal shapes market confidence and customer expectation. Pizza Pizza's ability to control this narrative directly affects brand equity, franchisee sentiment, and competitive positioning.",
       actions: [
-        { icon: TrendingUp, title: "Amplify Positive Brand Signals", description: "If the narrative is favourable, accelerate owned and paid amplification. Feature the story across Indigo's social channels and align PR with the momentum before it fades." },
-        { icon: Target, title: "Track Narrative Trajectory", description: "Monitor whether this story is being picked up by other outlets and how the tone is shifting. Flag any divergence between Indigo's intended positioning and how the market is interpreting it." },
-        { icon: Shield, title: "Prepare Counter-Narrative if Needed", description: "If sentiment is negative or mixed, draft response messaging and identify owned channels to reinforce the brand's intended narrative around curation, Canadian identity, and customer experience." },
+        { icon: TrendingUp, title: "Amplify Positive Brand Signals", description: "If the narrative is favourable, accelerate owned and paid amplification. Feature the story across Pizza Pizza's social channels and align PR with the momentum before it fades." },
+        { icon: Target, title: "Track Narrative Trajectory", description: "Monitor whether this story is being picked up by other outlets and how the tone is shifting. Flag any divergence between Pizza Pizza's intended positioning and how the market is interpreting it." },
+        { icon: Shield, title: "Prepare Counter-Narrative if Needed", description: "If sentiment is negative or mixed, draft response messaging and identify owned channels to reinforce the brand's intended narrative around value, Canadian identity, and delivery excellence." },
       ],
     };
   }
-  if (tag === "publishing") {
+  if (tag === "qsr") {
     return {
-      impact: "Canada's publishing industry revenue rose to $1.7B in 2024, with continued benefit from digital reading formats and social media influence. Shifts in publishing — from genre acceleration to digital format adoption to backlist resurgence — have direct implications for Indigo's assortment strategy, merchandising decisions, and demand forecasting.",
+      impact: "Canada's QSR industry revenue reached $38B in 2024, with continued growth from digital ordering and delivery platforms. Shifts in the QSR landscape — from value menu resurgence to delivery commission pressures to ghost kitchen expansion — have direct implications for Pizza Pizza's pricing strategy, channel mix, and competitive positioning.",
       actions: [
-        { icon: TrendingUp, title: "Align Assortment to Industry Momentum", description: "Cross-reference this publishing shift against Indigo's current category performance. If a format or genre is accelerating industry-wide, ensure Indigo's merchandising and inventory reflect the trend before competitors respond." },
-        { icon: Target, title: "Monitor Digital Format Disruption", description: "Track audiobook and eReading adoption rates relative to physical book sales. Identify where digital is complementing vs. cannibalising physical, and adjust channel strategy accordingly." },
-        { icon: Shield, title: "Watch for Backlist Opportunities", description: "Publishing shifts often create backlist resurgence — older titles that suddenly spike due to adaptations, social buzz, or cultural moments. Flag any backlist acceleration for merchandising consideration." },
+        { icon: TrendingUp, title: "Align Strategy to Industry Momentum", description: "Cross-reference this QSR industry shift against Pizza Pizza's current performance. If a trend is accelerating industry-wide, ensure Pizza Pizza's marketing and menu strategy reflect it before competitors respond." },
+        { icon: Target, title: "Monitor Delivery Platform Dynamics", description: "Track delivery commission rates, platform market share shifts, and direct-ordering adoption rates. Identify where delivery platform changes create opportunity or risk for Pizza Pizza's margins." },
+        { icon: Shield, title: "Watch for Competitive Threats", description: "QSR industry shifts often create competitive openings — new entrants, ghost kitchens, or format innovations. Flag emerging competitive threats for strategic evaluation." },
       ],
     };
   }
-  if (tag === "genre") {
+  if (tag === "menu") {
     return {
-      impact: "Genre and title momentum tracking helps Indigo move from reacting to bestsellers to anticipating demand. Recent market signals show continued genre volatility and culturally driven surges, especially around BookTok-led categories, adaptation-driven spikes, and breakout subgenres. Catching these signals early means better inventory positioning, smarter merchandising, and more relevant marketing.",
+      impact: "Menu innovation and food trend tracking helps Pizza Pizza move from reacting to trends to anticipating demand. Recent signals show continued consumer interest in plant-based options, premium toppings, global flavours, and new pizza styles. Catching these signals early means better menu positioning, smarter LTO planning, and more relevant marketing.",
       actions: [
-        { icon: TrendingUp, title: "Anticipate Demand — Don't Chase It", description: "If a genre or author is showing breakout signals, ensure Indigo's inventory and merchandising are ahead of the curve. Position featured titles prominently before the wave peaks." },
-        { icon: Target, title: "Cross-Reference with Social Signals", description: "Check whether this genre momentum is being amplified on BookTok, Goodreads, or Reddit. Social amplification accelerates demand velocity and shortens the window to capture it." },
-        { icon: Shield, title: "Flag Seasonal and Adaptation Triggers", description: "Track upcoming film/TV adaptations, seasonal reading themes, and award cycles. These are predictable demand drivers that Indigo can merchandise against with lead time." },
+        { icon: TrendingUp, title: "Anticipate Demand — Don't Chase It", description: "If a flavour profile or pizza style is showing breakout signals, ensure Pizza Pizza's menu innovation pipeline and marketing creative are ahead of the curve before the trend peaks." },
+        { icon: Target, title: "Cross-Reference with Social Signals", description: "Check whether this menu trend is being amplified on TikTok, Reddit, or food blogs. Social amplification accelerates demand velocity and shortens the window to capture it." },
+        { icon: Shield, title: "Flag Seasonal and Cultural Triggers", description: "Track upcoming cultural moments, sports seasons, and seasonal preferences. These are predictable demand drivers that Pizza Pizza can build LTOs and campaigns around with lead time." },
       ],
     };
   }
-  if (tag === "amazon") {
+  if (tag === "delivery") {
     return {
-      impact: "Amazon often acts as a real-time proxy for consumer demand velocity, even though Indigo curates differently. Bestseller movements, new release surges, review velocity, and category climbing on Amazon.ca reveal what consumers are actively seeking — and where Indigo can compete on curation, experience, and exclusivity rather than price alone.",
+      impact: "Delivery platforms act as real-time proxies for consumer demand velocity. Order patterns, search trends, daypart shifts, and category rankings on UberEats, DoorDash, and SkipTheDishes reveal what consumers are actively craving — and where Pizza Pizza can compete on speed, value, and direct ordering rather than platform dependence alone.",
       actions: [
-        { icon: TrendingUp, title: "Map Amazon Demand to Indigo Opportunity", description: "Cross-reference Amazon's trending titles and categories against Indigo's current assortment and inventory. Identify gaps where demand is proven but Indigo's positioning could capture share." },
-        { icon: Target, title: "Track Review Volume as a Leading Indicator", description: "Rapid review accumulation on Amazon often precedes mainstream breakout. Flag titles with accelerating review velocity for early merchandising consideration and marketing alignment." },
-        { icon: Shield, title: "Differentiate on Curation, Not Price", description: "Amazon competes on convenience and price. Indigo's response should emphasise curated collections, staff picks, exclusive editions, and the in-store discovery experience that Amazon cannot replicate." },
+        { icon: TrendingUp, title: "Map Platform Demand to Pizza Pizza Opportunity", description: "Cross-reference delivery platform trending items and categories against Pizza Pizza's current menu and promotions. Identify gaps where demand is proven but Pizza Pizza's positioning could capture more share." },
+        { icon: Target, title: "Track Order Velocity as a Leading Indicator", description: "Rapid order volume growth on delivery platforms often precedes mainstream demand shifts. Flag trending items and daypart patterns for early promotional consideration and menu alignment." },
+        { icon: Shield, title: "Differentiate on Direct Ordering", description: "Delivery platforms compete on convenience but take 25-30% commission. Pizza Pizza's response should emphasise direct ordering through the app and website — better value for customers, better margins for the business." },
       ],
     };
   }
   if (tag === "social") {
     return {
-      impact: "Book discovery is increasingly community-driven. Reddit reading communities — r/books, r/suggestmeabook, r/RomanceBooks, r/CanLit — are surfacing high-conviction recommendations that drive real purchasing behaviour. Unlike algorithmic feeds, Reddit threads represent genuine reader enthusiasm with detailed context on why a book resonates. This matters because Indigo's merchandising and marketing can align not just to what is selling, but to why readers are passionate about it.",
+      impact: "Food discovery is increasingly community-driven. Reddit food communities — r/pizza, r/foodToronto, r/CanadianFood — and TikTok food creators are surfacing high-conviction opinions that drive real ordering behaviour. Unlike algorithmic feeds, these communities represent genuine food enthusiasm with detailed context on why a brand or item resonates. This matters because Pizza Pizza's marketing can align not just to what is trending, but to why consumers are passionate about it.",
       actions: [
-        { icon: TrendingUp, title: "Align Merchandising to Community Conversation", description: "If a title, trope, or aesthetic is gaining traction on Reddit, ensure Indigo's merchandising and marketing reflect the language and framing the community is using. Reddit-driven demand is high-conviction and specific." },
-        { icon: Target, title: "Monitor Subreddit Recommendation Velocity", description: "Track which titles and genres are gaining momentum across key book subreddits. High upvote counts and comment velocity on recommendation threads are leading indicators of mainstream breakout." },
-        { icon: Shield, title: "Watch for Emerging Aesthetic and Trope Trends", description: "Reddit book conversation often organises around aesthetics (dark academia, cottagecore) and tropes (enemies-to-lovers, found family). These are merchandisable themes Indigo can build collections and campaigns around." },
+        { icon: TrendingUp, title: "Align Marketing to Community Conversation", description: "If a pizza style, topping, or brand mention is gaining traction on Reddit or TikTok, ensure Pizza Pizza's marketing reflects the language and framing the community is using. Community-driven demand is high-conviction and specific." },
+        { icon: Target, title: "Monitor Community Sentiment Velocity", description: "Track which brands, items, and trends are gaining momentum across key food communities. High upvote counts and comment velocity on recommendation threads are leading indicators of mainstream demand." },
+        { icon: Shield, title: "Watch for Emerging Food Trends and Hacks", description: "Social food conversation often organises around hacks, customisations, and aesthetic presentations. These are marketable themes Pizza Pizza can build UGC campaigns and social content around." },
       ],
     };
   }
-  if (tag === "gifting") {
+  if (tag === "sports") {
     return {
-      impact: "Indigo has a meaningful gifts, lifestyle, and home business. Current retail trend coverage points to cautious spending, convenience expectations, and emotional-value gifting. Monitoring gifting intent, seasonal celebration moments, and lifestyle aesthetics helps Indigo position its non-book assortment as intentional, curated, and emotionally resonant — not just transactional.",
+      impact: "Pizza and sports are deeply connected in consumer behaviour. Game day ordering spikes, sports partnership ROI, and event-driven catering demand represent predictable, high-volume revenue opportunities. Monitoring sports calendars, partnership effectiveness, and fan engagement patterns helps Pizza Pizza capture the full value of sports-driven demand moments.",
       actions: [
-        { icon: TrendingUp, title: "Align to Seasonal Gift Intent", description: "Track upcoming gifting moments — Mother's Day, graduation, teacher gifts, holiday — and ensure merchandising and marketing are positioned with lead time. Gift-intent search spikes are predictable and actionable." },
-        { icon: Target, title: "Monitor Lifestyle Aesthetic Trends", description: "Track trending aesthetics — cozy living, dopamine décor, self-care rituals, personalization — and align Indigo's lifestyle and home merchandising to the cultural conversation driving purchase decisions." },
-        { icon: Shield, title: "Position Indigo as the Curated Gift Destination", description: "In a cautious spending environment, consumers gravitate toward gifts with emotional value. Indigo's curation, private labels (Love & Lore, Nota), and book-lover lifestyle positioning are competitive advantages worth amplifying." },
+        { icon: TrendingUp, title: "Align to Sports Calendar Demand", description: "Track upcoming sports events — NHL playoffs, Super Bowl, FIFA World Cup, March Madness — and ensure promotional campaigns, catering offers, and delivery capacity are positioned with lead time." },
+        { icon: Target, title: "Monitor Sports Partnership ROI", description: "Track brand recall, order frequency lift, and social engagement from sports partnerships and sponsorships. Optimise activation spend based on measured impact rather than awareness assumptions." },
+        { icon: Shield, title: "Position Pizza Pizza as the Game Day Destination", description: "Sports-driven pizza demand is massive and predictable. Pizza Pizza's delivery fleet, group ordering capabilities, and party platter options are competitive advantages worth amplifying across all sports moments." },
+      ],
+    };
+  }
+  if (tag === "competitors") {
+    return {
+      impact: "Competitor activity from Domino's, Pizza Nova, and Pizza Hut directly affects Pizza Pizza's market position, pricing perception, and customer acquisition. Promotional launches, expansion moves, and platform strategies from these competitors signal where the competitive pressure is intensifying — and where Pizza Pizza has an opportunity to differentiate or defend.",
+      actions: [
+        { icon: TrendingUp, title: "Assess Competitive Threat Level", description: "Evaluate whether this competitor move targets a segment, daypart, or market where Pizza Pizza has significant share. Determine if it requires a defensive response or if Pizza Pizza's existing positioning is sufficient." },
+        { icon: Target, title: "Monitor Customer Response", description: "Track whether this competitor promotion is shifting order volume, app downloads, or search share in overlapping markets. Real-time delivery and ordering data will show impact faster than brand tracking studies." },
+        { icon: Shield, title: "Identify Differentiation Opportunity", description: "Every competitor move reveals their strategic priorities — and their blind spots. Identify where Pizza Pizza's strengths (direct ordering, loyalty program, delivery fleet, Canadian brand identity) create defensible advantages the competitor cannot easily replicate." },
+      ],
+    };
+  }
+  if (tag === "sponsorships") {
+    return {
+      impact: "Pizza Pizza's corporate sponsorships with the Toronto Maple Leafs, PWHL, and BC Lions create high-visibility activation windows tied to fan passion and cultural moments. League milestones, playoff runs, player signings, and community events each represent opportunities to convert sponsorship investment into brand engagement, app downloads, and order volume. The key is activating in real time — fan emotions peak during these moments and fade quickly.",
+      actions: [
+        { icon: TrendingUp, title: "Activate Around the Moment", description: "Coordinate real-time social content, push notifications, and geo-targeted promotions tied to this event. Fan engagement peaks during and immediately after key moments — speed of activation determines share of the demand spike." },
+        { icon: Target, title: "Leverage Partner Assets", description: "Use co-branded content, player appearances, and in-arena activations to extend reach beyond paid media. Sponsorship assets are most valuable when integrated into organic fan conversation, not just displayed as logos." },
+        { icon: Shield, title: "Measure Sponsorship ROI", description: "Track order volume, app downloads, loyalty sign-ups, and social engagement lift during and after activation windows. Build a sponsorship performance baseline to optimise future investment across the Maple Leafs, PWHL, and BC Lions partnerships." },
       ],
     };
   }
   if (tag === "macro") {
     return {
-      impact: "Macro consumer and retail conditions directly shape Indigo's performance pressure points: value perception, conversion rates, category mix, and promotional strategy. Canadian retail commentary in early 2026 points to cautious spending, rising convenience expectations, and e-commerce channel shifting. Understanding these forces helps STRATIS connect external conditions to strategic response.",
+      impact: "Macro consumer and QSR conditions directly shape Pizza Pizza's performance pressure points: value perception, order frequency, channel mix, and promotional strategy. Canadian QSR commentary in early 2026 points to cautious spending, rising convenience expectations, and digital ordering channel shifting. Understanding these forces helps STRATIS connect external conditions to strategic response.",
       actions: [
-        { icon: TrendingUp, title: "Adjust Strategy to Spending Climate", description: "If consumer confidence is declining or discretionary spending is under pressure, shift messaging toward value, emotional gifting, and experience — away from volume and impulse." },
-        { icon: Target, title: "Monitor Foot Traffic and Channel Shifts", description: "Track mall retail trends and e-commerce vs. in-store behaviour. Shifts in channel preference have direct implications for Indigo's omnichannel strategy and marketing budget allocation." },
-        { icon: Shield, title: "Flag Holiday and Seasonal Spending Signals Early", description: "Early indicators of holiday spending sentiment — from consumer surveys to credit card data — help Indigo calibrate promotional intensity, inventory depth, and campaign timing." },
+        { icon: TrendingUp, title: "Adjust Strategy to Spending Climate", description: "If consumer confidence is declining or food-away-from-home spending is under pressure, shift messaging toward value, convenience, and everyday affordability — away from premium and impulse." },
+        { icon: Target, title: "Monitor Ordering Channel Shifts", description: "Track digital ordering adoption, delivery vs. pickup behaviour, and platform market share shifts. Changes in channel preference have direct implications for Pizza Pizza's marketing budget allocation." },
+        { icon: Shield, title: "Flag Seasonal Demand Signals Early", description: "Early indicators of holiday ordering patterns, sports season demand, and catering trends help Pizza Pizza calibrate promotional intensity, delivery capacity, and campaign timing." },
       ],
     };
   }
   // default
   return {
-    impact: "This development has strategic implications for Indigo's positioning. Staying ahead of market shifts, consumer behaviour changes, and competitive dynamics ensures Indigo can respond proactively rather than reactively.",
+    impact: "This development has strategic implications for Pizza Pizza's positioning. Staying ahead of market shifts, consumer behaviour changes, and competitive dynamics ensures Pizza Pizza can respond proactively rather than reactively.",
     actions: [
-      { icon: TrendingUp, title: "Assess Strategic Impact", description: "Evaluate how this development affects Indigo's current priorities and whether it warrants a change in approach across merchandising, marketing, or operations." },
-      { icon: Target, title: "Cross-Reference with Other Signals", description: "Check whether this signal is being confirmed by other data sources — social conversation, sales data, competitor behaviour — to determine confidence level before acting." },
+      { icon: TrendingUp, title: "Assess Strategic Impact", description: "Evaluate how this development affects Pizza Pizza's current priorities and whether it warrants a change in approach across menu strategy, marketing, or operations." },
+      { icon: Target, title: "Cross-Reference with Other Signals", description: "Check whether this signal is being confirmed by other data sources — social conversation, ordering data, competitor behaviour — to determine confidence level before acting." },
       { icon: Shield, title: "Monitor for Escalation", description: "Track whether this signal is intensifying, stabilising, or fading. Set a review point to reassess impact and determine next steps." },
     ],
   };
@@ -495,7 +505,7 @@ export default function NewsPage() {
                   <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-500/5 border border-red-500/10">
                     <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
                     <p className="text-xs text-red-300/80">
-                      <span className="font-semibold text-red-400">Competitor Alert:</span> This article involves <span className="font-semibold">{selectedArticle.competitor}</span>, a competing retailer in Indigo&apos;s market.
+                      <span className="font-semibold text-red-400">Competitor Alert:</span> This article involves <span className="font-semibold">{selectedArticle.competitor}</span>, a competing brand in Pizza Pizza&apos;s market.
                     </p>
                   </div>
                 )}
@@ -512,7 +522,7 @@ export default function NewsPage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold">STRATIS Insight</h3>
-                    <p className="text-[10px] text-muted-foreground/60">What this means for Indigo</p>
+                    <p className="text-[10px] text-muted-foreground/60">What this means for Pizza Pizza</p>
                   </div>
                 </div>
 

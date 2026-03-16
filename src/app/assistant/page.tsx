@@ -102,15 +102,15 @@ Want me to create an implementation plan for any of these?`;
     return `Here's what I'm seeing across your audience personas:
 
 **Top Converting Personas:**
-- **BookTok Discovery Reader (18-34)** — 4.2% CVR, $9.80 CPA — Social-first discovery driving strong conversion on trending titles and genre fiction. TikTok and Instagram are primary channels.
-- **The Plum+ Value Maxer** — 5.8% CVR, $7.20 CPA — Highest conversion rate across all personas. Plum+ members respond strongly to exclusive offers, points multipliers, and member-only pricing.
-- **The Literary Traditionalist (35-65)** — 2.9% CVR, $14.50 CPA — Steady, high-AOV buyers driven by reviews, award lists, and staff picks. Strongest on Google Search and Facebook.
-- **The Self Care Lifestyle Shopper** — 3.4% CVR, $11.30 CPA — Cross-category buyers purchasing books alongside candles, journals, and Love & Lore accessories. Instagram and CTV driving awareness.
+- **TikTok Foodie (18-34)** — 4.2% CVR, $9.80 CPA — Social-first discovery driving strong conversion on trending menu items and LTOs. TikTok and Instagram are primary channels.
+- **The Pizza Pizza Club Loyalist** — 5.8% CVR, $7.20 CPA — Highest conversion rate across all personas. Loyalty members respond strongly to exclusive offers, points multipliers, and member-only deals.
+- **The Family Value Seeker (35-55)** — 2.9% CVR, $14.50 CPA — Steady, high-AOV buyers driven by family meal deals and combo offers. Strongest on Google Search and Facebook.
+- **The Late Night Craver (18-35)** — 3.4% CVR, $11.30 CPA — High-frequency delivery orderers, peak ordering between 10PM-2AM. Instagram and TikTok driving awareness.
 
 **Emerging Opportunity:**
-The BookTok Discovery Reader persona is showing a 340% increase in engagement with romantasy and horror content on TikTok and Spotify over the past 30 days. This segment is also driving unexpected cross-sell into lifestyle products — 28% of BookTok-influenced purchases include a non-book item.
+The TikTok Foodie persona is showing a 340% increase in engagement with pizza content on TikTok and Spotify over the past 30 days. This segment is also driving unexpected upsell into premium toppings — 28% of TikTok-influenced orders include a premium upgrade.
 
-**Recommendation:** Expand BookTok Readers campaign with Spotify audio ads targeting readers during commute hours. Estimated incremental reach: 1.8M uniques/month with strong cross-category potential.
+**Recommendation:** Expand TikTok Foodies campaign with Spotify audio ads targeting food enthusiasts during commute hours. Estimated incremental reach: 1.8M uniques/month with strong upsell potential.
 
 Shall I draft a targeting strategy?`;
   }
