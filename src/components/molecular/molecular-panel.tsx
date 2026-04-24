@@ -83,7 +83,7 @@ export function MolecularPanel({ selectedIds, onDeselect, onClearAll, onApply, o
       <div className="mb-4">
         <h2 className="text-sm font-semibold text-foreground mb-1">Molecular Filter</h2>
         <p className="text-[10px] text-muted-foreground">
-          Click nodes to select. Lineage traces upstream to RBC and downstream to execution.
+          Click nodes to select. Lineage traces upstream to JPMC and downstream to execution.
         </p>
       </div>
 

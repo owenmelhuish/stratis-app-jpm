@@ -11,7 +11,7 @@ import { STATE_NAMES, PROVINCE_NAME_TO_CODE, regionFillColor } from "@/lib/geo";
 import { formatCurrency } from "@/lib/format";
 import type { StateDatum } from "@/hooks/use-dashboard-data";
 
-const GEO_URL = "/geo/canada.geojson";
+const GEO_URL = "/geo/states-10m.json";
 
 interface WorldMapChartProps {
   stateData: StateDatum[];
@@ -88,13 +88,13 @@ export function WorldMapChart({ stateData }: WorldMapChartProps) {
     <div className="rounded-xl border border-border/40 bg-card p-6 relative">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold tracking-wide">
-          Canada — Spend Heat Map
+          United States — Spend Heat Map
         </h3>
       </div>
 
       <ComposableMap
-        projection="geoMercator"
-        projectionConfig={{ center: [-96, 60], scale: 500 }}
+        projection="geoAlbersUsa"
+        projectionConfig={{ scale: 1000 }}
         width={800}
         height={500}
         style={{ width: "100%", height: "auto" }}

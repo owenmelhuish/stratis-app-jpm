@@ -53,7 +53,7 @@ interface AdSet {
 
 const AD_SETS: AdSet[] = [
   {
-    id: 'as-avion-travel-display', name: 'Avion Travel Rewards — Programmatic Display', campaignId: 'rbc-avion-travel-q1', campaignName: 'Avion Travel Q1',
+    id: 'as-avion-travel-display', name: 'Sapphire Travel Rewards — Programmatic Display', campaignId: 'rbc-avion-travel-q1', campaignName: 'Sapphire Travel Q1',
     channel: 'ttd', format: 'Display', asset: 'avion-travel-banner-300x250',
     kpis: { spend: 184200, impressions: 12400000, clicks: 248000, ctr: 2.0, conversions: 6820, cpa: 27.01, roas: 4.8, cpm: 14.85, creativeFatigue: 22 },
     kpiDeltas: { spend: 8, impressions: 12, clicks: 15, ctr: 6, conversions: 18, cpa: -10, roas: 14, cpm: -3, creativeFatigue: 4 },
@@ -71,7 +71,7 @@ const AD_SETS: AdSet[] = [
     kpiDeltas: { spend: 3, impressions: 6, clicks: 9, ctr: 4, conversions: 12, cpa: -8, roas: 10, cpm: -2, creativeFatigue: 1 },
   },
   {
-    id: 'as-di-tfsa-reel', name: 'TFSA Season — Reels', campaignId: 'rbc-di-tfsa', campaignName: 'TFSA Season Push',
+    id: 'as-di-tfsa-reel', name: 'Roth IRA Season — Reels', campaignId: 'rbc-di-tfsa', campaignName: 'Roth IRA Season Push',
     channel: 'instagram', format: 'Reels', asset: 'tfsa-explainer-reel-v1',
     kpis: { spend: 68400, impressions: 5600000, clicks: 196000, ctr: 3.5, conversions: 2940, cpa: 23.27, roas: 3.9, cpm: 12.21, creativeFatigue: 38 },
     kpiDeltas: { spend: 12, impressions: 8, clicks: 4, ctr: -3, conversions: 2, cpa: 6, roas: -4, cpm: 5, creativeFatigue: 12 },
@@ -83,19 +83,19 @@ const AD_SETS: AdSet[] = [
     kpiDeltas: { spend: 6, impressions: 10, clicks: 8, ctr: -1, conversions: 5, cpa: 2, roas: -2, cpm: -3, creativeFatigue: 3 },
   },
   {
-    id: 'as-rewards-awareness-spotify', name: 'RBC Rewards — Spotify Audio', campaignId: 'rbc-rewards-awareness', campaignName: 'RBC Rewards Brand Awareness',
+    id: 'as-rewards-awareness-spotify', name: 'Ultimate Rewards — Spotify Audio', campaignId: 'rbc-rewards-awareness', campaignName: 'Ultimate Rewards Brand Awareness',
     channel: 'spotify', format: 'Audio Ad', asset: 'rewards-audio-30s',
     kpis: { spend: 78600, impressions: 9200000, clicks: 138000, ctr: 1.5, conversions: 1932, cpa: 40.68, roas: 2.4, cpm: 8.54, creativeFatigue: 42 },
     kpiDeltas: { spend: 4, impressions: -2, clicks: -6, ctr: -4, conversions: -8, cpa: 12, roas: -10, cpm: 6, creativeFatigue: 16 },
   },
   {
-    id: 'as-newcomer-fb', name: 'Welcome to Canada — Lead Gen', campaignId: 'rbc-newcomer-welcome', campaignName: 'Welcome to Canada',
+    id: 'as-newcomer-fb', name: 'Welcome to America — Lead Gen', campaignId: 'rbc-newcomer-welcome', campaignName: 'Welcome to America',
     channel: 'facebook', format: 'Lead Form', asset: 'newcomer-leadgen-v4',
     kpis: { spend: 54300, impressions: 3100000, clicks: 124000, ctr: 4.0, conversions: 3720, cpa: 14.60, roas: 6.8, cpm: 17.52, creativeFatigue: 10 },
     kpiDeltas: { spend: 2, impressions: 4, clicks: 7, ctr: 3, conversions: 9, cpa: -6, roas: 8, cpm: -1, creativeFatigue: -2 },
   },
   {
-    id: 'as-avion-retention-retarget', name: 'Avion Retention — Retargeting', campaignId: 'rbc-avion-retention', campaignName: 'Avion Cardholder Retention',
+    id: 'as-avion-retention-retarget', name: 'Sapphire Retention — Retargeting', campaignId: 'rbc-avion-retention', campaignName: 'Sapphire Cardholder Retention',
     channel: 'facebook', format: 'Dynamic Retargeting', asset: 'avion-dpa-catalogue',
     kpis: { spend: 62100, impressions: 2800000, clicks: 112000, ctr: 4.0, conversions: 5600, cpa: 11.09, roas: 9.2, cpm: 22.18, creativeFatigue: 6 },
     kpiDeltas: { spend: 1, impressions: 3, clicks: 5, ctr: 2, conversions: 7, cpa: -5, roas: 6, cpm: -2, creativeFatigue: -1 },
@@ -107,7 +107,7 @@ const AD_SETS: AdSet[] = [
     kpiDeltas: { spend: 10, impressions: 18, clicks: 20, ctr: 5, conversions: 16, cpa: -6, roas: 8, cpm: -4, creativeFatigue: 8 },
   },
   {
-    id: 'as-brand-q1-ooh', name: 'RBC Master Brand — OOH', campaignId: 'rbc-brand-q1', campaignName: 'RBC Master Brand — Q1',
+    id: 'as-brand-q1-ooh', name: 'Chase Master Brand — OOH', campaignId: 'rbc-brand-q1', campaignName: 'Chase Master Brand — Q1',
     channel: 'ooh', format: 'Billboard', asset: 'brand-q1-ooh-national',
     kpis: { spend: 48900, impressions: 1600000, clicks: 112000, ctr: 7.0, conversions: 6720, cpa: 7.28, roas: 12.4, cpm: 30.56, creativeFatigue: 4 },
     kpiDeltas: { spend: 2, impressions: 5, clicks: 8, ctr: 3, conversions: 10, cpa: -7, roas: 9, cpm: -3, creativeFatigue: 0 },
@@ -347,7 +347,7 @@ export function BrandView() {
         </div>
       </div>
 
-      {/* 8. Canada Heat Map */}
+      {/* 8. United States Heat Map */}
       <WorldMapChart stateData={data.stateData} />
 
       {/* 9. Campaign Overview Chart */}

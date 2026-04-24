@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "STRATIS — RBC",
+  title: "STRATIS — JPMorgan Chase",
   description: "Enterprise orchestration layer for cross-channel campaign intelligence",
 };
 

@@ -7,20 +7,33 @@ import { STATE_NAMES } from '@/lib/geo';
 import { DIVISION_LABELS, PRODUCT_LINE_LABELS, AUDIENCE_LABELS, AGENCY_LABELS, CHANNEL_LABELS } from '@/types';
 import { subDays, format, differenceInDays, parseISO } from 'date-fns';
 
-// Geo to province mapping
+// Geo region → member US state codes
 const GEO_TO_PROVINCES: Record<GeoId, string[]> = {
-  'national': ['ON', 'QC', 'BC', 'AB', 'MB', 'SK', 'NS', 'NB', 'NL', 'PE', 'NT', 'YT', 'NU'],
-  'ontario': ['ON'],
-  'quebec': ['QC'],
-  'western': ['BC', 'AB', 'MB', 'SK'],
-  'atlantic': ['NS', 'NB', 'NL', 'PE'],
+  'national': [
+    'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA',
+    'KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
+    'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT',
+    'VA','WA','WV','WI','WY','DC',
+  ],
+  'ontario': ['NY', 'NJ', 'PA', 'CT', 'MA'],       // Northeast
+  'quebec': ['FL', 'GA', 'NC', 'SC', 'VA'],        // Southeast
+  'western': ['CA', 'OR', 'WA', 'NV', 'AZ'],       // West
+  'atlantic': ['IL', 'OH', 'MI', 'IN', 'TX'],      // Midwest + TX
 };
 
-// Province branch weight distribution (RBC branches)
+// State branch weight distribution (Chase branches, approximate)
 const PROVINCE_BRANCH_WEIGHT: Record<string, number> = {
-  'ON': 0.380, 'QC': 0.230, 'BC': 0.140, 'AB': 0.110,
-  'MB': 0.035, 'SK': 0.025, 'NS': 0.025, 'NB': 0.020,
-  'NL': 0.015, 'PE': 0.008, 'NT': 0.005, 'YT': 0.004, 'NU': 0.003,
+  'CA': 0.180, 'TX': 0.140, 'NY': 0.120, 'FL': 0.090, 'IL': 0.070,
+  'NJ': 0.050, 'AZ': 0.040, 'OH': 0.040, 'MI': 0.030, 'WA': 0.030,
+  'PA': 0.030, 'GA': 0.030, 'NC': 0.030, 'CO': 0.020, 'VA': 0.020,
+  'MA': 0.020, 'CT': 0.020, 'OR': 0.015, 'NV': 0.015, 'IN': 0.010,
+  'UT': 0.008, 'WI': 0.008, 'MN': 0.007, 'TN': 0.007, 'MO': 0.006,
+  'MD': 0.005, 'LA': 0.005, 'KY': 0.004, 'OK': 0.004, 'SC': 0.003,
+  'AL': 0.003, 'NM': 0.003, 'ID': 0.002, 'WV': 0.002, 'NH': 0.002,
+  'RI': 0.002, 'DE': 0.002, 'DC': 0.002, 'HI': 0.002, 'KS': 0.002,
+  'NE': 0.002, 'IA': 0.002, 'AR': 0.002, 'MS': 0.001, 'ME': 0.001,
+  'AK': 0.001, 'MT': 0.001, 'ND': 0.001, 'SD': 0.001, 'VT': 0.001,
+  'WY': 0.001,
 };
 
 export interface StateDatum {

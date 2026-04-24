@@ -19,55 +19,55 @@ const FEED_SECTIONS: FeedSection[] = [
   {
     id: "brand",
     title: "Brand & Corporate Narrative",
-    sources: ["Financial Post", "The Globe and Mail", "Strategy Online", "BNN Bloomberg"],
+    sources: ["Wall Street Journal", "Bloomberg", "AdAge", "CNBC"],
     filterFn: (item) => item.tags.includes("brand"),
   },
   {
     id: "banking",
     title: "Banking Industry & Regulation",
-    sources: ["OSFI Bulletin", "Financial Post", "The Globe and Mail", "Canadian Banker"],
+    sources: ["OCC Bulletin", "Wall Street Journal", "Bloomberg", "American Banker"],
     filterFn: (item) => item.tags.includes("banking"),
   },
   {
     id: "credit-cards",
     title: "Credit Card & Payments",
-    sources: ["Financial Post", "Ratehub.ca", "MoneySense", "The Globe and Mail"],
+    sources: ["Wall Street Journal", "NerdWallet", "The Points Guy", "Bloomberg"],
     filterFn: (item) => item.tags.includes("credit-cards"),
   },
   {
     id: "fintech",
     title: "Digital Banking & Fintech",
-    sources: ["BetaKit", "TechCrunch", "Financial Post", "The Logic"],
+    sources: ["TechCrunch", "The Information", "Wall Street Journal", "Axios"],
     filterFn: (item) => item.tags.includes("fintech"),
   },
   {
     id: "social",
     title: "Social & Financial Culture",
-    sources: ["Reddit r/PersonalFinanceCanada", "Reddit r/investing", "TikTok #FinTok", "YouTube"],
+    sources: ["Reddit r/personalfinance", "Reddit r/investing", "TikTok #FinTok", "YouTube"],
     filterFn: (item) => item.tags.includes("social"),
   },
   {
     id: "sports",
     title: "Sports, Events & Partnerships",
-    sources: ["TSN", "Sportsnet", "Strategy Online", "The Athletic"],
+    sources: ["ESPN", "Fox Sports", "USTA Media", "The Athletic"],
     filterFn: (item) => item.tags.includes("sports"),
   },
   {
     id: "sponsorships",
     title: "Corporate Sponsorships",
-    sources: ["TSN", "Sportsnet", "The Athletic", "Strategy Online"],
+    sources: ["ESPN", "USTA Media", "The Athletic", "AdAge"],
     filterFn: (item) => item.tags.includes("sponsorships"),
   },
   {
     id: "competitors",
     title: "Competitor Watch",
-    sources: ["Financial Post", "The Globe and Mail", "Bloomberg", "J.D. Power"],
+    sources: ["Wall Street Journal", "Bloomberg", "Business Insider", "J.D. Power"],
     filterFn: (item) => item.tags.includes("competitors"),
   },
   {
     id: "macro",
     title: "Macro Consumer & Financial Environment",
-    sources: ["Statistics Canada", "The Globe and Mail", "Financial Post", "Bank of Canada"],
+    sources: ["Bureau of Labor Statistics", "Bloomberg", "Wall Street Journal", "Federal Reserve"],
     filterFn: (item) => item.tags.includes("macro"),
   },
 ];
@@ -79,7 +79,7 @@ const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
   { match: /Earnings|Q1 2026/i, photos: [
     "photo-1611974789855-9c2a0a7236a3",  // stock chart / financial data
   ]},
-  { match: /Avion.*Named|#1 Travel|MoneySense/i, photos: [
+  { match: /Sapphire.*Named|#1 Travel|NerdWallet/i, photos: [
     "photo-1500835556837-99ac94a94552",  // tropical beach aerial — travel rewards
   ]},
   { match: /ESG|sustainable|sustainability|climate/i, photos: [
@@ -96,10 +96,10 @@ const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
   ]},
 
   // ── Banking Industry & Regulation ──
-  { match: /Open Banking.*Framework|OSFI.*Open Banking/i, photos: [
+  { match: /Open Banking.*Framework|CFPB.*Open Banking/i, photos: [
     "photo-1451187580459-43490279c0fa",  // digital network / connected nodes
   ]},
-  { match: /Rate Cut|Rate Decision|Bank of Canada.*Signal/i, photos: [
+  { match: /Rate Cut|Rate Decision|Federal Reserve.*Signal/i, photos: [
     "photo-1535320903710-d993d3d77d29",  // stock market ticker board
   ]},
   { match: /Digital Adoption|Mobile.First/i, photos: [
@@ -113,7 +113,7 @@ const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
   ]},
 
   // ── Credit Cards ──
-  { match: /Rewards War|Avion.*Aeroplan.*Scene/i, photos: [
+  { match: /Rewards War|Sapphire.*Amex Platinum.*Citi/i, photos: [
     "photo-1556742049-0cfed4f6a45d",  // credit cards fanned out
   ]},
   { match: /Buy Now Pay Later|BNPL/i, photos: [
@@ -130,19 +130,19 @@ const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
   ]},
 
   // ── Fintech ──
-  { match: /Wealthsimple/i, photos: [
+  { match: /Robinhood/i, photos: [
     "photo-1611162617474-5b21e879e113",  // fintech app on phone
   ]},
-  { match: /EQ Bank/i, photos: [
+  { match: /Ally Bank/i, photos: [
     "photo-1579621970563-ebec7560ff3e",  // piggy bank / savings
   ]},
-  { match: /Neo Financial/i, photos: [
+  { match: /SoFi/i, photos: [
     "photo-1559526324-4b87b5e36e44",  // startup office space
   ]},
-  { match: /Fintech Investment.*\$3\.8B/i, photos: [
+  { match: /Fintech Investment.*\$28B/i, photos: [
     "photo-1460472178825-e5240623afd5",  // venture capital / funding
   ]},
-  { match: /KOHO|Credit Building/i, photos: [
+  { match: /Chime|Credit Building/i, photos: [
     "photo-1563013544-824ae1b704d3",  // young person with phone — fintech user
   ]},
 
@@ -150,10 +150,10 @@ const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
   { match: /Reddit.*Credit Card|Best Credit Card.*Thread/i, photos: [
     "photo-1611162616305-c69b3fa7fbe0",  // reddit / online discussion
   ]},
-  { match: /TikTok.*FinTok|TFSA.*Content/i, photos: [
+  { match: /TikTok.*FinTok|Roth IRA.*Content/i, photos: [
     "photo-1611162618071-b39a2ec055fb",  // social media / content creation
   ]},
-  { match: /churningcanada/i, photos: [
+  { match: /r\/churning/i, photos: [
     "photo-1557804506-669a67965ba0",  // person on laptop — online community
   ]},
   { match: /Rate My Portfolio/i, photos: [
@@ -164,27 +164,27 @@ const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
   ]},
 
   // ── Sports ──
-  { match: /Canadian Open.*Attendance|Canadian Open.*Record/i, photos: [
-    "photo-1535131749006-b7f58c99034b",  // golf course — tournament
+  { match: /US Open.*Attendance|US Open.*Record/i, photos: [
+    "photo-1554068865-24cecd4e34b8",  // tennis court / tournament
   ]},
   { match: /Sports Sponsorship ROI/i, photos: [
     "photo-1540747913346-19e32dc3e97e",  // stadium crowd — sports event
   ]},
-  { match: /Team RBC.*Win|4 Majors/i, photos: [
-    "photo-1587174486073-ae5e5cff23aa",  // golf trophy / celebration
+  { match: /Team Chase.*Win|4 Majors/i, photos: [
+    "photo-1587174486073-ae5e5cff23aa",  // trophy / celebration
   ]},
-  { match: /NHL Playoffs|Financial Product Searches/i, photos: [
-    "photo-1515703407324-5f753afd8be8",  // hockey arena
+  { match: /NBA Playoffs|Financial Product Searches/i, photos: [
+    "photo-1515703407324-5f753afd8be8",  // basketball arena
   ]},
-  { match: /Golf Sponsorship ROI.*3\.5x/i, photos: [
-    "photo-1592919505780-303950717480",  // golf swing
+  { match: /Tennis Sponsorship ROI.*3\.5x/i, photos: [
+    "photo-1515524738708-327f6b0037a7",  // tennis court / sponsorship
   ]},
 
   // ── Sponsorships ──
-  { match: /Canadian Open 2026.*Announced|St\. George/i, photos: [
-    "photo-1600585154340-be6161a56a0c",  // golf clubhouse
+  { match: /US Open 2026.*Announced|Flushing Meadows|Billie Jean King/i, photos: [
+    "photo-1622163642998-1ea32b0bbc67",  // tennis stadium
   ]},
-  { match: /Rising PGA|Portfolio.*12 Athletes/i, photos: [
+  { match: /Rising.*Tennis|Portfolio.*12 Athletes/i, photos: [
     "photo-1595435742656-5272d0b3fa82",  // athlete portrait
   ]},
   { match: /Community Sponsorship.*1,?200/i, photos: [
@@ -193,38 +193,38 @@ const CURATED_IMAGES: Array<{ match: RegExp; photos: string[] }> = [
   { match: /Foundation.*\$50M|Financial Literacy/i, photos: [
     "photo-1427504494785-3a9ca7044f45",  // classroom / education
   ]},
-  { match: /Golfer Wins First Major|\$18M.*Brand Value/i, photos: [
-    "photo-1622398925373-3f91b1e275f5",  // golf celebration / major win
+  { match: /Wins First Grand Slam|\$18M.*Brand Value/i, photos: [
+    "photo-1622398925373-3f91b1e275f5",  // sports celebration / major win
   ]},
 
   // ── Competitors ──
-  { match: /TD.*First Class Travel|TD.*Visa/i, photos: [
+  { match: /Bank of America.*Premium Travel|BofA.*Premium/i, photos: [
     "photo-1521295121783-8a321d551ad2",  // airport terminal — competitor card launch
   ]},
-  { match: /Scotiabank.*Scene\+|Cineplex/i, photos: [
-    "photo-1489599849927-2ee91cede3ba",  // cinema / entertainment
+  { match: /Wells Fargo.*Rewards|Hotel and Grocery/i, photos: [
+    "photo-1489599849927-2ee91cede3ba",  // hotel / entertainment
   ]},
-  { match: /BMO.*alto|BMO.*Digital/i, photos: [
+  { match: /Citi.*Digital Savings|Citi.*Digital/i, photos: [
     "photo-1563986768494-4dee2763ff3f",  // modern bank branch / digital
   ]},
-  { match: /CIBC.*AI|AI.Powered.*Financial/i, photos: [
+  { match: /Capital One.*AI|AI.Powered.*Financial/i, photos: [
     "photo-1677442136019-21780ecad995",  // AI / artificial intelligence
   ]},
-  { match: /National Bank.*Acquires|Fintech Lender/i, photos: [
+  { match: /US Bank.*Acquires|Fintech Lender/i, photos: [
     "photo-1454165804606-c3d57bc86b40",  // business handshake / M&A
   ]},
-  { match: /TD.*Cross.Border|Snowbird/i, photos: [
-    "photo-1569154941061-e231b4725ef1",  // US-Canada border / travel
+  { match: /Cross.Border|Mexico-Connected/i, photos: [
+    "photo-1569154941061-e231b4725ef1",  // border / travel
   ]},
 
   // ── Macro Environment ──
   { match: /Consumer Confidence.*Rises|Q1 2026.*Confidence/i, photos: [
-    "photo-1604594849809-dfedbc827105",  // Canadian city skyline
+    "photo-1485871981521-5b1fd3805eee",  // US city skyline
   ]},
-  { match: /Bank of Canada.*Holds.*Rate|3\.25%/i, photos: [
-    "photo-1533073526757-2c8ca1df9f1c",  // Parliament Hill Ottawa — rate decision
+  { match: /Federal Reserve.*Holds.*Rate|4\.50%/i, photos: [
+    "photo-1533073526757-2c8ca1df9f1c",  // government building — rate decision
   ]},
-  { match: /Household Debt|Debt.to.Income|Mortgage Renewal/i, photos: [
+  { match: /Household Debt|Debt.to.Income|Mortgage Refinance/i, photos: [
     "photo-1560518883-ce09059eeffa",  // suburban houses — housing/debt
   ]},
   { match: /Housing Market.*Stabiliz|Spring Listings/i, photos: [
@@ -301,77 +301,77 @@ function generateInsight(item: NewsItem): { impact: string; actions: Array<{ ico
 
   if (tag === "brand") {
     return {
-      impact: "This signals a shift in how the market perceives RBC's brand narrative. Whether it's growth strategy, executive positioning, digital transformation, or ESG messaging, every public-facing signal shapes market confidence and customer trust. RBC's ability to control this narrative directly affects brand equity, investor sentiment, and competitive positioning across all divisions.",
+      impact: "This signals a shift in how the market perceives JPMorgan Chase's brand narrative. Whether it's growth strategy, executive positioning, digital transformation, or ESG messaging, every public-facing signal shapes market confidence and customer trust. JPMorgan Chase's ability to control this narrative directly affects brand equity, investor sentiment, and competitive positioning across all divisions.",
       actions: [
-        { icon: TrendingUp, title: "Amplify Positive Brand Signals", description: "If the narrative is favourable, accelerate owned and paid amplification. Feature the story across RBC's social channels and align PR with the momentum before it fades." },
-        { icon: Target, title: "Track Narrative Trajectory", description: "Monitor whether this story is being picked up by other outlets and how the tone is shifting. Flag any divergence between RBC's intended positioning and how the market is interpreting it." },
-        { icon: Shield, title: "Prepare Counter-Narrative if Needed", description: "If sentiment is negative or mixed, draft response messaging and identify owned channels to reinforce the brand's intended narrative around trust, innovation, and Canadian leadership." },
+        { icon: TrendingUp, title: "Amplify Positive Brand Signals", description: "If the narrative is favorable, accelerate owned and paid amplification. Feature the story across Chase's social channels and align PR with the momentum before it fades." },
+        { icon: Target, title: "Track Narrative Trajectory", description: "Monitor whether this story is being picked up by other outlets and how the tone is shifting. Flag any divergence between JPMorgan Chase's intended positioning and how the market is interpreting it." },
+        { icon: Shield, title: "Prepare Counter-Narrative if Needed", description: "If sentiment is negative or mixed, draft response messaging and identify owned channels to reinforce the brand's intended narrative around trust, innovation, and U.S. financial leadership." },
       ],
     };
   }
   if (tag === "banking") {
     return {
-      impact: "Canada's financial services landscape is evolving rapidly with digital transformation, Open Banking regulation, and shifting consumer expectations. These industry-level shifts have direct implications for RBC's product strategy, channel mix, and competitive positioning across personal banking, wealth management, and insurance.",
+      impact: "America's financial services landscape is evolving rapidly with digital transformation, Open Banking regulation (CFPB Section 1033), and shifting consumer expectations. These industry-level shifts have direct implications for Chase's product strategy, channel mix, and competitive positioning across consumer banking, wealth management, and insurance.",
       actions: [
-        { icon: TrendingUp, title: "Align Strategy to Industry Momentum", description: "Cross-reference this financial services industry shift against RBC's current performance. If a trend is accelerating industry-wide, ensure RBC's marketing and product strategy reflect it before competitors respond." },
-        { icon: Target, title: "Monitor Digital Banking Dynamics", description: "Track digital adoption rates, fintech market share shifts, and Open Banking readiness. Identify where industry changes create opportunity or risk for RBC's customer acquisition and retention." },
+        { icon: TrendingUp, title: "Align Strategy to Industry Momentum", description: "Cross-reference this financial services industry shift against Chase's current performance. If a trend is accelerating industry-wide, ensure Chase's marketing and product strategy reflect it before competitors respond." },
+        { icon: Target, title: "Monitor Digital Banking Dynamics", description: "Track digital adoption rates, fintech market share shifts, and Open Banking readiness. Identify where industry changes create opportunity or risk for Chase's customer acquisition and retention." },
         { icon: Shield, title: "Watch for Competitive Threats", description: "Financial services industry shifts often create competitive openings — neobanks, embedded finance, or regulatory changes. Flag emerging competitive threats for strategic evaluation." },
       ],
     };
   }
   if (tag === "credit-cards") {
     return {
-      impact: "Product innovation tracking helps RBC move from reacting to market trends to anticipating customer demand. Recent signals show continued consumer interest in digital-first experiences, rewards integration, sustainable investing, and personalized financial products. Catching these signals early means better product positioning, smarter launch planning, and more relevant marketing.",
+      impact: "Product innovation tracking helps Chase move from reacting to market trends to anticipating customer demand. Recent signals show continued consumer interest in digital-first experiences, rewards integration, sustainable investing, and personalized financial products. Catching these signals early means better product positioning, smarter launch planning, and more relevant marketing.",
       actions: [
-        { icon: TrendingUp, title: "Anticipate Demand — Don't Chase It", description: "If a product category or feature is showing breakout signals, ensure RBC's innovation pipeline and marketing creative are ahead of the curve before the trend peaks." },
+        { icon: TrendingUp, title: "Anticipate Demand — Don't Chase It", description: "If a product category or feature is showing breakout signals, ensure Chase's innovation pipeline and marketing creative are ahead of the curve before the trend peaks." },
         { icon: Target, title: "Cross-Reference with Social Signals", description: "Check whether this product trend is being amplified on Reddit, TikTok FinTok, or financial blogs. Social amplification accelerates demand velocity and shortens the window to capture it." },
-        { icon: Shield, title: "Flag Seasonal and Life-Stage Triggers", description: "Track upcoming tax seasons, RRSP deadlines, and life-stage moments. These are predictable demand drivers that RBC can build campaigns and product promotions around with lead time." },
+        { icon: Shield, title: "Flag Seasonal and Life-Stage Triggers", description: "Track upcoming tax seasons, IRA contribution deadlines, and life-stage moments. These are predictable demand drivers that Chase can build campaigns and product promotions around with lead time." },
       ],
     };
   }
   if (tag === "fintech") {
     return {
-      impact: "Digital banking platforms act as real-time proxies for customer behaviour and preference. App usage patterns, feature adoption rates, and digital channel preferences reveal how customers want to interact with their finances — and where RBC can compete on experience, convenience, and personalization rather than rate alone.",
+      impact: "Digital banking platforms act as real-time proxies for customer behavior and preference. App usage patterns, feature adoption rates, and digital channel preferences reveal how customers want to interact with their finances — and where Chase can compete on experience, convenience, and personalization rather than rate alone.",
       actions: [
-        { icon: TrendingUp, title: "Map Digital Trends to RBC Opportunity", description: "Cross-reference digital banking trends and feature adoption against RBC's current digital experience. Identify gaps where customer demand is proven but RBC's positioning could capture more engagement." },
-        { icon: Target, title: "Track Adoption Velocity as a Leading Indicator", description: "Rapid feature adoption often precedes mainstream behaviour shifts. Flag trending digital behaviours for early product consideration and experience alignment." },
-        { icon: Shield, title: "Differentiate on Digital Experience", description: "Fintech competitors compete on convenience but lack the full-service relationship. RBC's response should emphasize the integrated digital experience — banking, investing, insurance, and rewards in one ecosystem." },
+        { icon: TrendingUp, title: "Map Digital Trends to Chase Opportunity", description: "Cross-reference digital banking trends and feature adoption against Chase's current digital experience. Identify gaps where customer demand is proven but Chase's positioning could capture more engagement." },
+        { icon: Target, title: "Track Adoption Velocity as a Leading Indicator", description: "Rapid feature adoption often precedes mainstream behavior shifts. Flag trending digital behaviors for early product consideration and experience alignment." },
+        { icon: Shield, title: "Differentiate on Digital Experience", description: "Fintech competitors compete on convenience but lack the full-service relationship. Chase's response should emphasize the integrated digital experience — banking, investing, insurance, and rewards in one ecosystem." },
       ],
     };
   }
   if (tag === "social") {
     return {
-      impact: "Financial decision-making is increasingly community-driven. Reddit communities — r/PersonalFinanceCanada, r/investing — and TikTok FinTok creators are surfacing high-conviction opinions that influence real financial decisions. Unlike traditional advertising, these communities represent genuine financial enthusiasm with detailed context on why a product or institution resonates. This matters because RBC's marketing can align not just to what is trending, but to why consumers trust specific financial products.",
+      impact: "Financial decision-making is increasingly community-driven. Reddit communities — r/personalfinance, r/investing — and TikTok FinTok creators are surfacing high-conviction opinions that influence real financial decisions. Unlike traditional advertising, these communities represent genuine financial enthusiasm with detailed context on why a product or institution resonates. This matters because Chase's marketing can align not just to what is trending, but to why consumers trust specific financial products.",
       actions: [
-        { icon: TrendingUp, title: "Align Marketing to Community Conversation", description: "If a product, feature, or financial strategy is gaining traction on Reddit or TikTok, ensure RBC's marketing reflects the language and framing the community is using. Community-driven interest is high-conviction and specific." },
+        { icon: TrendingUp, title: "Align Marketing to Community Conversation", description: "If a product, feature, or financial strategy is gaining traction on Reddit or TikTok, ensure Chase's marketing reflects the language and framing the community is using. Community-driven interest is high-conviction and specific." },
         { icon: Target, title: "Monitor Community Sentiment Velocity", description: "Track which brands, products, and financial strategies are gaining momentum across key communities. High upvote counts and comment velocity on recommendation threads are leading indicators of mainstream adoption." },
-        { icon: Shield, title: "Watch for Emerging Financial Trends", description: "Social financial conversation often organizes around tips, strategies, and product comparisons. These are marketable themes RBC can build educational content and social campaigns around." },
+        { icon: Shield, title: "Watch for Emerging Financial Trends", description: "Social financial conversation often organizes around tips, strategies, and product comparisons. These are marketable themes Chase can build educational content and social campaigns around." },
       ],
     };
   }
   if (tag === "sports") {
     return {
-      impact: "Sports and financial services are connected through brand visibility, community engagement, and cultural relevance. Game day activations, sports partnership ROI, and event-driven brand awareness represent high-impact marketing opportunities. Monitoring sports calendars, partnership effectiveness, and fan engagement patterns helps RBC maximize the value of sports-driven brand moments.",
+      impact: "Sports and financial services are connected through brand visibility, community engagement, and cultural relevance. Game day activations, sports partnership ROI, and event-driven brand awareness represent high-impact marketing opportunities. Monitoring sports calendars, partnership effectiveness, and fan engagement patterns helps Chase maximize the value of sports-driven brand moments.",
       actions: [
-        { icon: TrendingUp, title: "Align to Sports Calendar", description: "Track upcoming sports events — NHL playoffs, Olympics, community events — and ensure brand campaigns, activations, and digital content are positioned with lead time." },
+        { icon: TrendingUp, title: "Align to Sports Calendar", description: "Track upcoming sports events — US Open, NBA playoffs, Olympics, community events — and ensure brand campaigns, activations, and digital content are positioned with lead time." },
         { icon: Target, title: "Monitor Sports Partnership ROI", description: "Track brand recall, app downloads, account openings, and social engagement from sports partnerships and sponsorships. Optimize activation spend based on measured impact rather than awareness assumptions." },
-        { icon: Shield, title: "Position RBC as Community Champion", description: "Sports partnerships drive brand affinity beyond product marketing. RBC's community investment, youth programs, and grassroots sports initiatives are competitive advantages worth amplifying across all sports moments." },
+        { icon: Shield, title: "Position Chase as Community Champion", description: "Sports partnerships drive brand affinity beyond product marketing. Chase's community investment, youth programs, and grassroots sports initiatives are competitive advantages worth amplifying across all sports moments." },
       ],
     };
   }
   if (tag === "competitors") {
     return {
-      impact: "Competitor activity from TD, BMO, Scotiabank, and CIBC directly affects RBC's market position, rate perception, and customer acquisition. Product launches, digital innovations, and marketing strategies from these competitors signal where competitive pressure is intensifying — and where RBC has an opportunity to differentiate or defend.",
+      impact: "Competitor activity from Bank of America, Wells Fargo, Citi, and Capital One directly affects Chase's market position, rate perception, and customer acquisition. Product launches, digital innovations, and marketing strategies from these competitors signal where competitive pressure is intensifying — and where Chase has an opportunity to differentiate or defend.",
       actions: [
-        { icon: TrendingUp, title: "Assess Competitive Threat Level", description: "Evaluate whether this competitor move targets a segment, product line, or market where RBC has significant share. Determine if it requires a defensive response or if RBC's existing positioning is sufficient." },
+        { icon: TrendingUp, title: "Assess Competitive Threat Level", description: "Evaluate whether this competitor move targets a segment, product line, or market where Chase has significant share. Determine if it requires a defensive response or if Chase's existing positioning is sufficient." },
         { icon: Target, title: "Monitor Customer Response", description: "Track whether this competitor promotion is shifting account openings, app downloads, or search share in overlapping markets. Digital engagement data will show impact faster than brand tracking studies." },
-        { icon: Shield, title: "Identify Differentiation Opportunity", description: "Every competitor move reveals their strategic priorities — and their blind spots. Identify where RBC's strengths (integrated platform, rewards ecosystem, wealth management depth, Canadian trust) create defensible advantages the competitor cannot easily replicate." },
+        { icon: Shield, title: "Identify Differentiation Opportunity", description: "Every competitor move reveals their strategic priorities — and their blind spots. Identify where Chase's strengths (integrated platform, Ultimate Rewards ecosystem, J.P. Morgan wealth depth, brand trust) create defensible advantages the competitor cannot easily replicate." },
       ],
     };
   }
   if (tag === "sponsorships") {
     return {
-      impact: "RBC's corporate sponsorships create high-visibility activation windows tied to community passion and cultural moments. League milestones, playoff runs, community events, and cultural celebrations each represent opportunities to convert sponsorship investment into brand engagement, app downloads, and account openings. The key is activating in real time — emotional peaks during these moments fade quickly.",
+      impact: "Chase's corporate sponsorships create high-visibility activation windows tied to community passion and cultural moments. League milestones, playoff runs, community events, and cultural celebrations each represent opportunities to convert sponsorship investment into brand engagement, app downloads, and account openings. The key is activating in real time — emotional peaks during these moments fade quickly.",
       actions: [
         { icon: TrendingUp, title: "Activate Around the Moment", description: "Coordinate real-time social content, push notifications, and geo-targeted promotions tied to this event. Community engagement peaks during and immediately after key moments — speed of activation determines share of the attention." },
         { icon: Target, title: "Leverage Partner Assets", description: "Use co-branded content, athlete appearances, and in-venue activations to extend reach beyond paid media. Sponsorship assets are most valuable when integrated into organic community conversation, not just displayed as logos." },
@@ -381,21 +381,21 @@ function generateInsight(item: NewsItem): { impact: string; actions: Array<{ ico
   }
   if (tag === "macro") {
     return {
-      impact: "Macro consumer and financial conditions directly shape RBC's performance pressure points: rate sensitivity, product demand mix, channel preferences, and marketing strategy. Canadian economic commentary in early 2026 points to interest rate shifts, housing market dynamics, and evolving savings behaviour. Understanding these forces helps STRATIS connect external conditions to strategic response.",
+      impact: "Macro consumer and financial conditions directly shape Chase's performance pressure points: rate sensitivity, product demand mix, channel preferences, and marketing strategy. U.S. economic commentary in early 2026 points to interest rate shifts, housing market dynamics, and evolving savings behavior. Understanding these forces helps STRATIS connect external conditions to strategic response.",
       actions: [
         { icon: TrendingUp, title: "Adjust Strategy to Economic Climate", description: "If consumer confidence is declining or interest rates are shifting, adjust messaging toward financial security, savings tools, and long-term value — away from premium and discretionary products." },
-        { icon: Target, title: "Monitor Channel and Product Shifts", description: "Track digital banking adoption, product mix changes, and customer segment migration. Changes in how customers engage with financial services have direct implications for RBC's marketing budget allocation." },
-        { icon: Shield, title: "Flag Seasonal Demand Signals Early", description: "Early indicators of RRSP season activity, tax planning behaviour, and mortgage renewal cycles help RBC calibrate promotional intensity, staffing, and campaign timing." },
+        { icon: Target, title: "Monitor Channel and Product Shifts", description: "Track digital banking adoption, product mix changes, and customer segment migration. Changes in how customers engage with financial services have direct implications for Chase's marketing budget allocation." },
+        { icon: Shield, title: "Flag Seasonal Demand Signals Early", description: "Early indicators of IRA contribution season activity, tax planning behavior, and mortgage refinance cycles help Chase calibrate promotional intensity, staffing, and campaign timing." },
       ],
     };
   }
   // default
   return {
-    impact: "This development has strategic implications for RBC's positioning. Staying ahead of market shifts, consumer behaviour changes, and competitive dynamics ensures RBC can respond proactively rather than reactively.",
+    impact: "This development has strategic implications for JPMorgan Chase's positioning. Staying ahead of market shifts, consumer behavior changes, and competitive dynamics ensures Chase can respond proactively rather than reactively.",
     actions: [
-      { icon: TrendingUp, title: "Assess Strategic Impact", description: "Evaluate how this development affects RBC's current priorities and whether it warrants a change in approach across product strategy, marketing, or operations." },
-      { icon: Target, title: "Cross-Reference with Other Signals", description: "Check whether this signal is being confirmed by other data sources — social conversation, customer data, competitor behaviour — to determine confidence level before acting." },
-      { icon: Shield, title: "Monitor for Escalation", description: "Track whether this signal is intensifying, stabilising, or fading. Set a review point to reassess impact and determine next steps." },
+      { icon: TrendingUp, title: "Assess Strategic Impact", description: "Evaluate how this development affects Chase's current priorities and whether it warrants a change in approach across product strategy, marketing, or operations." },
+      { icon: Target, title: "Cross-Reference with Other Signals", description: "Check whether this signal is being confirmed by other data sources — social conversation, customer data, competitor behavior — to determine confidence level before acting." },
+      { icon: Shield, title: "Monitor for Escalation", description: "Track whether this signal is intensifying, stabilizing, or fading. Set a review point to reassess impact and determine next steps." },
     ],
   };
 }
@@ -588,7 +588,7 @@ export default function NewsPage() {
                   <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-500/5 border border-red-500/10">
                     <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
                     <p className="text-xs text-red-300/80">
-                      <span className="font-semibold text-red-400">Competitor Alert:</span> This article involves <span className="font-semibold">{selectedArticle.competitor}</span>, a competing brand in RBC&apos;s market.
+                      <span className="font-semibold text-red-400">Competitor Alert:</span> This article involves <span className="font-semibold">{selectedArticle.competitor}</span>, a competing brand in Chase&apos;s market.
                     </p>
                   </div>
                 )}
@@ -605,7 +605,7 @@ export default function NewsPage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold">STRATIS Insight</h3>
-                    <p className="text-[10px] text-muted-foreground/60">What this means for RBC</p>
+                    <p className="text-[10px] text-muted-foreground/60">What this means for JPMorgan Chase</p>
                   </div>
                 </div>
 

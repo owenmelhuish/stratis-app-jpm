@@ -152,7 +152,7 @@ export function HeaderBar() {
       <div className="flex items-center justify-between px-8 h-12">
         <div className="flex items-center gap-1.5 min-w-0">
           <button onClick={() => { setSelectedDivision(null); setSelectedProductLine(null); setSelectedCampaign(null); }} className="text-sm font-semibold text-foreground hover:text-teal transition-colors">
-            RBC
+            JPMorgan Chase
           </button>
           {selectedDivision && (
             <>

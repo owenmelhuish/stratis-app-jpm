@@ -81,7 +81,7 @@ export function getBasePosition(id: string): [number, number, number] {
 
 const NODES: MolecularNode[] = [
   // Ring 0 — Nucleus
-  { id: 'rbc', label: 'RBC', ring: 0, angle: 0, color: RING_COLORS.nucleus, radius: 2.5, description: 'Royal Bank of Canada' },
+  { id: 'rbc', label: 'JPMC', ring: 0, angle: 0, color: RING_COLORS.nucleus, radius: 2.5, description: 'JPMorgan Chase' },
 
   // Ring 1 — Organizational (4 divisions + 5 agencies)
   { id: 'pcb', label: 'PCB', ring: 1, angle: 0, color: RING_COLORS.org, radius: 1.4, description: 'Personal & Commercial Banking', filterType: 'division', filterValue: 'pcb' },
@@ -91,27 +91,27 @@ const NODES: MolecularNode[] = [
   { id: 'omnicom', label: 'Omnicom', ring: 1, angle: 36, color: RING_COLORS.org, radius: 1.1, description: 'Omnicom Media Group', filterType: 'agency', filterValue: 'omnicom' },
   { id: 'publicis', label: 'Publicis', ring: 1, angle: 108, color: RING_COLORS.org, radius: 1.1, description: 'Publicis Groupe', filterType: 'agency', filterValue: 'publicis' },
   { id: 'wpp', label: 'WPP', ring: 1, angle: 180, color: RING_COLORS.org, radius: 1.1, description: 'WPP', filterType: 'agency', filterValue: 'wpp' },
-  { id: 'in-house', label: 'In-House', ring: 1, angle: 252, color: RING_COLORS.org, radius: 1.1, description: 'RBC In-House', filterType: 'agency', filterValue: 'in-house' },
+  { id: 'in-house', label: 'In-House', ring: 1, angle: 252, color: RING_COLORS.org, radius: 1.1, description: 'Chase In-House', filterType: 'agency', filterValue: 'in-house' },
   { id: 'other', label: 'Other', ring: 1, angle: 324, color: RING_COLORS.org, radius: 1.1, description: 'Other Agencies', filterType: 'agency', filterValue: 'other' },
 
   // Ring 2 — Product Lines (12 nodes at 30° intervals)
-  { id: 'avion', label: 'Avion', ring: 2, angle: 0, color: RING_COLORS.product, radius: 1.2, description: 'Avion Credit Card', filterType: 'productLine', filterValue: 'avion' },
-  { id: 'ion', label: 'ION', ring: 2, angle: 30, color: RING_COLORS.product, radius: 1.2, description: 'ION Card', filterType: 'productLine', filterValue: 'ion' },
-  { id: 'rewards', label: 'Rewards', ring: 2, angle: 60, color: RING_COLORS.product, radius: 1.2, description: 'RBC Rewards', filterType: 'productLine', filterValue: 'rewards' },
+  { id: 'avion', label: 'Sapphire', ring: 2, angle: 0, color: RING_COLORS.product, radius: 1.2, description: 'Sapphire Preferred Card', filterType: 'productLine', filterValue: 'avion' },
+  { id: 'ion', label: 'Freedom', ring: 2, angle: 30, color: RING_COLORS.product, radius: 1.2, description: 'Freedom Unlimited Card', filterType: 'productLine', filterValue: 'ion' },
+  { id: 'rewards', label: 'Rewards', ring: 2, angle: 60, color: RING_COLORS.product, radius: 1.2, description: 'Ultimate Rewards', filterType: 'productLine', filterValue: 'rewards' },
   { id: 'mortgage', label: 'Mortgage', ring: 2, angle: 90, color: RING_COLORS.product, radius: 1.2, description: 'Mortgages & Home Equity', filterType: 'productLine', filterValue: 'mortgage' },
-  { id: 'direct-investing', label: 'Direct Inv.', ring: 2, angle: 120, color: RING_COLORS.product, radius: 1.2, description: 'RBC Direct Investing', filterType: 'productLine', filterValue: 'direct-investing' },
-  { id: 'dominion-securities', label: 'Dom. Sec.', ring: 2, angle: 150, color: RING_COLORS.product, radius: 1.2, description: 'RBC Dominion Securities', filterType: 'productLine', filterValue: 'dominion-securities' },
+  { id: 'direct-investing', label: 'Self-Dir.', ring: 2, angle: 120, color: RING_COLORS.product, radius: 1.2, description: 'J.P. Morgan Self-Directed', filterType: 'productLine', filterValue: 'direct-investing' },
+  { id: 'dominion-securities', label: 'Wealth Mgmt', ring: 2, angle: 150, color: RING_COLORS.product, radius: 1.2, description: 'J.P. Morgan Wealth Management', filterType: 'productLine', filterValue: 'dominion-securities' },
   { id: 'insurance-products', label: 'Ins. Products', ring: 2, angle: 180, color: RING_COLORS.product, radius: 1.2, description: 'Insurance Products', filterType: 'productLine', filterValue: 'insurance-products' },
   { id: 'student', label: 'Student', ring: 2, angle: 210, color: RING_COLORS.product, radius: 1.2, description: 'Student Banking', filterType: 'productLine', filterValue: 'student' },
-  { id: 'newcomer', label: 'Newcomer', ring: 2, angle: 240, color: RING_COLORS.product, radius: 1.2, description: 'Newcomer Banking', filterType: 'productLine', filterValue: 'newcomer' },
+  { id: 'newcomer', label: 'New to U.S.', ring: 2, angle: 240, color: RING_COLORS.product, radius: 1.2, description: 'New to U.S. Banking', filterType: 'productLine', filterValue: 'newcomer' },
   { id: 'small-business', label: 'Small Biz', ring: 2, angle: 270, color: RING_COLORS.product, radius: 1.2, description: 'Small Business Banking', filterType: 'productLine', filterValue: 'small-business' },
   { id: 'commercial-lending', label: 'Comm. Lending', ring: 2, angle: 300, color: RING_COLORS.product, radius: 1.2, description: 'Commercial Lending', filterType: 'productLine', filterValue: 'commercial-lending' },
-  { id: 'gic-savings', label: 'GIC/Savings', ring: 2, angle: 330, color: RING_COLORS.product, radius: 1.2, description: 'GICs & Savings', filterType: 'productLine', filterValue: 'gic-savings' },
+  { id: 'gic-savings', label: 'CDs/Savings', ring: 2, angle: 330, color: RING_COLORS.product, radius: 1.2, description: 'CDs & Savings', filterType: 'productLine', filterValue: 'gic-savings' },
 
   // Ring 3 — Audiences (8 nodes at 45° intervals)
   { id: 'young-professionals', label: 'Young Pros', ring: 3, angle: 0, color: RING_COLORS.audience, radius: 1.0, description: 'Young Professionals', filterType: 'audience', filterValue: 'young-professionals' },
   { id: 'families', label: 'Families', ring: 3, angle: 45, color: RING_COLORS.audience, radius: 1.0, description: 'Families', filterType: 'audience', filterValue: 'families' },
-  { id: 'new-canadians', label: 'New Canadians', ring: 3, angle: 90, color: RING_COLORS.audience, radius: 1.0, description: 'New Canadians', filterType: 'audience', filterValue: 'new-canadians' },
+  { id: 'new-canadians', label: 'New to U.S.', ring: 3, angle: 90, color: RING_COLORS.audience, radius: 1.0, description: 'Newcomers to U.S.', filterType: 'audience', filterValue: 'new-canadians' },
   { id: 'high-net-worth', label: 'HNW', ring: 3, angle: 135, color: RING_COLORS.audience, radius: 1.0, description: 'High-Net-Worth', filterType: 'audience', filterValue: 'high-net-worth' },
   { id: 'students', label: 'Students', ring: 3, angle: 180, color: RING_COLORS.audience, radius: 1.0, description: 'Students', filterType: 'audience', filterValue: 'students' },
   { id: 'retirees', label: 'Retirees', ring: 3, angle: 225, color: RING_COLORS.audience, radius: 1.0, description: 'Retirees', filterType: 'audience', filterValue: 'retirees' },
@@ -119,25 +119,25 @@ const NODES: MolecularNode[] = [
   { id: 'mass-market', label: 'Mass Market', ring: 3, angle: 315, color: RING_COLORS.audience, radius: 1.0, description: 'Mass Market', filterType: 'audience', filterValue: 'mass-market' },
 
   // Ring 4 — Campaigns (19 nodes, ~19° intervals)
-  { id: 'rbc-avion-travel-q1', label: 'Avion Travel Q1', ring: 4, angle: 0, color: RING_COLORS.campaign, radius: 0.8, description: 'Avion Travel Rewards — Q1 Push', filterType: 'campaign', filterValue: 'rbc-avion-travel-q1' },
-  { id: 'rbc-avion-points-accel', label: 'Avion Points', ring: 4, angle: 19, color: RING_COLORS.campaign, radius: 0.8, description: 'Avion Points Accelerator', filterType: 'campaign', filterValue: 'rbc-avion-points-accel' },
-  { id: 'rbc-avion-retention', label: 'Avion Retain', ring: 4, angle: 38, color: RING_COLORS.campaign, radius: 0.8, description: 'Avion Cardholder Retention', filterType: 'campaign', filterValue: 'rbc-avion-retention' },
-  { id: 'rbc-ion-launch', label: 'ION Launch', ring: 4, angle: 57, color: RING_COLORS.campaign, radius: 0.8, description: 'ION Card Digital Launch', filterType: 'campaign', filterValue: 'rbc-ion-launch' },
-  { id: 'rbc-ion-student', label: 'ION Student', ring: 4, angle: 76, color: RING_COLORS.campaign, radius: 0.8, description: 'ION Student Crossover', filterType: 'campaign', filterValue: 'rbc-ion-student' },
-  { id: 'rbc-rewards-awareness', label: 'Rewards Aware', ring: 4, angle: 95, color: RING_COLORS.campaign, radius: 0.8, description: 'RBC Rewards Brand Awareness', filterType: 'campaign', filterValue: 'rbc-rewards-awareness' },
+  { id: 'rbc-avion-travel-q1', label: 'Sapphire Travel Q1', ring: 4, angle: 0, color: RING_COLORS.campaign, radius: 0.8, description: 'Sapphire Travel Rewards — Q1 Push', filterType: 'campaign', filterValue: 'rbc-avion-travel-q1' },
+  { id: 'rbc-avion-points-accel', label: 'Sapphire Points', ring: 4, angle: 19, color: RING_COLORS.campaign, radius: 0.8, description: 'Sapphire Points Accelerator', filterType: 'campaign', filterValue: 'rbc-avion-points-accel' },
+  { id: 'rbc-avion-retention', label: 'Sapphire Retain', ring: 4, angle: 38, color: RING_COLORS.campaign, radius: 0.8, description: 'Sapphire Cardholder Retention', filterType: 'campaign', filterValue: 'rbc-avion-retention' },
+  { id: 'rbc-ion-launch', label: 'Freedom Launch', ring: 4, angle: 57, color: RING_COLORS.campaign, radius: 0.8, description: 'Freedom Card Digital Launch', filterType: 'campaign', filterValue: 'rbc-ion-launch' },
+  { id: 'rbc-ion-student', label: 'Freedom Student', ring: 4, angle: 76, color: RING_COLORS.campaign, radius: 0.8, description: 'Freedom Student Crossover', filterType: 'campaign', filterValue: 'rbc-ion-student' },
+  { id: 'rbc-rewards-awareness', label: 'Rewards Aware', ring: 4, angle: 95, color: RING_COLORS.campaign, radius: 0.8, description: 'Ultimate Rewards Brand Awareness', filterType: 'campaign', filterValue: 'rbc-rewards-awareness' },
   { id: 'rbc-mortgage-spring', label: 'Mortgage Spring', ring: 4, angle: 114, color: RING_COLORS.campaign, radius: 0.8, description: 'Spring Mortgage Rates', filterType: 'campaign', filterValue: 'rbc-mortgage-spring' },
   { id: 'rbc-mortgage-ftb', label: 'Mortgage FTB', ring: 4, angle: 133, color: RING_COLORS.campaign, radius: 0.8, description: 'First-Time Home Buyer', filterType: 'campaign', filterValue: 'rbc-mortgage-ftb' },
-  { id: 'rbc-di-tfsa', label: 'TFSA Push', ring: 4, angle: 152, color: RING_COLORS.campaign, radius: 0.8, description: 'TFSA Season Push', filterType: 'campaign', filterValue: 'rbc-di-tfsa' },
+  { id: 'rbc-di-tfsa', label: 'Roth IRA Push', ring: 4, angle: 152, color: RING_COLORS.campaign, radius: 0.8, description: 'Roth IRA Season Push', filterType: 'campaign', filterValue: 'rbc-di-tfsa' },
   { id: 'rbc-di-active-trader', label: 'Active Trader', ring: 4, angle: 171, color: RING_COLORS.campaign, radius: 0.8, description: 'Active Trader Acquisition', filterType: 'campaign', filterValue: 'rbc-di-active-trader' },
   { id: 'rbc-ds-hnw', label: 'HNW Advisory', ring: 4, angle: 190, color: RING_COLORS.campaign, radius: 0.8, description: 'HNW Wealth Advisory', filterType: 'campaign', filterValue: 'rbc-ds-hnw' },
   { id: 'rbc-insurance-bundle', label: 'Ins. Bundle', ring: 4, angle: 209, color: RING_COLORS.campaign, radius: 0.8, description: 'Home & Auto Insurance Bundle', filterType: 'campaign', filterValue: 'rbc-insurance-bundle' },
   { id: 'rbc-student-bts', label: 'Student BTS', ring: 4, angle: 228, color: RING_COLORS.campaign, radius: 0.8, description: 'Back to School Banking 2026', filterType: 'campaign', filterValue: 'rbc-student-bts' },
-  { id: 'rbc-newcomer-welcome', label: 'Newcomer Welcome', ring: 4, angle: 247, color: RING_COLORS.campaign, radius: 0.8, description: 'Welcome to Canada', filterType: 'campaign', filterValue: 'rbc-newcomer-welcome' },
+  { id: 'rbc-newcomer-welcome', label: 'Welcome to U.S.', ring: 4, angle: 247, color: RING_COLORS.campaign, radius: 0.8, description: 'Welcome to America', filterType: 'campaign', filterValue: 'rbc-newcomer-welcome' },
   { id: 'rbc-smb-growth', label: 'SMB Growth', ring: 4, angle: 266, color: RING_COLORS.campaign, radius: 0.8, description: 'Small Business Growth', filterType: 'campaign', filterValue: 'rbc-smb-growth' },
   { id: 'rbc-cml-commercial', label: 'Comm. Lending', ring: 4, angle: 285, color: RING_COLORS.campaign, radius: 0.8, description: 'Commercial Lending', filterType: 'campaign', filterValue: 'rbc-cml-commercial' },
-  { id: 'rbc-gic-rates', label: 'GIC Rates', ring: 4, angle: 304, color: RING_COLORS.campaign, radius: 0.8, description: 'GIC Rate Promotion', filterType: 'campaign', filterValue: 'rbc-gic-rates' },
+  { id: 'rbc-gic-rates', label: 'CD Rates', ring: 4, angle: 304, color: RING_COLORS.campaign, radius: 0.8, description: 'CD Rate Promotion', filterType: 'campaign', filterValue: 'rbc-gic-rates' },
   { id: 'rbc-gameday-moments', label: 'Game Day', ring: 4, angle: 323, color: RING_COLORS.campaign, radius: 0.8, description: 'Game Day Moments', filterType: 'campaign', filterValue: 'rbc-gameday-moments' },
-  { id: 'rbc-brand-q1', label: 'Brand Q1', ring: 4, angle: 342, color: RING_COLORS.campaign, radius: 0.8, description: 'RBC Master Brand — Q1', filterType: 'campaign', filterValue: 'rbc-brand-q1' },
+  { id: 'rbc-brand-q1', label: 'Brand Q1', ring: 4, angle: 342, color: RING_COLORS.campaign, radius: 0.8, description: 'Chase Master Brand — Q1', filterType: 'campaign', filterValue: 'rbc-brand-q1' },
 
   // Ring 5 — Execution (9 channels + 3 funnel + 4 geos = 16 nodes)
   { id: 'ch-instagram', label: 'Instagram', ring: 5, angle: 0, color: RING_COLORS.exec, radius: 0.9, description: 'Instagram', filterType: 'channel', filterValue: 'instagram' },
@@ -153,15 +153,15 @@ const NODES: MolecularNode[] = [
   { id: 'fn-consideration', label: 'Consideration', ring: 5, angle: 232.5, color: RING_COLORS.exec, radius: 0.9, description: 'Consideration Objective', filterType: 'funnel', filterValue: 'consideration' },
   { id: 'fn-conversion', label: 'Conversion', ring: 5, angle: 255, color: RING_COLORS.exec, radius: 0.9, description: 'Conversion Objective', filterType: 'funnel', filterValue: 'conversion' },
   { id: 'geo-national', label: 'National', ring: 5, angle: 285, color: RING_COLORS.exec, radius: 0.9, description: 'National', filterType: 'geo', filterValue: 'national' },
-  { id: 'geo-ontario', label: 'Ontario', ring: 5, angle: 307.5, color: RING_COLORS.exec, radius: 0.9, description: 'Ontario', filterType: 'geo', filterValue: 'ontario' },
-  { id: 'geo-quebec', label: 'Quebec', ring: 5, angle: 330, color: RING_COLORS.exec, radius: 0.9, description: 'Quebec', filterType: 'geo', filterValue: 'quebec' },
-  { id: 'geo-western', label: 'Western', ring: 5, angle: 352.5, color: RING_COLORS.exec, radius: 0.9, description: 'Western Canada', filterType: 'geo', filterValue: 'western' },
+  { id: 'geo-ontario', label: 'Northeast', ring: 5, angle: 307.5, color: RING_COLORS.exec, radius: 0.9, description: 'Northeast US', filterType: 'geo', filterValue: 'ontario' },
+  { id: 'geo-quebec', label: 'Southeast', ring: 5, angle: 330, color: RING_COLORS.exec, radius: 0.9, description: 'Southeast US', filterType: 'geo', filterValue: 'quebec' },
+  { id: 'geo-western', label: 'West', ring: 5, angle: 352.5, color: RING_COLORS.exec, radius: 0.9, description: 'Western US', filterType: 'geo', filterValue: 'western' },
 ];
 
 // ===== Bond Definitions =====
 
 const BONDS: MolecularBond[] = [
-  // Ring 0→1: RBC to all org nodes
+  // Ring 0→1: JPMC to all org nodes
   ...['pcb', 'wealth', 'insurance', 'capital-markets', 'omnicom', 'publicis', 'wpp', 'in-house', 'other'].map(t => ({ source: 'rbc', target: t })),
 
   // Ring 1→2: Divisions own product lines

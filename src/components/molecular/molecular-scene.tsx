@@ -12,7 +12,7 @@ import {
 // Get animated node position from precomputed Fibonacci sphere base + gentle drift
 function nodePosition(node: MolecularNode, time: number): [number, number, number] {
   const [bx, by, bz] = getBasePosition(node.id);
-  if (node.ring === 0) return [0, 0, 0]; // RBC stays at origin
+  if (node.ring === 0) return [0, 0, 0]; // JPMC stays at origin
   const drift = 0.4;
   return [
     bx + Math.sin(time * 0.3 + node.angle * 0.05) * drift,

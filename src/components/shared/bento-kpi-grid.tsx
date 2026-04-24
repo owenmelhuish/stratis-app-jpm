@@ -1250,7 +1250,7 @@ const PERSONAS: Persona[] = [
     reachShare: 16, engagementIdx: 82, deltaPercent: 14, color: "#1e453b",
     kpis: { cvr: 4.2, cvrDelta: 18, cpa: 62, cpaDelta: -12, aov: 850, aovDelta: 15, roas: 2.4, roasDelta: 19, ltv: 3200, ltvDelta: 12, frequency: 2.8, frequencyDelta: 8 },
     topChannels: [{ name: "TikTok", share: 36 }, { name: "Instagram", share: 28 }, { name: "Spotify", share: 20 }],
-    topCategories: [{ name: "ION Card", share: 38 }, { name: "Student Banking", share: 34 }, { name: "TFSA", share: 28 }],
+    topCategories: [{ name: "Freedom Card", share: 38 }, { name: "Student Banking", share: 34 }, { name: "Roth IRA", share: 28 }],
   },
 ];
 

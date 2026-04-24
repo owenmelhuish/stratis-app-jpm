@@ -78,7 +78,7 @@ function generateAssetName(insightId: string): string {
   const aspects = ['1x1', '16x9', '9x16'];
   const aspect = aspects[(hash >> 12) % 3];
   const code = insightId.replace(/[^a-zA-Z0-9]/g, '').slice(-3).toUpperCase();
-  return `RBC26-${code}-Ad${String(adNum).padStart(2, '0')}-${fmt}-${lang}-${dur}-${aspect}`;
+  return `JPMC26-${code}-Ad${String(adNum).padStart(2, '0')}-${fmt}-${lang}-${dur}-${aspect}`;
 }
 
 // --- Check if insight is creative/ad type ---

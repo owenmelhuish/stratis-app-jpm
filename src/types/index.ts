@@ -17,7 +17,7 @@ export const AGENCY_LABELS: Record<AgencyId, string> = {
   'omnicom': 'Omnicom Media Group',
   'publicis': 'Publicis Groupe',
   'wpp': 'WPP',
-  'in-house': 'RBC In-House',
+  'in-house': 'Chase In-House',
   'other': 'Other Agencies',
 };
 
@@ -29,18 +29,18 @@ export type ProductLineId =
   | 'small-business' | 'commercial-lending' | 'gic-savings';
 
 export const PRODUCT_LINE_LABELS: Record<ProductLineId, string> = {
-  'avion': 'Avion',
-  'ion': 'ION',
-  'rewards': 'RBC Rewards',
+  'avion': 'Sapphire Preferred',
+  'ion': 'Freedom Unlimited',
+  'rewards': 'Ultimate Rewards',
   'mortgage': 'Mortgages & Home Equity',
-  'direct-investing': 'RBC Direct Investing',
-  'dominion-securities': 'RBC Dominion Securities',
+  'direct-investing': 'J.P. Morgan Self-Directed',
+  'dominion-securities': 'J.P. Morgan Wealth Mgmt',
   'insurance-products': 'Insurance Products',
   'student': 'Student Banking',
-  'newcomer': 'Newcomer Banking',
+  'newcomer': 'New to U.S. Banking',
   'small-business': 'Small Business Banking',
   'commercial-lending': 'Commercial Lending',
-  'gic-savings': 'GICs & Savings',
+  'gic-savings': 'CDs & Savings',
 };
 
 export interface ProductLine {
@@ -59,7 +59,7 @@ export type AudienceId =
 export const AUDIENCE_LABELS: Record<AudienceId, string> = {
   'young-professionals': 'Young Professionals',
   'families': 'Families',
-  'new-canadians': 'New Canadians',
+  'new-canadians': 'Newcomers to U.S.',
   'high-net-worth': 'High-Net-Worth',
   'students': 'Students',
   'retirees': 'Retirees',
@@ -72,10 +72,10 @@ export type GeoId = 'national' | 'ontario' | 'quebec' | 'western' | 'atlantic';
 
 export const GEO_LABELS: Record<GeoId, string> = {
   'national': 'National',
-  'ontario': 'Ontario',
-  'quebec': 'Quebec',
-  'western': 'Western Canada',
-  'atlantic': 'Atlantic Canada',
+  'ontario': 'Northeast',
+  'quebec': 'Southeast',
+  'western': 'West',
+  'atlantic': 'Midwest',
 };
 
 /** @deprecated Use GeoId. Kept for backward compatibility during migration. */

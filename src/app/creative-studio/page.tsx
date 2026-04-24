@@ -50,8 +50,8 @@ const INITIAL_LAYERS: SceneLayer[] = [
   { id: "dome", name: "Dome Light", icon: Sun, visible: true, locked: false },
   { id: "key", name: "Key Light", icon: Lightbulb, visible: true, locked: false },
   { id: "area", name: "Area Light", icon: LayoutGrid, visible: true, locked: false },
-  { id: "avion", name: "Avion Card", icon: Box, visible: true, locked: true },
-  { id: "shield", name: "RBC Shield", icon: Box, visible: true, locked: true },
+  { id: "avion", name: "Sapphire Card", icon: Box, visible: true, locked: true },
+  { id: "shield", name: "Chase Shield", icon: Box, visible: true, locked: true },
   { id: "paint", name: "Paint Splashes", icon: Layers, visible: true, locked: false },
   { id: "headline", name: "Headline Text", icon: Type, visible: true, locked: false },
   { id: "bg", name: "Background", icon: Image, visible: true, locked: false },
@@ -105,7 +105,7 @@ export default function CreativeStudioPage() {
   const [selectedBgPreset, setSelectedBgPreset] = useState("rose");
   const [selectedProductAngle, setSelectedProductAngle] = useState("3-quarter");
   const [selectedProductColor, setSelectedProductColor] = useState("white");
-  const [headlineText, setHeadlineText] = useState("TRAVEL REWARDED.\nAVION BY RBC.");
+  const [headlineText, setHeadlineText] = useState("TRAVEL REWARDED.\nSAPPHIRE BY CHASE.");
   const [selectedFont, setSelectedFont] = useState("Impact");
   const [fontSize, setFontSize] = useState(72);
   const [effectIntensity, setEffectIntensity] = useState(80);
@@ -192,7 +192,7 @@ export default function CreativeStudioPage() {
           </div>
           <div>
             <div className="flex items-center gap-1">
-              <span className="text-sm font-semibold">RBC Avion Travel Rewards</span>
+              <span className="text-sm font-semibold">Chase Sapphire Preferred</span>
               <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </div>
             <p className="text-[10px] text-muted-foreground">Ad Campaign Project</p>
@@ -540,7 +540,7 @@ export default function CreativeStudioPage() {
                 </div>
                 <div className="relative rounded-lg overflow-hidden shadow-2xl shadow-black/40">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/creative-hero.jpg" alt="Your Future Our Commitment — RBC Avion campaign creative" className="w-[580px] h-auto block select-none" draggable={false} />
+                  <img src="/creative-hero.jpg" alt="Your Future Our Commitment — Chase Sapphire campaign creative" className="w-[580px] h-auto block select-none" draggable={false} />
                   <div className="absolute inset-0 border-2 border-teal/60 rounded-lg pointer-events-none">
                     <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-teal rounded-sm border border-card" />
                     <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-teal rounded-sm border border-card" />
@@ -818,8 +818,8 @@ export default function CreativeStudioPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { id: "avion", label: "Avion Card" },
-                        { id: "shield", label: "RBC Shield" },
+                        { id: "avion", label: "Sapphire Card" },
+                        { id: "shield", label: "Chase Shield" },
                         { id: "private", label: "Private Banking" },
                         { id: "wealth", label: "Wealth Mgmt" },
                       ].map((model) => (

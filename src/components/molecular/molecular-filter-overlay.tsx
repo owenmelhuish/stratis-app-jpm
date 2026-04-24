@@ -27,7 +27,7 @@ export function MolecularFilterOverlay({ onClose }: MolecularFilterOverlayProps)
   const handleSelect = useCallback((id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
-      // Click on RBC nucleus clears all
+      // Click on JPMC nucleus clears all
       if (id === 'rbc') {
         return new Set();
       }
@@ -113,7 +113,7 @@ export function MolecularFilterOverlay({ onClose }: MolecularFilterOverlayProps)
         {/* Color legend */}
         <div className="absolute bottom-4 left-4 z-10 px-3 py-2.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border/30 space-y-1">
           {[
-            ['#E24B4A', 'RBC (nucleus)'],
+            ['#E24B4A', 'JPMC (nucleus)'],
             ['#7F77DD', 'Organization'],
             ['#1D9E75', 'Product Lines'],
             ['#D85A30', 'Audiences'],
