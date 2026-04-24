@@ -76,10 +76,13 @@ function computeDateRange(preset: DateRangePreset): DateRange {
   }
 }
 
+export type Theme = 'dark' | 'light';
+
 interface PersistedState {
   dateRange: DateRange;
   compareEnabled: boolean;
   role: UserRole;
+  theme: Theme;
   customKpis: KPIKey[];
   selectedFunnel: FunnelStage;
   insightStatuses: Record<string, InsightStatus>;
@@ -120,6 +123,7 @@ export interface AppState {
   selectedCampaignStatuses: CampaignStatus[];
   attributionModel: AttributionModel;
   role: UserRole;
+  theme: Theme;
   selectedDivision: DivisionId | null;
   selectedProductLine: ProductLineId | null;
   selectedCampaign: string | null;
@@ -140,6 +144,8 @@ export interface AppState {
   setDatePreset: (preset: DateRangePreset) => void;
   toggleCompare: () => void;
   setRole: (role: UserRole) => void;
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
   setSelectedDivisions: (divisions: DivisionId[]) => void;
   setSelectedAgencies: (agencies: AgencyId[]) => void;
   setSelectedProductLines: (productLines: ProductLineId[]) => void;
@@ -193,6 +199,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   selectedCampaignStatuses: [],
   attributionModel: 'last-click',
   role: 'agency',
+  theme: 'dark' as Theme,
   selectedDivision: null,
   selectedProductLine: null,
   selectedCampaign: null,
@@ -220,6 +227,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
   toggleCompare: () => { set((s) => ({ compareEnabled: !s.compareEnabled })); get().syncToStorage(); },
   setRole: (role) => { set({ role }); get().syncToStorage(); },
+  setTheme: (theme) => { set({ theme }); get().syncToStorage(); },
+  toggleTheme: () => { set((s) => ({ theme: s.theme === 'dark' ? 'light' : 'dark' })); get().syncToStorage(); },
   setSelectedDivisions: (divisions) => set({ selectedDivisions: divisions }),
   setSelectedAgencies: (agencies) => set({ selectedAgencies: agencies }),
   setSelectedProductLines: (productLines) => set({ selectedProductLines: productLines }),
@@ -306,6 +315,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
       dateRange: persisted.dateRange ?? s.dateRange,
       compareEnabled: persisted.compareEnabled ?? s.compareEnabled,
       role: persisted.role ?? s.role,
+      theme: persisted.theme ?? s.theme,
       customKpis: persisted.customKpis ?? s.customKpis,
       selectedFunnel: persisted.selectedFunnel ?? s.selectedFunnel,
       insightStatuses: persisted.insightStatuses ?? s.insightStatuses,
@@ -325,6 +335,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
       dateRange: s.dateRange,
       compareEnabled: s.compareEnabled,
       role: s.role,
+      theme: s.theme,
       customKpis: s.customKpis,
       selectedFunnel: s.selectedFunnel,
       insightStatuses: s.insightStatuses,

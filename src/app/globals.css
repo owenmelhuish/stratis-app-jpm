@@ -54,42 +54,47 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.13 0.005 160);
-  --foreground: oklch(0.96 0 0);
-  --card: oklch(0.16 0.005 160);
-  --card-foreground: oklch(0.96 0 0);
-  --card-elevated: oklch(0.19 0.005 160);
-  --popover: oklch(0.16 0.005 160);
-  --popover-foreground: oklch(0.96 0 0);
-  --primary: oklch(0.96 0 0);
-  --primary-foreground: oklch(0.13 0 0);
-  --secondary: oklch(0.20 0.005 160);
-  --secondary-foreground: oklch(0.96 0 0);
-  --muted: oklch(0.20 0.005 160);
-  --muted-foreground: oklch(0.55 0 0);
-  --accent: oklch(0.20 0.005 160);
-  --accent-foreground: oklch(0.96 0 0);
-  --destructive: oklch(0.65 0.2 20);
-  --border: oklch(1 0 0 / 6%);
-  --border-strong: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.556 0 0);
-  --teal: oklch(0.75 0.15 170);
-  --orange: oklch(0.75 0.18 55);
-  --orange-foreground: oklch(0.13 0 0);
-  --chart-1: oklch(0.75 0.15 170);
-  --chart-2: oklch(0.65 0.18 20);
-  --chart-3: oklch(0.70 0.12 250);
-  --chart-4: oklch(0.65 0.15 300);
-  --chart-5: oklch(0.70 0.12 80);
-  --sidebar: oklch(0.10 0.005 160);
-  --sidebar-foreground: oklch(0.96 0 0);
-  --sidebar-primary: oklch(0.75 0.15 170);
-  --sidebar-primary-foreground: oklch(0.13 0 0);
-  --sidebar-accent: oklch(0.18 0.005 160);
-  --sidebar-accent-foreground: oklch(0.96 0 0);
-  --sidebar-border: oklch(1 0 0 / 5%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Light palette — liquid-glass on a cool neutral white */
+  --background: oklch(0.985 0.003 200);
+  --foreground: oklch(0.18 0.005 160);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.005 160);
+  --card-elevated: oklch(1 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.005 160);
+  --primary: oklch(0.20 0.005 160);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.95 0.003 200);
+  --secondary-foreground: oklch(0.20 0.005 160);
+  --muted: oklch(0.95 0.003 200);
+  --muted-foreground: oklch(0.45 0.005 160);
+  --accent: oklch(0.95 0.003 200);
+  --accent-foreground: oklch(0.20 0.005 160);
+  --destructive: oklch(0.55 0.22 20);
+  --border: oklch(0.18 0.005 160 / 10%);
+  --border-strong: oklch(0.18 0.005 160 / 18%);
+  --input: oklch(0.18 0.005 160 / 12%);
+  --ring: oklch(0.45 0 0);
+  --teal: oklch(0.55 0.15 170);
+  --orange: oklch(0.62 0.18 55);
+  --orange-foreground: oklch(0.98 0 0);
+  --chart-1: oklch(0.55 0.15 170);
+  --chart-2: oklch(0.55 0.18 20);
+  --chart-3: oklch(0.55 0.14 250);
+  --chart-4: oklch(0.55 0.17 300);
+  --chart-5: oklch(0.60 0.14 80);
+  --sidebar: oklch(0.97 0.003 200);
+  --sidebar-foreground: oklch(0.20 0.005 160);
+  --sidebar-primary: oklch(0.55 0.15 170);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.93 0.003 200);
+  --sidebar-accent-foreground: oklch(0.20 0.005 160);
+  --sidebar-border: oklch(0.18 0.005 160 / 8%);
+  --sidebar-ring: oklch(0.45 0 0);
+  --scrollbar-thumb: oklch(0.18 0.005 160 / 20%);
+  --scrollbar-thumb-hover: oklch(0.18 0.005 160 / 35%);
+  --chart-grid: oklch(0.18 0.005 160 / 8%);
+  --chart-text: oklch(0.40 0 0);
 }
 
 .dark {
@@ -129,6 +134,10 @@
   --sidebar-accent-foreground: oklch(0.96 0 0);
   --sidebar-border: oklch(1 0 0 / 5%);
   --sidebar-ring: oklch(0.556 0 0);
+  --scrollbar-thumb: oklch(0.25 0 0);
+  --scrollbar-thumb-hover: oklch(0.35 0 0);
+  --chart-grid: oklch(1 0 0 / 4%);
+  --chart-text: oklch(0.45 0 0);
 }
 
 @layer base {
@@ -149,23 +158,23 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.25 0 0);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.35 0 0);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Recharts */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: oklch(1 0 0 / 4%);
+  stroke: var(--chart-grid);
   stroke-dasharray: 4 4;
 }
 .recharts-text {
-  fill: oklch(0.45 0 0);
+  fill: var(--chart-text);
   font-size: 11px;
 }
 .recharts-tooltip-wrapper {
-  filter: drop-shadow(0 12px 32px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 12px 32px rgba(0,0,0,0.35));
 }

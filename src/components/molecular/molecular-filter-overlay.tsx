@@ -22,6 +22,7 @@ export function MolecularFilterOverlay({ onClose }: MolecularFilterOverlayProps)
     setSelectedAudiences, setSelectedGeos, setSelectedChannels,
     setSelectedCampaigns, setSelectedObjectives,
     setMolecularSelections, setMolecularFilterOpen,
+    theme,
   } = useAppStore();
 
   const handleSelect = useCallback((id: string) => {
@@ -101,6 +102,7 @@ export function MolecularFilterOverlay({ onClose }: MolecularFilterOverlayProps)
           onSelect={handleSelect}
           hoveredNode={hoveredNode}
           onHover={handleHover}
+          theme={theme}
         />
         {/* Close button */}
         <button

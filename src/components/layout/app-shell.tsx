@@ -10,11 +10,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const hydrateFromStorage = useAppStore(s => s.hydrateFromStorage);
   const molecularFilterOpen = useAppStore(s => s.molecularFilterOpen);
   const setMolecularFilterOpen = useAppStore(s => s.setMolecularFilterOpen);
+  const theme = useAppStore(s => s.theme);
 
   useEffect(() => {
     hydrateFromStorage();
     setMounted(true);
   }, [hydrateFromStorage]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const root = document.documentElement;
+    if (theme === 'dark') root.classList.add('dark');
+    else root.classList.remove('dark');
+  }, [theme, mounted]);
 
   if (!mounted) {
     return (

@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { ChevronRight, ChevronDown, SlidersHorizontal, GitCompareArrows, User, MapPin, Radio, Megaphone, Building2, Briefcase, Users, Globe, Atom } from 'lucide-react';
+import { ChevronRight, ChevronDown, SlidersHorizontal, GitCompareArrows, User, MapPin, Radio, Megaphone, Building2, Briefcase, Users, Globe, Atom, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateAllData } from '@/lib/mock-data';
 
@@ -81,6 +81,7 @@ export function HeaderBar() {
     setSelectedDivision, setSelectedProductLine, setSelectedCampaign,
     selectedFunnel, setFunnel,
     molecularFilterOpen, setMolecularFilterOpen, molecularSelections,
+    theme, toggleTheme,
   } = useAppStore();
 
   const store = useMemo(() => generateAllData(), []);
@@ -187,6 +188,18 @@ export function HeaderBar() {
             </Label>
             <Switch checked={role === 'exec'} onCheckedChange={(c) => setRole(c ? 'exec' : 'agency')} className="data-[state=checked]:bg-teal" />
           </div>
+
+          <Separator orientation="vertical" className="h-5" />
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="h-7 w-7 flex items-center justify-center rounded-md border border-border bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+          >
+            {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+          </button>
 
           <Separator orientation="vertical" className="h-5" />
 

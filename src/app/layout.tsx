@@ -17,13 +17,32 @@ export const metadata: Metadata = {
   description: "Enterprise orchestration layer for cross-channel campaign intelligence",
 };
 
+const themeInitScript = `
+(function() {
+  try {
+    var raw = localStorage.getItem('stratis-app-state');
+    var theme = 'dark';
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && parsed.theme === 'light') theme = 'light';
+    }
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+  } catch (e) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

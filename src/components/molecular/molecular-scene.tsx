@@ -25,17 +25,20 @@ function bondKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`;
 }
 
+type Theme = 'dark' | 'light';
+
 // ===== Atom (Node) Component =====
 interface AtomProps {
   node: MolecularNode;
   isSelected: boolean;
   isLit: boolean;
   hasSelection: boolean;
+  theme: Theme;
   onSelect: (id: string) => void;
   onHover: (node: MolecularNode | null) => void;
 }
 
-function Atom({ node, isSelected, isLit, hasSelection, onSelect, onHover }: AtomProps) {
+function Atom({ node, isSelected, isLit, hasSelection, theme, onSelect, onHover }: AtomProps) {
   const groupRef = useRef<THREE.Group>(null);
   const outerRef = useRef<THREE.Mesh>(null);
   const coreRef = useRef<THREE.Mesh>(null);
@@ -59,17 +62,17 @@ function Atom({ node, isSelected, isLit, hasSelection, onSelect, onHover }: Atom
     // Outer sphere opacity
     if (outerRef.current) {
       const mat = outerRef.current.material as THREE.MeshStandardMaterial;
-      const targetOp = (hasSelection && !isLit && !isSelected) ? 0.12 : isSelected ? 0.35 : 0.25;
+      const targetOp = (hasSelection && !isLit && !isSelected) ? 0.15 : isSelected ? 0.5 : 0.4;
       mat.opacity += (targetOp - mat.opacity) * 0.08;
-      mat.emissiveIntensity = isSelected ? 0.8 + Math.sin(t * 3) * 0.2 : hovered ? 0.5 : isLit ? 0.3 : 0.1;
+      mat.emissiveIntensity = isSelected ? 0.9 + Math.sin(t * 3) * 0.2 : hovered ? 0.65 : isLit ? 0.5 : 0.3;
     }
 
     // Core opacity
     if (coreRef.current) {
       const mat = coreRef.current.material as THREE.MeshStandardMaterial;
-      const targetOp = (hasSelection && !isLit && !isSelected) ? 0.35 : 1.0;
+      const targetOp = (hasSelection && !isLit && !isSelected) ? 0.4 : 1.0;
       mat.opacity += (targetOp - mat.opacity) * 0.08;
-      mat.emissiveIntensity = isSelected ? 1.0 : hovered ? 0.6 : isLit ? 0.4 : 0.15;
+      mat.emissiveIntensity = isSelected ? 1.1 : hovered ? 0.8 : isLit ? 0.6 : 0.45;
     }
   });
 
@@ -91,7 +94,7 @@ function Atom({ node, isSelected, isLit, hasSelection, onSelect, onHover }: Atom
     document.body.style.cursor = 'auto';
   }, [onHover]);
 
-  const labelOpacity = (hasSelection && !isLit && !isSelected) ? 0.3 : isSelected ? 1.0 : isLit ? 0.85 : 0.5;
+  const labelOpacity = (hasSelection && !isLit && !isSelected) ? 0.35 : isSelected ? 1.0 : isLit ? 0.9 : 0.75;
 
   return (
     <group ref={groupRef}>
@@ -106,9 +109,9 @@ function Atom({ node, isSelected, isLit, hasSelection, onSelect, onHover }: Atom
         <meshStandardMaterial
           color={color}
           transparent
-          opacity={0.25}
+          opacity={0.4}
           emissive={color}
-          emissiveIntensity={0.1}
+          emissiveIntensity={0.3}
           roughness={0.4}
           metalness={0.1}
           depthWrite={false}
@@ -122,7 +125,7 @@ function Atom({ node, isSelected, isLit, hasSelection, onSelect, onHover }: Atom
           transparent
           opacity={1.0}
           emissive={color}
-          emissiveIntensity={0.15}
+          emissiveIntensity={0.45}
           roughness={0.2}
           metalness={0.3}
         />
@@ -139,7 +142,7 @@ function Atom({ node, isSelected, isLit, hasSelection, onSelect, onHover }: Atom
         <Text
           position={[0, -(vizRadius + 0.6), 0]}
           fontSize={node.ring === 0 ? 1.2 : node.ring <= 2 ? 0.65 : 0.5}
-          color="#ffffff"
+          color={theme === 'light' ? '#0a1a16' : '#ffffff'}
           anchorX="center"
           anchorY="top"
           fillOpacity={labelOpacity}
@@ -210,7 +213,9 @@ function Bonds({ selectedIds, time }: BondsProps) {
 }
 
 // ===== Ring Guides (wireframe spheres) =====
-function RingGuides() {
+function RingGuides({ theme }: { theme: Theme }) {
+  const color = theme === 'light' ? '#0a1a16' : '#ffffff';
+  const opacity = theme === 'light' ? 0.08 : 0.06;
   return (
     <>
       {RING_RADII.slice(1).map((radius, i) => (
@@ -219,8 +224,8 @@ function RingGuides() {
           <meshBasicMaterial
             wireframe
             transparent
-            opacity={0.03}
-            color="#ffffff"
+            opacity={opacity}
+            color={color}
             depthWrite={false}
           />
         </mesh>
@@ -232,22 +237,29 @@ function RingGuides() {
 // ===== Scene Content (inside Canvas) =====
 interface SceneContentProps {
   selectedIds: Set<string>;
+  theme: Theme;
   onSelect: (id: string) => void;
   onHover: (node: MolecularNode | null) => void;
 }
 
-function SceneContent({ selectedIds, onSelect, onHover }: SceneContentProps) {
+function SceneContent({ selectedIds, theme, onSelect, onHover }: SceneContentProps) {
   const { litNodes } = useMemo(
     () => traceLineage(selectedIds),
     [selectedIds],
   );
   const hasSelection = selectedIds.size > 0;
 
+  // Light mode: lower ambient + softer point lights so glowing atoms don't blow out on white.
+  // Dark mode: keep brighter values so nodes glow against the near-black backdrop.
+  const ambient = theme === 'light' ? 0.85 : 0.6;
+  const keyLight = theme === 'light' ? 0.9 : 1.2;
+  const fillLight = theme === 'light' ? 0.3 : 0.5;
+
   return (
     <>
-      <ambientLight intensity={0.35} />
-      <pointLight position={[25, 30, 25]} intensity={0.9} />
-      <pointLight position={[-20, -15, 20]} intensity={0.3} color="#5DCAA5" />
+      <ambientLight intensity={ambient} />
+      <pointLight position={[25, 30, 25]} intensity={keyLight} />
+      <pointLight position={[-20, -15, 20]} intensity={fillLight} color="#5DCAA5" />
 
       <OrbitControls
         autoRotate
@@ -259,7 +271,7 @@ function SceneContent({ selectedIds, onSelect, onHover }: SceneContentProps) {
         enablePan={false}
       />
 
-      <RingGuides />
+      <RingGuides theme={theme} />
 
       {MOLECULAR_NODES.map((node) => (
         <Atom
@@ -268,6 +280,7 @@ function SceneContent({ selectedIds, onSelect, onHover }: SceneContentProps) {
           isSelected={selectedIds.has(node.id)}
           isLit={litNodes.has(node.id)}
           hasSelection={hasSelection}
+          theme={theme}
           onSelect={onSelect}
           onHover={onHover}
         />
@@ -296,9 +309,10 @@ interface MolecularSceneProps {
   onSelect: (id: string) => void;
   hoveredNode: MolecularNode | null;
   onHover: (node: MolecularNode | null) => void;
+  theme: Theme;
 }
 
-export function MolecularScene({ selectedIds, onSelect, hoveredNode, onHover }: MolecularSceneProps) {
+export function MolecularScene({ selectedIds, onSelect, hoveredNode, onHover, theme }: MolecularSceneProps) {
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
       <Canvas
@@ -308,6 +322,7 @@ export function MolecularScene({ selectedIds, onSelect, hoveredNode, onHover }: 
       >
         <SceneContent
           selectedIds={selectedIds}
+          theme={theme}
           onSelect={onSelect}
           onHover={onHover}
         />
